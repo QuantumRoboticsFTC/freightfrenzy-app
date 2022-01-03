@@ -12,7 +12,9 @@ import java.util.List;
  */
 public class DashboardUtil {
     private static final double DEFAULT_RESOLUTION = 2.0; // distance units; presumed inches
-    private static final double ROBOT_RADIUS = 9; // in
+    private static final double ROBOT_X_FRONT = 8.0315; // in
+    private static final double ROBOT_X_REAR = 8.5039; // in
+    private static final double ROBOT_Y = 13.26; // in
 
 
     public static void drawPoseHistory(Canvas canvas, List<Pose2d> poseHistory) {
@@ -44,9 +46,23 @@ public class DashboardUtil {
         drawSampledPath(canvas, path, DEFAULT_RESOLUTION);
     }
 
+
+
     public static void drawRobot(Canvas canvas, Pose2d pose) {
-        canvas.strokeCircle(pose.getX(), pose.getY(), ROBOT_RADIUS);
-        Vector2d v = pose.headingVec().times(ROBOT_RADIUS);
+        Vector2d[] corners = new Vector2d[] {
+                new Vector2d(ROBOT_X_FRONT, ROBOT_Y / 2).rotated(pose.getHeading()).plus(pose.vec()),
+                new Vector2d(ROBOT_X_FRONT, -ROBOT_Y / 2).rotated(pose.getHeading()).plus(pose.vec()),
+                new Vector2d(-ROBOT_X_REAR, -ROBOT_Y / 2).rotated(pose.getHeading()).plus(pose.vec()),
+                new Vector2d(-ROBOT_X_REAR, ROBOT_Y / 2).rotated(pose.getHeading()).plus(pose.vec()),
+        };
+        double[] xPoints = new double[corners.length];
+        double[] yPoints = new double[corners.length];
+        for(int i = 0; i < corners.length; i++) {
+            xPoints[i] = corners[i].getX();
+            yPoints[i] = corners[i].getY();
+        }
+        canvas.strokePolygon(xPoints, yPoints);
+        Vector2d v = pose.headingVec().times(ROBOT_X_FRONT);
         double x1 = pose.getX() + v.getX() / 2, y1 = pose.getY() + v.getY() / 2;
         double x2 = pose.getX() + v.getX(), y2 = pose.getY() + v.getY();
         canvas.strokeLine(x1, y1, x2, y2);

@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
+import eu.qrobotics.freightfrenzy.teamcode.util.Alliance;
+
 @Config
 public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarningSource {
     public static final String TAG = "Robot";
@@ -30,6 +32,7 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
     public Elevator elevator;
     public Arm arm;
     public Carousel carousel;
+    public DistanceSensorLocalization distanceSensorLocalization;
 
     private List<Subsystem> subsystems;
     private List<Subsystem> subsystemsWithProblems;
@@ -77,7 +80,7 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
         }
     };
 
-    public Robot(OpMode opMode, boolean isAutonomous) {
+    public Robot(OpMode opMode, boolean isAutonomous, Alliance alliance) {
         // Initialize statistics
         top10 = new MovingStatistics(10);
         top100 = new MovingStatistics(100);
@@ -129,6 +132,14 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
         }
         catch (Exception e) {
             Log.w(TAG, "skipping Carousel");
+        }
+
+        try {
+            distanceSensorLocalization = new DistanceSensorLocalization(opMode.hardwareMap, this, alliance);
+            subsystems.add(distanceSensorLocalization);
+        }
+        catch (Exception e) {
+            Log.w(TAG, "skipping DistanceSensorLocalization");
         }
 
         //endregion

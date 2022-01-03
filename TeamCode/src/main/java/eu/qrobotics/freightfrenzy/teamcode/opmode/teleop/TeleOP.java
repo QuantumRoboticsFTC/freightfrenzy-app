@@ -12,6 +12,7 @@ import eu.qrobotics.freightfrenzy.teamcode.subsystems.Carousel;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Elevator;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Intake;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Robot;
+import eu.qrobotics.freightfrenzy.teamcode.util.Alliance;
 import eu.qrobotics.freightfrenzy.teamcode.util.StickyGamepad;
 
 @TeleOp
@@ -33,7 +34,7 @@ public class TeleOP extends OpMode {
     public void init() {
         telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        robot = new Robot(this, false);
+        robot = new Robot(this, false, Alliance.RED);
 
         stickyGamepad1 = new StickyGamepad(gamepad1);
         stickyGamepad2 = new StickyGamepad(gamepad2);
