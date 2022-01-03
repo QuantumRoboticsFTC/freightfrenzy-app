@@ -25,6 +25,12 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
     private LynxModule hub1;
     private LynxModule hub2;
 
+    public Drivetrain drivetrain;
+    public Intake intake;
+    public Elevator elevator;
+    public Arm arm;
+    public Carousel carousel;
+
     private List<Subsystem> subsystems;
     private List<Subsystem> subsystemsWithProblems;
     private ExecutorService subsystemUpdateExecutor;
@@ -81,7 +87,7 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
         dashboard.setTelemetryTransmissionInterval(25);
 
         hub1 = opMode.hardwareMap.get(LynxModule.class, "Control Hub");
-        hub2 = opMode.hardwareMap.get(LynxModule.class, "Expansion Hub 3");
+        hub2 = opMode.hardwareMap.get(LynxModule.class, "Expansion Hub 2");
 
         hub1.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         hub2.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
@@ -89,7 +95,42 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
         //region Initialize subsystems
         subsystems = new ArrayList<>();
 
-        // TODO: subsystems
+        try {
+            drivetrain = new Drivetrain(opMode.hardwareMap, this, isAutonomous);
+            subsystems.add(drivetrain);
+        } catch (Exception e) {
+            Log.w(TAG, "skipping Drivetrain");
+        }
+
+        try {
+            intake = new Intake(opMode.hardwareMap, this);
+            subsystems.add(intake);
+        } catch (Exception e) {
+            Log.w(TAG, "skipping Intake");
+        }
+
+        try {
+            elevator = new Elevator(opMode.hardwareMap, this);
+            subsystems.add(elevator);
+        } catch (Exception e) {
+            Log.w(TAG, "skipping Elevator");
+        }
+
+        try {
+            arm = new Arm(opMode.hardwareMap, this);
+            subsystems.add(arm);
+        } catch (Exception e) {
+            Log.w(TAG, "skipping Arm");
+        }
+
+        try {
+            carousel = new Carousel(opMode.hardwareMap, this);
+            subsystems.add(carousel);
+        }
+        catch (Exception e) {
+            Log.w(TAG, "skipping Carousel");
+        }
+
         //endregion
         for (Subsystem subsystem : subsystems) {
             top100Subsystems.put(subsystem, new MovingStatistics(100));
