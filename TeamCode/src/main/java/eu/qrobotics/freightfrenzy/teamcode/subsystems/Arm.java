@@ -20,14 +20,14 @@ public class Arm implements Subsystem {
         OPEN_REVERSE,
     }
 
-    public static double ARM_FRONT_LEFT_POSITION = 0;
-    public static double ARM_FRONT_RIGHT_POSITION = 0.98;
+    public static double ARM_FRONT_LEFT_POSITION = 0.04;
+    public static double ARM_FRONT_RIGHT_POSITION = 0.96;
     public static double ARM_MID_LEFT_POSITION = 0.5;
     public static double ARM_MID_RIGHT_POSITION = 0.5;
-    public static double ARM_BACK_LEFT_POSITION = 0.85;
-    public static double ARM_BACK_RIGHT_POSITION = 0.15;
-    public static double ARM_CAPSTONE_LEFT_POSITION = 0.1;
-    public static double ARM_CAPSTONE_RIGHT_POSITION = 0.9;
+    public static double ARM_BACK_LEFT_POSITION = 0.95;
+    public static double ARM_BACK_RIGHT_POSITION = 0.05;
+    public static double ARM_CAPSTONE_LEFT_POSITION = 0.11;
+    public static double ARM_CAPSTONE_RIGHT_POSITION = 0.89;
 
     public static double TRAPDOOR_CLOSED_POSITION = 0.5;
     public static double TRAPDOOR_OPEN_POSITION = 0.35;

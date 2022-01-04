@@ -218,7 +218,7 @@ public class Elevator implements Subsystem {
                     controller.setTargetVelocity(state.getV());
                 } else {
                     // just hold the position
-                    controller.setTargetPosition(profile.end().getX() + offsetPosition);
+                    controller.setTargetPosition(profile != null ? profile.end().getX() + offsetPosition : 0);
                     controller.setTargetVelocity(0);
                 }
                 setPower(controller.update(currentHeight, currentVelocity));

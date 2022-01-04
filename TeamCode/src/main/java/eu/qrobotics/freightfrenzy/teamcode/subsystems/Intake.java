@@ -38,7 +38,7 @@ public class Intake implements Subsystem {
     public static double INTAKE_DOWN_POSITION_RIGHT = 0.645;
 
     public static double INTAKE_BLOCKER_BLOCK_POSITION = 0.45;
-    public static double INTAKE_BLOCKER_RAMP_POSITION = 0.67;
+    public static double INTAKE_BLOCKER_RAMP_POSITION = 0.72;
 
     public IntakeMode intakeMode;
     public IntakeRotation intakeRotation;
