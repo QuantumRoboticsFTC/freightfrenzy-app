@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Arm;
+import eu.qrobotics.freightfrenzy.teamcode.subsystems.Capstone;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Carousel;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Elevator;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Intake;
@@ -52,6 +53,7 @@ public class TeleOP extends OpMode {
     ElapsedTime trapdoorTimer = new ElapsedTime(0);
     ElapsedTime intakeUpTimer = new ElapsedTime(0);
     ElapsedTime intakeDownTimer = new ElapsedTime(0);
+    ElapsedTime capstoneTimer = new ElapsedTime(0);
 
     @Override
     public void loop() {
@@ -153,12 +155,24 @@ public class TeleOP extends OpMode {
             trapdoorTimer.reset();
         }
 
+        if(stickyGamepad2.y) {
+            robot.arm.armMode = Arm.ArmMode.CAPSTONE;
+            robot.capstone.capstoneMode = Capstone.CapstoneMode.OUTTAKE;
+            robot.intake.intakeRotation = Intake.IntakeRotation.DOWN;
+            capstoneTimer.reset();
+        }
+
         if(0.5 < trapdoorTimer.seconds() && trapdoorTimer.seconds() < 0.6) {
             robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN_REVERSE;
         }
 
         if(1.0 < trapdoorTimer.seconds() && trapdoorTimer.seconds() < 1.1) {
             robot.arm.trapdoorMode = Arm.TrapdoorMode.CLOSED;
+        }
+
+        if(1.0 < capstoneTimer.seconds() && capstoneTimer.seconds() < 1.1) {
+            robot.capstone.capstoneMode = Capstone.CapstoneMode.UP;
+            robot.intake.intakeRotation = Intake.IntakeRotation.UP;
         }
 
         // endregion

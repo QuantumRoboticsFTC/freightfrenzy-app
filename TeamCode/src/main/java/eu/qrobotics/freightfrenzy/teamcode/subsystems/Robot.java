@@ -32,6 +32,7 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
     public Elevator elevator;
     public Arm arm;
     public Carousel carousel;
+    public Capstone capstone;
     public DistanceSensorLocalization distanceSensorLocalization;
 
     private List<Subsystem> subsystems;
@@ -132,6 +133,14 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
         }
         catch (Exception e) {
             Log.w(TAG, "skipping Carousel");
+        }
+
+        try {
+            capstone = new Capstone(opMode.hardwareMap, this);
+            subsystems.add(capstone);
+        }
+        catch (Exception e) {
+            Log.w(TAG, "skipping Capstone");
         }
 
         try {
