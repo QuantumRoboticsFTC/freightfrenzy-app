@@ -142,6 +142,10 @@ public class Elevator implements Subsystem {
         return profile != null && (clock.seconds() - profileStartTime) <= profile.duration();
     }
 
+    public double getDistanceLeft() {
+        return controller.getLastError();
+    }
+
     public boolean isAutonomous() {
         return elevatorMode != ElevatorMode.DISABLED; // && elevatorMode != ElevatorMode.MANUAL;
     }
