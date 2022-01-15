@@ -29,9 +29,9 @@ public class Arm implements Subsystem {
     public static double ARM_CAPSTONE_LEFT_POSITION = 0.11;
     public static double ARM_CAPSTONE_RIGHT_POSITION = 0.89;
 
-    public static double TRAPDOOR_CLOSED_POSITION = 0.5;
-    public static double TRAPDOOR_OPEN_POSITION = 0.35;
-    public static double TRAPDOOR_OPEN_REVERSE_POSITION = 0.65;
+    public static double TRAPDOOR_CLOSED_POSITION = 0.84;
+    public static double TRAPDOOR_OPEN_POSITION = 0.64;
+    public static double TRAPDOOR_OPEN_REVERSE_POSITION = 0.99;
 
     public ArmMode armMode;
     public TrapdoorMode trapdoorMode;
