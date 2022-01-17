@@ -27,7 +27,7 @@ public class Intake implements Subsystem {
     }
 
     public static double INTAKE_IN_SPEED = 0.9;
-    public static double INTAKE_IN_SLOW_SPEED = 0.2;
+    public static double INTAKE_IN_SLOW_SPEED = 0.4;
     public static double INTAKE_IDLE_SPEED = 0;
     public static double INTAKE_OUT_SPEED = -0.8;
     public static double INTAKE_OUT_SLOW_SPEED = -0.4;
