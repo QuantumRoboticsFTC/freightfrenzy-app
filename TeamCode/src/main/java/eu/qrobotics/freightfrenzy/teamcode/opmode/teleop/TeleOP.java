@@ -50,10 +50,12 @@ public class TeleOP extends OpMode {
         robot.start();
     }
 
-    ElapsedTime trapdoorTimer = new ElapsedTime(0);
     ElapsedTime intakeUpTimer = new ElapsedTime(0);
     ElapsedTime intakeDownTimer = new ElapsedTime(0);
     ElapsedTime capstoneTimer = new ElapsedTime(0);
+    ElapsedTime elevatorDownTimer = new ElapsedTime(0);
+
+    boolean elevatorToggle = true;
 
     @Override
     public void loop() {
@@ -81,7 +83,12 @@ public class TeleOP extends OpMode {
         if (stickyGamepad1.right_bumper) {
             driveMode = DriveMode.NORMAL;
         }
-        robot.carousel.carouselPower = gamepad1.right_trigger - gamepad1.left_trigger;
+        if(gamepad1.right_trigger > 0.1) {
+            robot.carousel.spin();
+        }
+        if(gamepad1.left_trigger > 0.1) {
+            robot.carousel.stopSpin();
+        }
 
         //endregion
 
@@ -121,38 +128,49 @@ public class TeleOP extends OpMode {
             robot.intake.intakeMode = Intake.IntakeMode.IDLE;
         }
 
-        if (stickyGamepad2.dpad_up) {
-            robot.elevator.setTargetHeight(Elevator.TargetHeight.HIGH);
-        }
-        else if (stickyGamepad2.dpad_left) {
-            robot.elevator.setTargetHeight(Elevator.TargetHeight.MID);
-        }
-        else if (stickyGamepad2.dpad_down) {
-            robot.elevator.setTargetHeight(Elevator.TargetHeight.LOW);
-        }
-        else if (stickyGamepad2.dpad_right) {
-            robot.elevator.setTargetHeight(Elevator.TargetHeight.CAP);
+        if(robot.elevator.getElevatorMode() == Elevator.ElevatorMode.DOWN) {
+            if (stickyGamepad2.dpad_up) {
+                robot.elevator.setTargetHeight(Elevator.TargetHeight.HIGH);
+            } else if (stickyGamepad2.dpad_left) {
+                robot.elevator.setTargetHeight(Elevator.TargetHeight.MID);
+            } else if (stickyGamepad2.dpad_down) {
+                robot.elevator.setTargetHeight(Elevator.TargetHeight.LOW);
+            } else if (stickyGamepad2.dpad_right) {
+                robot.elevator.setTargetHeight(Elevator.TargetHeight.CAP);
+            }
         }
 
         if (stickyGamepad2.right_bumper) {
            robot.elevator.setElevatorMode(Elevator.ElevatorMode.UP);
-           robot.arm.armMode = Arm.ArmMode.BACK;
+           elevatorToggle = false;
         }
         else if (stickyGamepad2.left_bumper) {
-            robot.elevator.setElevatorMode(Elevator.ElevatorMode.DOWN);
             robot.arm.armMode = Arm.ArmMode.FRONT;
+            robot.arm.trapdoorMode = Arm.TrapdoorMode.CLOSED;
+            elevatorDownTimer.reset();
+        }
+
+        if(robot.elevator.getElevatorMode() == Elevator.ElevatorMode.UP && !elevatorToggle && robot.elevator.getDistanceLeft() < 0.5) {
+            robot.arm.armMode = Arm.ArmMode.BACK;
+            elevatorToggle = true;
+        }
+
+        if(0.3 < elevatorDownTimer.seconds() && elevatorDownTimer.seconds() < 0.4) {
+            robot.elevator.setElevatorMode(Elevator.ElevatorMode.DOWN);
         }
 
         if(robot.elevator.getElevatorMode() == Elevator.ElevatorMode.UP) {// || robot.elevator.getElevatorMode() == Elevator.ElevatorMode.MANUAL) {
-            robot.elevator.manualPower = gamepad2.right_trigger * 0.75 - gamepad2.left_trigger * 0.25;
+            robot.elevator.manualPower = gamepad2.right_trigger * 0.25 - gamepad2.left_trigger * 0.05;
         }
         else {
             robot.elevator.manualPower = 0;
         }
 
         if (stickyGamepad2.x && robot.arm.armMode != Arm.ArmMode.FRONT) {
-            robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
-            trapdoorTimer.reset();
+            if(robot.arm.trapdoorMode != Arm.TrapdoorMode.OPEN)
+                robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
+            else
+                robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN_REVERSE;
         }
 
         if(stickyGamepad2.y) {
@@ -160,14 +178,6 @@ public class TeleOP extends OpMode {
             robot.capstone.capstoneMode = Capstone.CapstoneMode.OUTTAKE;
             robot.intake.intakeRotation = Intake.IntakeRotation.DOWN;
             capstoneTimer.reset();
-        }
-
-        if(0.5 < trapdoorTimer.seconds() && trapdoorTimer.seconds() < 0.6) {
-            robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN_REVERSE;
-        }
-
-        if(1.0 < trapdoorTimer.seconds() && trapdoorTimer.seconds() < 1.1) {
-            robot.arm.trapdoorMode = Arm.TrapdoorMode.CLOSED;
         }
 
         if(1.0 < capstoneTimer.seconds() && capstoneTimer.seconds() < 1.1) {
