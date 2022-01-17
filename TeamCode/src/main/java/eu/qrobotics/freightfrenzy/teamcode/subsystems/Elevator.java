@@ -19,36 +19,33 @@ public class Elevator implements Subsystem {
     public static double SPOOL_RADIUS = 0.74; // in
     public static double GEAR_RATIO = 1.0; // output/input
 
-    // the operating range of the elevator is restricted to [0, MAX_HEIGHT]
-    public static double MAX_HEIGHT = 20.0;
-
-    public static PIDCoefficients PID = new PIDCoefficients(0.2, 0, 0);
-
-    public static double MAX_VEL = 20; // in/s
-    public static double MAX_ACCEL = 10; // in/s^2
-    public static double MAX_JERK = 0; // in/s^3
-
-    public static double kV = 0.055;
-    public static double kA = 0;
-    public static double kStatic = 0;
-
     private static double encoderTicksToInches(double ticks) {
         return SPOOL_RADIUS * 2 * Math.PI * GEAR_RATIO * ticks / TICKS_PER_REV;
     }
 
-    public static double rpmToVelocity(double rpm) {
-        return rpm * GEAR_RATIO * 2 * Math.PI * SPOOL_RADIUS / 60.0;
-    }
-
-    public static double getMaxRpm() {
-        return 435;
-    }
+    public static double THRESHOLD_DOWN = 1;
+    public static double THRESHOLD_DOWN_LEVEL_1 = 3;
+    public static double THRESHOLD_DOWN_LEVEL_2 = 5;
+    public static double THRESHOLD_DOWN_LEVEL_3 = 10;
+    public static double THRESHOLD = 0.5;
+    public static double THRESHOLD_LEVEL_1 = 1;
+    public static double THRESHOLD_LEVEL_2 = 3;
+    public static double THRESHOLD_LEVEL_3 = 5;
+    public static double DOWN_POWER_1 = -0.01;
+    public static double DOWN_POWER_2 = -0.2;
+    public static double DOWN_POWER_3 = -0.4;
+    public static double DOWN_POWER_4 = -0.6;
+    public static double HOLD_POWER = 0.1;
+    public static double LEVEL_1_POWER = 0.4;
+    public static double LEVEL_2_POWER = 0.6;
+    public static double LEVEL_3_POWER = 0.85;
+    public static double LEVEL_4_POWER = 1;
 
     public enum ElevatorMode {
         DISABLED,
         DOWN,
         UP,
-//        MANUAL
+        MANUAL
     }
 
     public enum TargetHeight {
@@ -58,9 +55,9 @@ public class Elevator implements Subsystem {
                 return this;
             }
         },
-        MID(8),
-        HIGH(14),
-        CAP(20) {
+        MID(7),
+        HIGH(12),
+        CAP(18) {
             @Override
             public TargetHeight next() {
                 return this;
@@ -89,10 +86,7 @@ public class Elevator implements Subsystem {
     private int downPosition;
     public double offsetPosition;
     public double manualPower;
-    private PIDFController controller;
-    private MotionProfile profile;
     private NanoClock clock = NanoClock.system();
-    private double profileStartTime;
 
     private ElevatorMode elevatorMode;
     private TargetHeight targetHeight;
@@ -109,12 +103,10 @@ public class Elevator implements Subsystem {
         motorLeft.setDirection(DcMotor.Direction.REVERSE);
         motorRight.setDirection(DcMotor.Direction.FORWARD);
 
-        motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         downPosition = getEncoder();
-
-        controller = new PIDFController(PID, kV, kA, kStatic, (h, v) -> h * 0.000001);
 
         elevatorMode = ElevatorMode.DOWN;
         targetHeight = TargetHeight.LOW;
@@ -139,45 +131,23 @@ public class Elevator implements Subsystem {
     }
 
     public boolean isBusy() {
-        return profile != null && (clock.seconds() - profileStartTime) <= profile.duration();
+        return getDistanceLeft() > THRESHOLD;
     }
 
     public double getDistanceLeft() {
-        return controller.getLastError();
+        return Math.abs(getError());
     }
 
-    public boolean isAutonomous() {
-        return elevatorMode != ElevatorMode.DISABLED; // && elevatorMode != ElevatorMode.MANUAL;
-    }
-
-    private void generateMotion() {
-        double height = 0;
-        switch(elevatorMode) {
-            case DOWN:
-                height = 0;
-                break;
-            case UP:
-                height = this.targetHeight.getHeight();
-                break;
-        }
-        height = Math.min(Math.max(0, height), MAX_HEIGHT);
-
-        double time = clock.seconds() - profileStartTime;
-        MotionState start = isBusy() ? profile.get(time) : new MotionState(getCurrentHeight(), 0, 0, 0);
-        MotionState goal = new MotionState(height, 0, 0, 0);
-        profile = MotionProfileGenerator.generateSimpleMotionProfile(
-                start, goal, MAX_VEL, MAX_ACCEL, MAX_JERK
-        );
-        profileStartTime = clock.seconds();
-        offsetPosition = 0;
+    public double getError() {
+        if(elevatorMode == ElevatorMode.DOWN)
+            return getCurrentHeight();
+        return getCurrentHeight() - (targetHeight.getHeight() + offsetPosition);
     }
 
     public void setElevatorMode(ElevatorMode elevatorMode) {
         if (this.elevatorMode == elevatorMode)
             return;
         this.elevatorMode = elevatorMode;
-        if(isAutonomous())
-            generateMotion();
     }
 
     public ElevatorMode getElevatorMode() {
@@ -188,8 +158,6 @@ public class Elevator implements Subsystem {
         if (this.targetHeight == targetHeight)
             return;
         this.targetHeight = targetHeight;
-        if(isAutonomous())
-            generateMotion();
     }
 
     public TargetHeight getTargetHeight() {
@@ -198,35 +166,35 @@ public class Elevator implements Subsystem {
 
     @Override
     public void update() {
-        switch (elevatorMode) {
-            case DISABLED:
+        if (elevatorMode == ElevatorMode.DISABLED)
+            return;
+
+        if (elevatorMode == ElevatorMode.DOWN) {
+            offsetPosition = 0;
+            if (getCurrentHeight() <= THRESHOLD_DOWN)
                 setPower(0);
-                break;
-//            case MANUAL:
-            case UP:
-                if(manualPower != 0) {
-                    setPower(manualPower);
-                    if (profile != null) {
-                        offsetPosition = getCurrentHeight() - profile.end().getX();
-                    }
-                    break;
-                }
-            case DOWN:
-                double currentHeight = getCurrentHeight();
-                double currentVelocity = getCurrentVelocity();
-                if (isBusy()) {
-                    // following a profile
-                    double time = clock.seconds() - profileStartTime;
-                    MotionState state = profile.get(time);
-                    controller.setTargetPosition(state.getX());
-                    controller.setTargetVelocity(state.getV());
-                } else {
-                    // just hold the position
-                    controller.setTargetPosition(profile != null ? profile.end().getX() + offsetPosition : 0);
-                    controller.setTargetVelocity(0);
-                }
-                setPower(controller.update(currentHeight, currentVelocity));
-                break;
+            else if(getCurrentHeight() <= THRESHOLD_DOWN_LEVEL_1)
+                setPower(DOWN_POWER_1);
+            else if(getCurrentHeight() <= THRESHOLD_DOWN_LEVEL_2)
+                setPower(DOWN_POWER_2);
+            else if(getCurrentHeight() <= THRESHOLD_DOWN_LEVEL_3)
+                setPower(DOWN_POWER_3);
+            else
+                setPower(DOWN_POWER_4);
+        } else if (elevatorMode == ElevatorMode.UP) {
+            double error = -getError();
+            if (Math.abs(error) <= THRESHOLD)
+                setPower(HOLD_POWER);
+            else if (Math.abs(error) <= THRESHOLD_LEVEL_1)
+                setPower(LEVEL_1_POWER * Math.signum(error));
+            else if (Math.abs(error) <= THRESHOLD_LEVEL_2)
+                setPower(LEVEL_2_POWER * Math.signum(error));
+            else if (Math.abs(error) <= THRESHOLD_LEVEL_3)
+                setPower(LEVEL_3_POWER * Math.signum(error));
+            else
+                setPower(LEVEL_4_POWER * Math.signum(error));
+        } else {
+            setPower(manualPower);
         }
     }
 
