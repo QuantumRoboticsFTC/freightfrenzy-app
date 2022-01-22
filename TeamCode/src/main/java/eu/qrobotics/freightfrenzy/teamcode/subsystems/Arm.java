@@ -36,6 +36,9 @@ public class Arm implements Subsystem {
     public ArmMode armMode;
     public TrapdoorMode trapdoorMode;
 
+    private ArmMode prevArmMode;
+    private TrapdoorMode prevTrapdoorMode;
+
     private Servo armServoLeft, armServoRight;
     private Servo trapdoorServo;
 
@@ -53,34 +56,42 @@ public class Arm implements Subsystem {
     @Override
     public void update() {
         if(IS_DISABLED) return;
-        switch (armMode) {
-            case FRONT:
-                armServoLeft.setPosition(ARM_FRONT_LEFT_POSITION);
-                armServoRight.setPosition(ARM_FRONT_RIGHT_POSITION);
-                break;
-            case MID:
-                armServoLeft.setPosition(ARM_MID_LEFT_POSITION);
-                armServoRight.setPosition(ARM_MID_RIGHT_POSITION);
-                break;
-            case BACK:
-                armServoLeft.setPosition(ARM_BACK_LEFT_POSITION);
-                armServoRight.setPosition(ARM_BACK_RIGHT_POSITION);
-                break;
-            case CAPSTONE:
-                armServoLeft.setPosition(ARM_CAPSTONE_LEFT_POSITION);
-                armServoRight.setPosition(ARM_CAPSTONE_RIGHT_POSITION);
-                break;
+
+        if(armMode != prevArmMode) {
+            switch (armMode) {
+                case FRONT:
+                    armServoLeft.setPosition(ARM_FRONT_LEFT_POSITION);
+                    armServoRight.setPosition(ARM_FRONT_RIGHT_POSITION);
+                    break;
+                case MID:
+                    armServoLeft.setPosition(ARM_MID_LEFT_POSITION);
+                    armServoRight.setPosition(ARM_MID_RIGHT_POSITION);
+                    break;
+                case BACK:
+                    armServoLeft.setPosition(ARM_BACK_LEFT_POSITION);
+                    armServoRight.setPosition(ARM_BACK_RIGHT_POSITION);
+                    break;
+                case CAPSTONE:
+                    armServoLeft.setPosition(ARM_CAPSTONE_LEFT_POSITION);
+                    armServoRight.setPosition(ARM_CAPSTONE_RIGHT_POSITION);
+                    break;
+            }
         }
-        switch (trapdoorMode) {
-            case CLOSED:
-                trapdoorServo.setPosition(TRAPDOOR_CLOSED_POSITION);
-                break;
-            case OPEN:
-                trapdoorServo.setPosition(TRAPDOOR_OPEN_POSITION);
-                break;
-            case OPEN_REVERSE:
-                trapdoorServo.setPosition(TRAPDOOR_OPEN_REVERSE_POSITION);
-                break;
+        prevArmMode = armMode;
+
+        if(trapdoorMode != prevTrapdoorMode) {
+            switch (trapdoorMode) {
+                case CLOSED:
+                    trapdoorServo.setPosition(TRAPDOOR_CLOSED_POSITION);
+                    break;
+                case OPEN:
+                    trapdoorServo.setPosition(TRAPDOOR_OPEN_POSITION);
+                    break;
+                case OPEN_REVERSE:
+                    trapdoorServo.setPosition(TRAPDOOR_OPEN_REVERSE_POSITION);
+                    break;
+            }
         }
+        prevTrapdoorMode = trapdoorMode;
     }
 }

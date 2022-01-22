@@ -1,7 +1,6 @@
 package eu.qrobotics.freightfrenzy.teamcode.subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -32,13 +31,24 @@ public class Carousel implements Subsystem {
         timer = new ElapsedTime(0);
     }
 
-    @Override
-    public void update() {
-        if(IS_DISABLED) return;
+    private double getPower() {
         double carouselPower = 0;
         if(timer.seconds() < TIME) {
             carouselPower = ACCELERATION_RATE * timer.seconds();
         }
-        carouselMotor.setPower(carouselPower);
+        carouselPower = Math.min(carouselPower, 1);
+        return carouselPower;
+    }
+
+    private double prevPower;
+
+    @Override
+    public void update() {
+        if(IS_DISABLED) return;
+        double power = getPower();
+        if(power != prevPower) {
+            carouselMotor.setPower(power);
+        }
+        prevPower = power;
     }
 }

@@ -181,8 +181,13 @@ public class Elevator implements Subsystem {
         }
     }
 
+    private double prevPower;
+
     private void setPower(double power) {
-        motorLeft.setPower(power);
-        motorRight.setPower(power);
+        if(power != prevPower) {
+            motorLeft.setPower(power);
+            motorRight.setPower(power);
+        }
+        prevPower = power;
     }
 }

@@ -18,6 +18,7 @@ public class Capstone implements Subsystem {
     public static double CAPSTONE_OUTTAKE_POSITION = 0.88;
 
     public CapstoneMode capstoneMode;
+    private CapstoneMode prevCapstoneMode;
 
     private Servo capstoneServo;
 
@@ -32,16 +33,20 @@ public class Capstone implements Subsystem {
     @Override
     public void update() {
         if(IS_DISABLED) return;
-        switch(capstoneMode) {
-            case DOWN:
-                capstoneServo.setPosition(CAPSTONE_DOWN_POSITION);
-                break;
-            case UP:
-                capstoneServo.setPosition(CAPSTONE_UP_POSITION);
-                break;
-            case OUTTAKE:
-                capstoneServo.setPosition(CAPSTONE_OUTTAKE_POSITION);
-                break;
+
+        if(capstoneMode != prevCapstoneMode) {
+            switch (capstoneMode) {
+                case DOWN:
+                    capstoneServo.setPosition(CAPSTONE_DOWN_POSITION);
+                    break;
+                case UP:
+                    capstoneServo.setPosition(CAPSTONE_UP_POSITION);
+                    break;
+                case OUTTAKE:
+                    capstoneServo.setPosition(CAPSTONE_OUTTAKE_POSITION);
+                    break;
+            }
         }
+        prevCapstoneMode = capstoneMode;
     }
 }

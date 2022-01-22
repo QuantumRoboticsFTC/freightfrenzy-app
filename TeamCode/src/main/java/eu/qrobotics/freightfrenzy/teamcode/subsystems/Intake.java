@@ -44,6 +44,10 @@ public class Intake implements Subsystem {
     public IntakeRotation intakeRotation;
     public IntakeBlockerRampMode intakeBlockerRampMode;
 
+    private IntakeMode prevIntakeMode;
+    private IntakeRotation prevIntakeRotation;
+    private IntakeBlockerRampMode prevIntakeBlockerRampMode;
+
     private DcMotor intakeMotor;
     private Servo intakePivotServoLeft;
     private Servo intakePivotServoRight;
@@ -65,40 +69,52 @@ public class Intake implements Subsystem {
     @Override
     public void update() {
         if(IS_DISABLED) return;
-        switch (intakeMode) {
-            case IN:
-                intakeMotor.setPower(INTAKE_IN_SPEED);
-                break;
-            case IN_SLOW:
-                intakeMotor.setPower(INTAKE_IN_SLOW_SPEED);
-                break;
-            case IDLE:
-                intakeMotor.setPower(INTAKE_IDLE_SPEED);
-                break;
-            case OUT:
-                intakeMotor.setPower(INTAKE_OUT_SPEED);
-                break;
-            case OUT_SLOW:
-                intakeMotor.setPower(INTAKE_OUT_SLOW_SPEED);
-                break;
+
+        if(intakeMode != prevIntakeMode) {
+            switch (intakeMode) {
+                case IN:
+                    intakeMotor.setPower(INTAKE_IN_SPEED);
+                    break;
+                case IN_SLOW:
+                    intakeMotor.setPower(INTAKE_IN_SLOW_SPEED);
+                    break;
+                case IDLE:
+                    intakeMotor.setPower(INTAKE_IDLE_SPEED);
+                    break;
+                case OUT:
+                    intakeMotor.setPower(INTAKE_OUT_SPEED);
+                    break;
+                case OUT_SLOW:
+                    intakeMotor.setPower(INTAKE_OUT_SLOW_SPEED);
+                    break;
+            }
         }
-        switch (intakeRotation) {
-            case UP:
-                intakePivotServoLeft.setPosition(INTAKE_UP_POSITION_LEFT);
-                intakePivotServoRight.setPosition(INTAKE_UP_POSITION_RIGHT);
-                break;
-            case DOWN:
-                intakePivotServoLeft.setPosition(INTAKE_DOWN_POSITION_LEFT);
-                intakePivotServoRight.setPosition(INTAKE_DOWN_POSITION_RIGHT);
-                break;
+        prevIntakeMode = intakeMode;
+
+        if(intakeRotation != prevIntakeRotation) {
+            switch (intakeRotation) {
+                case UP:
+                    intakePivotServoLeft.setPosition(INTAKE_UP_POSITION_LEFT);
+                    intakePivotServoRight.setPosition(INTAKE_UP_POSITION_RIGHT);
+                    break;
+                case DOWN:
+                    intakePivotServoLeft.setPosition(INTAKE_DOWN_POSITION_LEFT);
+                    intakePivotServoRight.setPosition(INTAKE_DOWN_POSITION_RIGHT);
+                    break;
+            }
         }
-        switch (intakeBlockerRampMode) {
-            case BLOCK:
-                intakeBlockerRampServo.setPosition(INTAKE_BLOCKER_BLOCK_POSITION);
-                break;
-            case RAMP:
-                intakeBlockerRampServo.setPosition(INTAKE_BLOCKER_RAMP_POSITION);
-                break;
+        prevIntakeRotation = intakeRotation;
+
+        if(intakeBlockerRampMode != prevIntakeBlockerRampMode) {
+            switch (intakeBlockerRampMode) {
+                case BLOCK:
+                    intakeBlockerRampServo.setPosition(INTAKE_BLOCKER_BLOCK_POSITION);
+                    break;
+                case RAMP:
+                    intakeBlockerRampServo.setPosition(INTAKE_BLOCKER_RAMP_POSITION);
+                    break;
+            }
         }
+        prevIntakeBlockerRampMode = intakeBlockerRampMode;
     }
 }
