@@ -113,7 +113,7 @@ public class TeleOP extends OpMode {
         }
         else if (stickyGamepad2.b) {
             robot.intake.intakeMode = Intake.IntakeMode.IDLE;
-            if(robot.intake.intakeRotation == Intake.IntakeRotation.UP && robot.elevator.getElevatorMode() == Elevator.ElevatorMode.DOWN && robot.arm.armMode == Arm.ArmMode.FRONT) {
+            if(robot.intake.intakeRotation == Intake.IntakeRotation.UP && robot.elevator.elevatorMode == Elevator.ElevatorMode.DOWN && robot.arm.armMode == Arm.ArmMode.FRONT) {
                 robot.intake.intakeBlockerRampMode = Intake.IntakeBlockerRampMode.RAMP;
                 robot.intake.intakeMode = Intake.IntakeMode.IN_SLOW;
                 intakeUpTimer.reset();
@@ -128,20 +128,20 @@ public class TeleOP extends OpMode {
             robot.intake.intakeMode = Intake.IntakeMode.IDLE;
         }
 
-        if(robot.elevator.getElevatorMode() == Elevator.ElevatorMode.DOWN) {
+        if(robot.elevator.elevatorMode == Elevator.ElevatorMode.DOWN) {
             if (stickyGamepad2.dpad_up) {
-                robot.elevator.setTargetHeight(Elevator.TargetHeight.HIGH);
+                robot.elevator.targetHeight = Elevator.TargetHeight.HIGH;
             } else if (stickyGamepad2.dpad_left) {
-                robot.elevator.setTargetHeight(Elevator.TargetHeight.MID);
+                robot.elevator.targetHeight = Elevator.TargetHeight.MID;
             } else if (stickyGamepad2.dpad_down) {
-                robot.elevator.setTargetHeight(Elevator.TargetHeight.LOW);
+                robot.elevator.targetHeight = Elevator.TargetHeight.LOW;
             } else if (stickyGamepad2.dpad_right) {
-                robot.elevator.setTargetHeight(Elevator.TargetHeight.CAP);
+                robot.elevator.targetHeight = Elevator.TargetHeight.CAP;
             }
         }
 
         if (stickyGamepad2.right_bumper) {
-           robot.elevator.setElevatorMode(Elevator.ElevatorMode.UP);
+           robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
            elevatorToggle = false;
         }
         else if (stickyGamepad2.left_bumper) {
@@ -150,45 +150,61 @@ public class TeleOP extends OpMode {
             elevatorDownTimer.reset();
         }
 
-        if(robot.elevator.getElevatorMode() == Elevator.ElevatorMode.UP && !elevatorToggle && robot.elevator.getDistanceLeft() < 0.5) {
+        if(robot.elevator.elevatorMode == Elevator.ElevatorMode.UP && !elevatorToggle && robot.elevator.getDistanceLeft() < 0.5) {
             robot.arm.armMode = Arm.ArmMode.BACK;
             elevatorToggle = true;
         }
 
         if(0.3 < elevatorDownTimer.seconds() && elevatorDownTimer.seconds() < 0.4) {
-            robot.elevator.setElevatorMode(Elevator.ElevatorMode.DOWN);
+            robot.elevator.elevatorMode = Elevator.ElevatorMode.DOWN;
         }
 
-        if(robot.elevator.getElevatorMode() == Elevator.ElevatorMode.UP) {// || robot.elevator.getElevatorMode() == Elevator.ElevatorMode.MANUAL) {
-            robot.elevator.manualPower = gamepad2.right_trigger * 0.25 - gamepad2.left_trigger * 0.05;
-        }
-        else {
-            robot.elevator.manualPower = 0;
+        if (robot.elevator.elevatorMode == Elevator.ElevatorMode.UP ||
+                robot.elevator.elevatorMode == Elevator.ElevatorMode.MANUAL) {
+            if (gamepad2.right_trigger > 0.1) {
+                robot.elevator.elevatorMode = Elevator.ElevatorMode.MANUAL;
+                robot.elevator.manualPower = gamepad2.right_trigger * 0.25;
+            } else if (gamepad2.left_trigger > 0.1) {
+                robot.elevator.elevatorMode = Elevator.ElevatorMode.MANUAL;
+                robot.elevator.manualPower = -gamepad2.left_trigger * (-0.05);
+            } else {
+                if (robot.elevator.elevatorMode == Elevator.ElevatorMode.MANUAL) {
+                    robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
+                    robot.elevator.offsetPosition = robot.elevator.getCurrentHeight() - robot.elevator.targetHeight.getHeight();
+                }
+            }
         }
 
-        if (stickyGamepad2.x && robot.arm.armMode != Arm.ArmMode.FRONT) {
+        if (stickyGamepad2.x && robot.arm.armMode == Arm.ArmMode.BACK) {
             if(robot.arm.trapdoorMode != Arm.TrapdoorMode.OPEN)
                 robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
             else
                 robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN_REVERSE;
         }
 
-        if(stickyGamepad2.y) {
+        if (stickyGamepad2.y && robot.arm.armMode == Arm.ArmMode.BACK) {
+            if(robot.arm.trapdoorMode != Arm.TrapdoorMode.OPEN_REVERSE)
+                robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN_REVERSE;
+            else
+                robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
+        }
+
+        if(stickyGamepad2.back) {
             robot.arm.armMode = Arm.ArmMode.CAPSTONE;
             robot.capstone.capstoneMode = Capstone.CapstoneMode.OUTTAKE;
             robot.intake.intakeRotation = Intake.IntakeRotation.DOWN;
             capstoneTimer.reset();
         }
 
-        if(1.0 < capstoneTimer.seconds() && capstoneTimer.seconds() < 1.1) {
+        if(0.5 < capstoneTimer.seconds() && capstoneTimer.seconds() < 0.6) {
             robot.capstone.capstoneMode = Capstone.CapstoneMode.UP;
             robot.intake.intakeRotation = Intake.IntakeRotation.UP;
         }
 
         // endregion
 
-        telemetry.addData("Elevator mode", robot.elevator.getElevatorMode());
-        telemetry.addData("Elevator target height", robot.elevator.getTargetHeight());
+        telemetry.addData("Elevator mode", robot.elevator.elevatorMode);
+        telemetry.addData("Elevator target height", robot.elevator.targetHeight);
         telemetry.addData("Elevator current height", robot.elevator.getCurrentHeight());
         telemetry.addData("Elevator isBusy", robot.elevator.isBusy());
         telemetry.addData("Elevator power", robot.elevator.motorLeft.getPower());

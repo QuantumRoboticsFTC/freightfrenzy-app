@@ -88,8 +88,8 @@ public class Elevator implements Subsystem {
     public double manualPower;
     private NanoClock clock = NanoClock.system();
 
-    private ElevatorMode elevatorMode;
-    private TargetHeight targetHeight;
+    public ElevatorMode elevatorMode;
+    public TargetHeight targetHeight;
 
     public DcMotorEx motorLeft, motorRight;
     private Robot robot;
@@ -140,61 +140,44 @@ public class Elevator implements Subsystem {
 
     public double getError() {
         if(elevatorMode == ElevatorMode.DOWN)
-            return getCurrentHeight();
-        return getCurrentHeight() - (targetHeight.getHeight() + offsetPosition);
-    }
-
-    public void setElevatorMode(ElevatorMode elevatorMode) {
-        if (this.elevatorMode == elevatorMode)
-            return;
-        this.elevatorMode = elevatorMode;
-    }
-
-    public ElevatorMode getElevatorMode() {
-        return elevatorMode;
-    }
-
-    public void setTargetHeight(TargetHeight targetHeight) {
-        if (this.targetHeight == targetHeight)
-            return;
-        this.targetHeight = targetHeight;
-    }
-
-    public TargetHeight getTargetHeight() {
-        return targetHeight;
+            return -getCurrentHeight();
+        return (targetHeight.getHeight() + offsetPosition) - getCurrentHeight();
     }
 
     @Override
     public void update() {
-        if (elevatorMode == ElevatorMode.DISABLED)
-            return;
-
-        if (elevatorMode == ElevatorMode.DOWN) {
-            offsetPosition = 0;
-            if (getCurrentHeight() <= THRESHOLD_DOWN)
+        switch (elevatorMode) {
+            case DISABLED:
                 setPower(0);
-            else if(getCurrentHeight() <= THRESHOLD_DOWN_LEVEL_1)
-                setPower(DOWN_POWER_1);
-            else if(getCurrentHeight() <= THRESHOLD_DOWN_LEVEL_2)
-                setPower(DOWN_POWER_2);
-            else if(getCurrentHeight() <= THRESHOLD_DOWN_LEVEL_3)
-                setPower(DOWN_POWER_3);
-            else
-                setPower(DOWN_POWER_4);
-        } else if (elevatorMode == ElevatorMode.UP) {
-            double error = -getError();
-            if (Math.abs(error) <= THRESHOLD)
-                setPower(HOLD_POWER);
-            else if (Math.abs(error) <= THRESHOLD_LEVEL_1)
-                setPower(LEVEL_1_POWER * Math.signum(error));
-            else if (Math.abs(error) <= THRESHOLD_LEVEL_2)
-                setPower(LEVEL_2_POWER * Math.signum(error));
-            else if (Math.abs(error) <= THRESHOLD_LEVEL_3)
-                setPower(LEVEL_3_POWER * Math.signum(error));
-            else
-                setPower(LEVEL_4_POWER * Math.signum(error));
-        } else {
-            setPower(manualPower);
+            case DOWN:
+                offsetPosition = 0;
+                if (getCurrentHeight() <= THRESHOLD_DOWN)
+                    setPower(0);
+                else if(getCurrentHeight() <= THRESHOLD_DOWN_LEVEL_1)
+                    setPower(DOWN_POWER_1);
+                else if(getCurrentHeight() <= THRESHOLD_DOWN_LEVEL_2)
+                    setPower(DOWN_POWER_2);
+                else if(getCurrentHeight() <= THRESHOLD_DOWN_LEVEL_3)
+                    setPower(DOWN_POWER_3);
+                else
+                    setPower(DOWN_POWER_4);
+                break;
+            case UP:
+                double error = getError();
+                if (Math.abs(error) <= THRESHOLD)
+                    setPower(HOLD_POWER);
+                else if (Math.abs(error) <= THRESHOLD_LEVEL_1)
+                    setPower(LEVEL_1_POWER * Math.signum(error));
+                else if (Math.abs(error) <= THRESHOLD_LEVEL_2)
+                    setPower(LEVEL_2_POWER * Math.signum(error));
+                else if (Math.abs(error) <= THRESHOLD_LEVEL_3)
+                    setPower(LEVEL_3_POWER * Math.signum(error));
+                else
+                    setPower(LEVEL_4_POWER * Math.signum(error));
+                break;
+            case MANUAL:
+                setPower(manualPower);
+                break;
         }
     }
 
