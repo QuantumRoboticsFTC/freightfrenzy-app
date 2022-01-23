@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import eu.qrobotics.freightfrenzy.teamcode.util.Alliance;
+
 @Config
 public class Carousel implements Subsystem {
 
@@ -13,10 +15,14 @@ public class Carousel implements Subsystem {
     public static double ACCELERATION_RATE = 0.7; // power increase / second
     public static double TIME = 2.0; // seconds
 
-    Carousel(HardwareMap hardwareMap, Robot robot) {
+    Carousel(HardwareMap hardwareMap, Robot robot, Alliance alliance) {
         carouselMotor = hardwareMap.get(DcMotor.class, "carouselMotor");
 
         carouselMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        if (alliance == Alliance.RED) {
+            carouselMotor.setDirection(DcMotor.Direction.REVERSE);
+        }
     }
 
     public static boolean IS_DISABLED = false;
