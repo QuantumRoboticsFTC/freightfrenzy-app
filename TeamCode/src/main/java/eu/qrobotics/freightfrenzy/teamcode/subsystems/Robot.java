@@ -128,7 +128,7 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
         }
 
         try {
-            carousel = new Carousel(opMode.hardwareMap, this, alliance);
+            carousel = new Carousel(opMode.hardwareMap, this, isAutonomous, alliance);
             subsystems.add(carousel);
         }
         catch (Exception e) {

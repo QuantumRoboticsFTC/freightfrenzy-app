@@ -32,6 +32,12 @@ public class DriveConstants {
     public static TrajectoryVelocityConstraint BASE_VEL_CONSTRAINT = new MecanumVelocityConstraint(45, TRACK_WIDTH, WHEEL_BASE, LATERAL_MULTIPLIER);
     public static TrajectoryAccelerationConstraint BASE_ACCEL_CONSTRAINT = new ProfileAccelerationConstraint(90);
 
+    public static TrajectoryVelocityConstraint NORMAL_VEL_CONSTRAINT = new MecanumVelocityConstraint(25, TRACK_WIDTH, WHEEL_BASE, LATERAL_MULTIPLIER);
+    public static TrajectoryAccelerationConstraint NORMAL_ACCEL_CONSTRAINT = new ProfileAccelerationConstraint(60);
+
+    public static TrajectoryVelocityConstraint SLOW_VEL_CONSTRAINT = new MecanumVelocityConstraint(5, TRACK_WIDTH, WHEEL_BASE, LATERAL_MULTIPLIER);
+    public static TrajectoryAccelerationConstraint SLOW_ACCEL_CONSTRAINT = new ProfileAccelerationConstraint(20);
+
     public static TrajectoryVelocityConstraint YEET_VEL_CONSTRAINT = new MecanumVelocityConstraint(60, TRACK_WIDTH, WHEEL_BASE, LATERAL_MULTIPLIER);
     public static TrajectoryAccelerationConstraint YEET_ACCEL_CONSTRAINT = new ProfileAccelerationConstraint(120);
 

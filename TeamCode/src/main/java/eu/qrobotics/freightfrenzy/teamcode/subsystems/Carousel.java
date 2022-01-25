@@ -11,11 +11,17 @@ import eu.qrobotics.freightfrenzy.teamcode.util.Alliance;
 public class Carousel implements Subsystem {
 
     private DcMotor carouselMotor;
+    private boolean isAutonomous;
 
     public static double ACCELERATION_RATE = 0.7; // power increase / second
     public static double TIME = 2.0; // seconds
 
-    Carousel(HardwareMap hardwareMap, Robot robot, Alliance alliance) {
+    public static double ACCELERATION_RATE_AUTONOMOUS = 0.4; // power increase / second
+    public static double TIME_AUTONOMOUS = 3.0; // seconds
+
+    Carousel(HardwareMap hardwareMap, Robot robot, boolean isAutonomous, Alliance alliance) {
+        this.isAutonomous = isAutonomous;
+
         carouselMotor = hardwareMap.get(DcMotor.class, "carouselMotor");
 
         carouselMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -37,10 +43,22 @@ public class Carousel implements Subsystem {
         timer = new ElapsedTime(0);
     }
 
+    public boolean isBusy() {
+        return timer.seconds() < getTIME();
+    }
+
+    private double getTIME() {
+        return isAutonomous ? TIME_AUTONOMOUS : TIME;
+    }
+
+    private double getACCELERATION() {
+        return isAutonomous ? ACCELERATION_RATE_AUTONOMOUS : ACCELERATION_RATE;
+    }
+
     private double getPower() {
         double carouselPower = 0;
-        if(timer.seconds() < TIME) {
-            carouselPower = ACCELERATION_RATE * timer.seconds();
+        if(timer.seconds() < getTIME()) {
+            carouselPower = getACCELERATION() * timer.seconds();
         }
         carouselPower = Math.min(carouselPower, 1);
         return carouselPower;

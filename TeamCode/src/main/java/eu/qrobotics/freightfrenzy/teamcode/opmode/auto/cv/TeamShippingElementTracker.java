@@ -10,9 +10,9 @@ import org.openftc.easyopencv.OpenCvTracker;
 
 public class TeamShippingElementTracker extends OpenCvTracker {
     private Point pt1, pt2;
-    private double[] hslThresholdHue = {0.0, 180.0};
-    private double[] hslThresholdSaturation = {0.0, 255.0};
-    private double[] hslThresholdLuminance = {0.0, 71};
+    private double[] hslThresholdHue = {100.0, 140.0};
+    private double[] hslThresholdSaturation = {85.0, 255.0};
+    private double[] hslThresholdLuminance = {0.0, 255.0};
     private Mat mask, hsl, result;
     private Scalar count;
 
@@ -40,12 +40,12 @@ public class TeamShippingElementTracker extends OpenCvTracker {
         count = Core.sumElems(result);
 
 
-        Imgproc.rectangle(input,
+        Imgproc.rectangle(hsl,
                 pt1,
                 pt2,
                 new Scalar(255, 0, 0), 4);
 
-        return input;
+        return hsl;
     }
 
     public Scalar getCount() {
@@ -63,7 +63,7 @@ public class TeamShippingElementTracker extends OpenCvTracker {
      */
     private void hslThreshold(Mat input, double[] hue, double[] sat, double[] lum,
                               Mat out) {
-        Imgproc.cvtColor(input, out, Imgproc.COLOR_BGR2HLS);
+        Imgproc.cvtColor(input, out, Imgproc.COLOR_RGB2HLS);
         Core.inRange(out, new Scalar(hue[0], lum[0], sat[0]),
                 new Scalar(hue[1], lum[1], sat[1]), out);
     }

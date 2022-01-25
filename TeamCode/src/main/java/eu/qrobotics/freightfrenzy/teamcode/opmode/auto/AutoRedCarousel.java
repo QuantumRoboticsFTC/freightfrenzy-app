@@ -20,7 +20,7 @@ import java.util.List;
 
 import eu.qrobotics.freightfrenzy.teamcode.opmode.auto.cv.TSEPattern;
 import eu.qrobotics.freightfrenzy.teamcode.opmode.auto.cv.TeamShippingElementTracker;
-import eu.qrobotics.freightfrenzy.teamcode.opmode.auto.trajectories.TrajectoriesRedWarehouse;
+import eu.qrobotics.freightfrenzy.teamcode.opmode.auto.trajectories.TrajectoriesRedCarousel;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Arm;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Capstone;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Elevator;
@@ -30,27 +30,27 @@ import eu.qrobotics.freightfrenzy.teamcode.util.Alliance;
 
 @Config
 @Autonomous
-public class AutoRedWarehouse extends LinearOpMode {
+public class AutoRedCarousel extends LinearOpMode {
 
-    public static int LEFT_TSE_UP_X = 70;
-    public static int LEFT_TSE_UP_Y = 40;
-    public static int LEFT_TSE_DOWN_X = 250;
-    public static int LEFT_TSE_DOWN_Y = 150;
-    public static int CENTER_TSE_UP_X = 200;
-    public static int CENTER_TSE_UP_Y = 40;
-    public static int CENTER_TSE_DOWN_X = 420;
-    public static int CENTER_TSE_DOWN_Y = 150;
-    public static int RIGHT_TSE_UP_X = 420;
-    public static int RIGHT_TSE_UP_Y = 40;
-    public static int RIGHT_TSE_DOWN_X = 600;
-    public static int RIGHT_TSE_DOWN_Y = 150;
+    public static int LEFT_TSE_UP_X = 600;
+    public static int LEFT_TSE_UP_Y = 650;
+    public static int LEFT_TSE_DOWN_X = 850;
+    public static int LEFT_TSE_DOWN_Y = 1000;
+    public static int CENTER_TSE_UP_X = 990;
+    public static int CENTER_TSE_UP_Y = 675;
+    public static int CENTER_TSE_DOWN_X = 1250;
+    public static int CENTER_TSE_DOWN_Y = 1050;
+    public static int RIGHT_TSE_UP_X = 1525;
+    public static int RIGHT_TSE_UP_Y = 685;
+    public static int RIGHT_TSE_DOWN_X = 1850;
+    public static int RIGHT_TSE_DOWN_Y = 1080;
 
     public static double ELEVATOR_THRESHOLD = 2;
     
     @Override
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(this, true, Alliance.RED);
-        robot.drivetrain.setPoseEstimate(TrajectoriesRedWarehouse.START_POSE);
+        robot.drivetrain.setPoseEstimate(TrajectoriesRedCarousel.START_POSE);
 
         TeamShippingElementTracker leftTSE = new TeamShippingElementTracker(
                 new Point(LEFT_TSE_UP_X, LEFT_TSE_UP_Y),
@@ -88,9 +88,9 @@ public class AutoRedWarehouse extends LinearOpMode {
 
         FtcDashboard.getInstance().startCameraStream(webcam, 30);
 
-        List<Trajectory> trajectoriesA = TrajectoriesRedWarehouse.getTrajectoriesA();
-        List<Trajectory> trajectoriesB = TrajectoriesRedWarehouse.getTrajectoriesB();
-        List<Trajectory> trajectoriesC = TrajectoriesRedWarehouse.getTrajectoriesC();
+        List<Trajectory> trajectoriesA = TrajectoriesRedCarousel.getTrajectoriesA();
+        List<Trajectory> trajectoriesB = TrajectoriesRedCarousel.getTrajectoriesB();
+        List<Trajectory> trajectoriesC = TrajectoriesRedCarousel.getTrajectoriesC();
 
         TSEPattern tsePattern = TSEPattern.RIGHT;
         while (!opModeIsActive() && !isStopRequested()) {
@@ -160,76 +160,80 @@ public class AutoRedWarehouse extends LinearOpMode {
         robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN_REVERSE;
         robot.sleep(0.2);
 
-        for (int cycle = 0; cycle < 3; cycle++) {
-            robot.drivetrain.followTrajectory(trajectories.get(2 + cycle * 2));
-
-            robot.sleep(0.2);
-            robot.arm.armMode = Arm.ArmMode.FRONT;
-            robot.sleep(0.2);
-            robot.elevator.elevatorMode = Elevator.ElevatorMode.DOWN;
-
-            while(robot.elevator.getCurrentHeight() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
-                robot.sleep(0.01);
-            }
-
-            robot.capstone.capstoneMode = Capstone.CapstoneMode.UP;
-            robot.intake.intakeRotation = Intake.IntakeRotation.DOWN;
-            robot.sleep(0.4);
-            robot.intake.intakeMode = Intake.IntakeMode.OUT;
-            robot.sleep(0.4);
-            robot.intake.intakeMode = Intake.IntakeMode.IN;
-            robot.intake.intakeBlockerRampMode = Intake.IntakeBlockerRampMode.BLOCK;
-
-            while (robot.drivetrain.isBusy() && opModeIsActive() && !isStopRequested()) {
-                robot.sleep(0.01);
-            }
-
-            robot.distanceSensorLocalization.enabled = true;
-
-            robot.sleep(0.7);
-
-            Pose2d pose = robot.distanceSensorLocalization.getRobotPose();
-            if(pose.getY() > -48) {
-                pose = new Pose2d(pose.getX(), -65, pose.getHeading());
-            }
-            robot.drivetrain.setPoseEstimate(pose);
-            robot.distanceSensorLocalization.enabled = false;
-
-            robot.intake.intakeRotation = Intake.IntakeRotation.UP;
-
-            robot.drivetrain.followTrajectory(trajectories.get(3 + cycle * 2));
-
-            robot.sleep(0.5);
-
-            robot.intake.intakeMode = Intake.IntakeMode.IN_SLOW;
-            robot.intake.intakeBlockerRampMode = Intake.IntakeBlockerRampMode.RAMP;
-
-            while (robot.drivetrain.isBusy() && opModeIsActive() && !isStopRequested()) {
-                robot.sleep(0.01);
-            }
-
-            robot.elevator.targetHeight = Elevator.TargetHeight.HIGH;
-            robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
-            robot.capstone.capstoneMode = Capstone.CapstoneMode.UP_CLEARANCE;
-            while (robot.elevator.getDistanceLeft() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
-                robot.sleep(0.01);
-            }
-            robot.arm.armMode = Arm.ArmMode.BACK;
-            robot.sleep(0.6);
-            robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN_REVERSE;
-            robot.sleep(0.5);
-            robot.arm.trapdoorMode = Arm.TrapdoorMode.CLOSED;
-        }
-
-        robot.drivetrain.followTrajectory(trajectories.get(8));
+        robot.drivetrain.followTrajectory(trajectories.get(2));
 
         robot.sleep(0.5);
         robot.arm.trapdoorMode = Arm.TrapdoorMode.CLOSED;
-        robot.sleep(0.5);
+        robot.sleep(0.3);
         robot.arm.armMode = Arm.ArmMode.FRONT;
+        robot.sleep(0.2);
+        robot.elevator.elevatorMode = Elevator.ElevatorMode.DOWN;
+
+        while(robot.elevator.getCurrentHeight() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
+            robot.sleep(0.01);
+        }
+
+        robot.capstone.capstoneMode = Capstone.CapstoneMode.UP;
+
+        while (robot.drivetrain.isBusy() && opModeIsActive() && !isStopRequested()) {
+            robot.sleep(0.01);
+        }
+
+        robot.carousel.spin();
+
+        while (robot.carousel.isBusy() && opModeIsActive() && !isStopRequested()) {
+            robot.sleep(0.01);
+        }
+
+        robot.drivetrain.followTrajectorySync(trajectories.get(3));
+
+        robot.intake.intakeRotation = Intake.IntakeRotation.DOWN;
+        robot.intake.intakeMode = Intake.IntakeMode.IN;
+
+        robot.drivetrain.followTrajectorySync(trajectories.get(4));
+
+        robot.intake.intakeRotation = Intake.IntakeRotation.UP;
+        robot.sleep(0.4);
+        robot.intake.intakeMode = Intake.IntakeMode.IN_SLOW;
+        robot.intake.intakeBlockerRampMode = Intake.IntakeBlockerRampMode.RAMP;
+
+        robot.drivetrain.followTrajectory(trajectories.get(5));
+
+        robot.capstone.capstoneMode = Capstone.CapstoneMode.UP_CLEARANCE;
+        robot.sleep(0.5);
+        robot.elevator.targetHeight = Elevator.TargetHeight.HIGH;
+        robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
+
+        while(robot.elevator.getDistanceLeft() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
+            robot.sleep(0.01);
+        }
+
+        while(robot.drivetrain.isBusy() && opModeIsActive() && !isStopRequested()) {
+            robot.sleep(0.01);
+        }
+
+        robot.arm.armMode = Arm.ArmMode.BACK;
+        robot.sleep(0.6);
+        robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN_REVERSE;
+        robot.sleep(0.4);
+        robot.arm.trapdoorMode = Arm.TrapdoorMode.CLOSED;
+        robot.sleep(0.2);
+        robot.arm.armMode = Arm.ArmMode.FRONT;
+
+        robot.drivetrain.followTrajectory(trajectories.get(6));
+
         robot.sleep(0.5);
         robot.elevator.elevatorMode = Elevator.ElevatorMode.DOWN;
-        robot.sleep(1.0);
+
+        while(robot.elevator.getDistanceLeft() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
+            robot.sleep(0.01);
+        }
+
+        robot.capstone.capstoneMode = Capstone.CapstoneMode.UP;
+
+        while(robot.drivetrain.isBusy() && opModeIsActive() && !isStopRequested()) {
+            robot.sleep(0.01);
+        }
 
         robot.stop();
     }
