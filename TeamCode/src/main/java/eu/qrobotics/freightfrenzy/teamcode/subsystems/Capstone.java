@@ -10,11 +10,13 @@ public class Capstone implements Subsystem {
     public enum CapstoneMode {
         DOWN,
         UP,
+        UP_CLEARANCE,
         OUTTAKE,
     }
 
     public static double CAPSTONE_DOWN_POSITION = 0.13;
     public static double CAPSTONE_UP_POSITION = 0.64;
+    public static double CAPSTONE_UP_CLEARANCE_POSITION = 0.60;
     public static double CAPSTONE_OUTTAKE_POSITION = 0.88;
 
     public CapstoneMode capstoneMode;
@@ -41,6 +43,9 @@ public class Capstone implements Subsystem {
                     break;
                 case UP:
                     capstoneServo.setPosition(CAPSTONE_UP_POSITION);
+                    break;
+                case UP_CLEARANCE:
+                    capstoneServo.setPosition(CAPSTONE_UP_CLEARANCE_POSITION);
                     break;
                 case OUTTAKE:
                     capstoneServo.setPosition(CAPSTONE_OUTTAKE_POSITION);

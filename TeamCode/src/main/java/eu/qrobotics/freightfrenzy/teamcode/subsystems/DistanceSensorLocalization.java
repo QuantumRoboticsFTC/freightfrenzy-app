@@ -3,6 +3,7 @@ package eu.qrobotics.freightfrenzy.teamcode.subsystems;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
+import com.qualcomm.hardware.stmicroelectronics.VL53L0X;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.MovingStatistics;
 
@@ -12,17 +13,17 @@ import eu.qrobotics.freightfrenzy.teamcode.util.Alliance;
 
 @Config
 public class DistanceSensorLocalization implements Subsystem {
-    public static Pose2d LEFT_SENSOR_POSE = new Pose2d(2.5, 6.22, Math.toRadians(90));
-    public static Pose2d RIGHT_SENSOR_POSE = new Pose2d(2.5, -6.22, Math.toRadians(-90));
+    public static Pose2d LEFT_SENSOR_POSE = new Pose2d(2.5, 6.72, Math.toRadians(90));
+    public static Pose2d RIGHT_SENSOR_POSE = new Pose2d(2.5, -6.72, Math.toRadians(-90));
     public static Pose2d FRONT_SENSOR_POSE = new Pose2d(6.47, 5.39, Math.toRadians(0));
 
     public static double LEFT_WALL_Y = 72;
     public static double RIGHT_WALL_Y = -72;
     public static double FRONT_WALL_X = 72;
 
-    private Rev2mDistanceSensor leftSensor;
-    private Rev2mDistanceSensor rightSensor;
-    private Rev2mDistanceSensor frontSensor;
+    public Rev2mDistanceSensor leftSensor;
+    public Rev2mDistanceSensor rightSensor;
+    public Rev2mDistanceSensor frontSensor;
 
     private Robot robot;
     private Alliance alliance;
@@ -76,6 +77,10 @@ public class DistanceSensorLocalization implements Subsystem {
         return new Pose2d(worldRobotX, worldRobotY, angle);
     }
 
+    private double mmToInches(double mm) {
+        return mm / 25.4;
+    }
+
     @Override
     public void update() {
         if(!enabled) {
@@ -84,13 +89,29 @@ public class DistanceSensorLocalization implements Subsystem {
             frontSensorAverage.clear();
         }
         else {
-            frontSensorAverage.add(frontSensor.getDistance(DistanceUnit.INCH));
+            double front = frontSensor.getDistance(DistanceUnit.MM);
+            double left = leftSensor.getDistance(DistanceUnit.MM);
+            double right = rightSensor.getDistance(DistanceUnit.MM);
+
+            if(front > 65000) {
+                frontSensor.initialize();
+            }
+
+            if(left > 65000) {
+                frontSensor.initialize();
+            }
+
+            if(right > 65000) {
+                frontSensor.initialize();
+            }
+
+            frontSensorAverage.add(mmToInches(front));
             switch(alliance) {
                 case RED:
-                    rightSensorAverage.add(rightSensor.getDistance(DistanceUnit.INCH));
+                    rightSensorAverage.add(mmToInches(right));
                     break;
                 case BLUE:
-                    leftSensorAverage.add(leftSensor.getDistance(DistanceUnit.INCH));
+                    leftSensorAverage.add(mmToInches(left));
                     break;
             }
         }

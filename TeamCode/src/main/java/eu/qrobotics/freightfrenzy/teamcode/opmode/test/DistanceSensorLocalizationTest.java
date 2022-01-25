@@ -44,6 +44,10 @@ public class DistanceSensorLocalizationTest extends OpMode {
         fieldOverlay.setStroke("#3F51B5");
         DashboardUtil.drawRobot(fieldOverlay, robotPose);
 
+        packet.put("Front", robot.distanceSensorLocalization.frontSensor.getDistance(DistanceUnit.INCH));
+        packet.put("Right", robot.distanceSensorLocalization.rightSensor.getDistance(DistanceUnit.INCH));
+        packet.put("Left", robot.distanceSensorLocalization.leftSensor.getDistance(DistanceUnit.INCH));
+
         FtcDashboard.getInstance().sendTelemetryPacket(packet);
     }
 

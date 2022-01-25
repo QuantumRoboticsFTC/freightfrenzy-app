@@ -55,7 +55,7 @@ public class Elevator implements Subsystem {
                 return this;
             }
         },
-        MID(7),
+        MID(6),
         HIGH(12),
         CAP(18) {
             @Override

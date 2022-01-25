@@ -1,6 +1,8 @@
 package eu.qrobotics.freightfrenzy.teamcode.opmode.auto;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -26,6 +28,7 @@ import eu.qrobotics.freightfrenzy.teamcode.subsystems.Intake;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Robot;
 import eu.qrobotics.freightfrenzy.teamcode.util.Alliance;
 
+@Config
 @Autonomous
 public class AutoRedWarehouse extends LinearOpMode {
 
@@ -42,7 +45,7 @@ public class AutoRedWarehouse extends LinearOpMode {
     public static int RIGHT_TSE_DOWN_X = 600;
     public static int RIGHT_TSE_DOWN_Y = 150;
 
-    public static double ELEVATOR_THRESHOLD = 0.5;
+    public static double ELEVATOR_THRESHOLD = 2;
     
     @Override
     public void runOpMode() throws InterruptedException {
@@ -84,12 +87,12 @@ public class AutoRedWarehouse extends LinearOpMode {
 //        webcam.showFpsMeterOnViewport(true);
 //
 //        FtcDashboard.getInstance().startCameraStream(webcam, 30);
-
+//
         List<Trajectory> trajectoriesA = TrajectoriesRedWarehouse.getTrajectoriesA();
         List<Trajectory> trajectoriesB = TrajectoriesRedWarehouse.getTrajectoriesB();
         List<Trajectory> trajectoriesC = TrajectoriesRedWarehouse.getTrajectoriesC();
 
-        TSEPattern tsePattern = TSEPattern.LEFT;
+        TSEPattern tsePattern = TSEPattern.RIGHT;
         while (!opModeIsActive() && !isStopRequested()) {
 //            double[] counts = {average(leftTSE.getCount()),
 //                    average(centerTSE.getCount()),
@@ -109,11 +112,11 @@ public class AutoRedWarehouse extends LinearOpMode {
 //            } else {
 //                tsePattern = TSEPattern.RIGHT;
 //            }
-//            telemetry.addData("TSE Pattern", tsePattern);
-//            telemetry.update();
+            telemetry.addData("TSE Pattern", tsePattern);
+            telemetry.update();
         }
 
-//        webcam.stopStreaming();
+//        webcam.closeCameraDeviceAsync(() -> {});
 
         List<Trajectory> trajectories;
         if(tsePattern == TSEPattern.LEFT) {
@@ -131,127 +134,104 @@ public class AutoRedWarehouse extends LinearOpMode {
         robot.drivetrain.followTrajectorySync(trajectories.get(0));
 
         robot.capstone.capstoneMode = Capstone.CapstoneMode.DOWN;
-        robot.sleep(0.5);
+        robot.sleep(0.75);
         robot.capstone.capstoneMode = Capstone.CapstoneMode.UP;
 
         robot.drivetrain.followTrajectorySync(trajectories.get(1));
 
         switch(tsePattern) {
             case LEFT:
-                robot.elevator.setTargetHeight(Elevator.TargetHeight.LOW);
+                robot.elevator.targetHeight = Elevator.TargetHeight.LOW;
                 break;
             case MIDDLE:
-                robot.elevator.setTargetHeight(Elevator.TargetHeight.MID);
+                robot.elevator.targetHeight = Elevator.TargetHeight.MID;
                 break;
             case RIGHT:
-                robot.elevator.setTargetHeight(Elevator.TargetHeight.HIGH);
+                robot.elevator.targetHeight = Elevator.TargetHeight.HIGH;
                 break;
         }
-        robot.elevator.setElevatorMode(Elevator.ElevatorMode.UP);
-        while(robot.elevator.getDistanceLeft() < ELEVATOR_THRESHOLD) {
+        robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
+        robot.capstone.capstoneMode = Capstone.CapstoneMode.UP_CLEARANCE;
+        while(robot.elevator.getDistanceLeft() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
             robot.sleep(0.01);
         }
         robot.arm.armMode = Arm.ArmMode.BACK;
+        robot.sleep(0.6);
+        robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN_REVERSE;
         robot.sleep(0.2);
-        robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
-        robot.sleep(0.2);
-        robot.arm.trapdoorMode = Arm.TrapdoorMode.CLOSED;
-        robot.arm.armMode = Arm.ArmMode.FRONT;
-        robot.sleep(0.2);
-        robot.elevator.setElevatorMode(Elevator.ElevatorMode.DOWN);
 
-        robot.intake.intakeRotation = Intake.IntakeRotation.DOWN;
+        for (int cycle = 0; cycle < 3; cycle++) {
+            robot.drivetrain.followTrajectory(trajectories.get(2 + cycle * 2));
 
-        robot.drivetrain.followTrajectorySync(trajectories.get(2));
+            robot.sleep(0.2);
+            robot.arm.armMode = Arm.ArmMode.FRONT;
+            robot.sleep(0.2);
+            robot.elevator.elevatorMode = Elevator.ElevatorMode.DOWN;
 
-        robot.intake.intakeMode = Intake.IntakeMode.IN;
+            while(robot.elevator.getCurrentHeight() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
+                robot.sleep(0.01);
+            }
 
-        robot.distanceSensorLocalization.enabled = true;
-        robot.sleep(0.2);
-        robot.drivetrain.setPoseEstimate(robot.distanceSensorLocalization.getRobotPose());
-        robot.distanceSensorLocalization.enabled = false;
+            robot.capstone.capstoneMode = Capstone.CapstoneMode.UP;
+            robot.intake.intakeRotation = Intake.IntakeRotation.DOWN;
+            robot.sleep(0.4);
+            robot.intake.intakeMode = Intake.IntakeMode.OUT;
+            robot.sleep(0.4);
+            robot.intake.intakeMode = Intake.IntakeMode.IN;
+            robot.intake.intakeBlockerRampMode = Intake.IntakeBlockerRampMode.BLOCK;
 
-        robot.intake.intakeMode = Intake.IntakeMode.IDLE;
-        robot.intake.intakeRotation = Intake.IntakeRotation.UP;
+            while (robot.drivetrain.isBusy() && opModeIsActive() && !isStopRequested()) {
+                robot.sleep(0.01);
+            }
 
-        robot.drivetrain.followTrajectorySync(trajectories.get(3));
+            robot.distanceSensorLocalization.enabled = true;
 
-        robot.elevator.setTargetHeight(Elevator.TargetHeight.HIGH);
-        robot.elevator.setElevatorMode(Elevator.ElevatorMode.UP);
-        while(robot.elevator.getDistanceLeft() < ELEVATOR_THRESHOLD) {
-            robot.sleep(0.01);
+            robot.sleep(0.7);
+
+            Pose2d pose = robot.distanceSensorLocalization.getRobotPose();
+            if(pose.getY() > -48) {
+                pose = new Pose2d(pose.getX(), -65, pose.getHeading());
+            }
+            robot.drivetrain.setPoseEstimate(pose);
+            robot.distanceSensorLocalization.enabled = false;
+
+            robot.intake.intakeRotation = Intake.IntakeRotation.UP;
+
+            robot.drivetrain.followTrajectory(trajectories.get(3 + cycle * 2));
+
+            robot.sleep(0.5);
+
+            robot.intake.intakeMode = Intake.IntakeMode.IN_SLOW;
+            robot.intake.intakeBlockerRampMode = Intake.IntakeBlockerRampMode.RAMP;
+
+            while (robot.drivetrain.isBusy() && opModeIsActive() && !isStopRequested()) {
+                robot.sleep(0.01);
+            }
+
+            robot.elevator.targetHeight = Elevator.TargetHeight.HIGH;
+            robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
+            robot.capstone.capstoneMode = Capstone.CapstoneMode.UP_CLEARANCE;
+            while (robot.elevator.getDistanceLeft() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
+                robot.sleep(0.01);
+            }
+            robot.arm.armMode = Arm.ArmMode.BACK;
+            robot.sleep(0.6);
+            robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN_REVERSE;
+            robot.sleep(0.5);
+            robot.arm.trapdoorMode = Arm.TrapdoorMode.CLOSED;
         }
-        robot.arm.armMode = Arm.ArmMode.BACK;
-        robot.sleep(0.2);
-        robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
-        robot.sleep(0.2);
+
+        robot.drivetrain.followTrajectory(trajectories.get(8));
+
+        robot.sleep(0.5);
         robot.arm.trapdoorMode = Arm.TrapdoorMode.CLOSED;
+        robot.sleep(0.5);
         robot.arm.armMode = Arm.ArmMode.FRONT;
-        robot.sleep(0.2);
-        robot.elevator.setElevatorMode(Elevator.ElevatorMode.DOWN);
+        robot.sleep(0.5);
+        robot.elevator.elevatorMode = Elevator.ElevatorMode.DOWN;
+        robot.sleep(1.0);
 
-        robot.intake.intakeRotation = Intake.IntakeRotation.DOWN;
-
-        robot.drivetrain.followTrajectorySync(trajectories.get(4));
-
-        robot.intake.intakeMode = Intake.IntakeMode.IN;
-
-        robot.distanceSensorLocalization.enabled = true;
-        robot.sleep(0.2);
-        robot.drivetrain.setPoseEstimate(robot.distanceSensorLocalization.getRobotPose());
-        robot.distanceSensorLocalization.enabled = false;
-
-        robot.intake.intakeMode = Intake.IntakeMode.IDLE;
-        robot.intake.intakeRotation = Intake.IntakeRotation.UP;
-
-        robot.drivetrain.followTrajectorySync(trajectories.get(5));
-
-        robot.elevator.setTargetHeight(Elevator.TargetHeight.HIGH);
-        robot.elevator.setElevatorMode(Elevator.ElevatorMode.UP);
-        while(robot.elevator.getDistanceLeft() < ELEVATOR_THRESHOLD) {
-            robot.sleep(0.01);
-        }
-        robot.arm.armMode = Arm.ArmMode.BACK;
-        robot.sleep(0.2);
-        robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
-        robot.sleep(0.2);
-        robot.arm.trapdoorMode = Arm.TrapdoorMode.CLOSED;
-        robot.arm.armMode = Arm.ArmMode.FRONT;
-        robot.sleep(0.2);
-        robot.elevator.setElevatorMode(Elevator.ElevatorMode.DOWN);
-
-        robot.intake.intakeRotation = Intake.IntakeRotation.DOWN;
-
-        robot.drivetrain.followTrajectorySync(trajectories.get(6));
-
-        robot.intake.intakeMode = Intake.IntakeMode.IN;
-
-        robot.distanceSensorLocalization.enabled = true;
-        robot.sleep(0.2);
-        robot.drivetrain.setPoseEstimate(robot.distanceSensorLocalization.getRobotPose());
-        robot.distanceSensorLocalization.enabled = false;
-
-        robot.intake.intakeMode = Intake.IntakeMode.IDLE;
-        robot.intake.intakeRotation = Intake.IntakeRotation.UP;
-
-        robot.drivetrain.followTrajectorySync(trajectories.get(7));
-
-        robot.elevator.setTargetHeight(Elevator.TargetHeight.HIGH);
-        robot.elevator.setElevatorMode(Elevator.ElevatorMode.UP);
-        while(robot.elevator.getDistanceLeft() < ELEVATOR_THRESHOLD) {
-            robot.sleep(0.01);
-        }
-        robot.arm.armMode = Arm.ArmMode.BACK;
-        robot.sleep(0.2);
-        robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
-        robot.sleep(0.2);
-        robot.arm.trapdoorMode = Arm.TrapdoorMode.CLOSED;
-        robot.arm.armMode = Arm.ArmMode.FRONT;
-        robot.sleep(0.2);
-        robot.elevator.setElevatorMode(Elevator.ElevatorMode.DOWN);
-
-        robot.drivetrain.followTrajectorySync(trajectories.get(8));
-
+        robot.stop();
     }
 
     private double average(Scalar s) {
