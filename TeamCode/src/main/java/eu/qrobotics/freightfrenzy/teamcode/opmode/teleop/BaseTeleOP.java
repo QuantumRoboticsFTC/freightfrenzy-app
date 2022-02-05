@@ -3,21 +3,17 @@ package eu.qrobotics.freightfrenzy.teamcode.opmode.teleop;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Arm;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Capstone;
-import eu.qrobotics.freightfrenzy.teamcode.subsystems.Carousel;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Elevator;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Intake;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Robot;
 import eu.qrobotics.freightfrenzy.teamcode.util.Alliance;
 import eu.qrobotics.freightfrenzy.teamcode.util.StickyGamepad;
 
-@TeleOp
-public class TeleOP extends OpMode {
+public abstract class BaseTeleOP extends OpMode {
     enum DriveMode {
         NORMAL,
         SLOW,
@@ -31,11 +27,15 @@ public class TeleOP extends OpMode {
 
     MultipleTelemetry telemetry;
 
+    abstract Alliance getAlliance();
+
     @Override
     public void init() {
         telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        robot = new Robot(this, false, Alliance.RED);
+        robot = new Robot(this, false, getAlliance());
+
+        robot.elevator.targetHeight = Elevator.TargetHeight.HIGH;
 
         stickyGamepad1 = new StickyGamepad(gamepad1);
         stickyGamepad2 = new StickyGamepad(gamepad2);
@@ -50,12 +50,14 @@ public class TeleOP extends OpMode {
         robot.start();
     }
 
+    ElapsedTime intakeDropTimer = new ElapsedTime(0);
     ElapsedTime intakeUpTimer = new ElapsedTime(0);
     ElapsedTime intakeDownTimer = new ElapsedTime(0);
     ElapsedTime capstoneTimer = new ElapsedTime(0);
     ElapsedTime elevatorDownTimer = new ElapsedTime(0);
 
-    boolean elevatorToggle = true;
+    boolean elevatorUpToggle = true;
+    boolean elevatorDownToggle = true;
 
     @Override
     public void loop() {
@@ -112,19 +114,26 @@ public class TeleOP extends OpMode {
             intakeDownTimer.reset();
         }
         else if (stickyGamepad2.b) {
-            robot.intake.intakeMode = Intake.IntakeMode.IDLE;
             if(robot.intake.intakeRotation == Intake.IntakeRotation.UP && robot.elevator.elevatorMode == Elevator.ElevatorMode.DOWN && robot.arm.armMode == Arm.ArmMode.FRONT) {
                 robot.intake.intakeBlockerRampMode = Intake.IntakeBlockerRampMode.RAMP;
                 robot.intake.intakeMode = Intake.IntakeMode.IN_SLOW;
-                intakeUpTimer.reset();
+                intakeDropTimer.reset();
             }
             robot.intake.intakeRotation = Intake.IntakeRotation.UP;
+            intakeUpTimer.reset();
         }
+
         if(0.5 < intakeDownTimer.seconds() && intakeDownTimer.seconds() < 0.6) {
-            robot.intake.intakeMode = Intake.IntakeMode.IN;
+            if(robot.intake.intakeRotation == Intake.IntakeRotation.DOWN) {
+                robot.intake.intakeMode = Intake.IntakeMode.IN;
+            }
         }
 
         if(0.5 < intakeUpTimer.seconds() && intakeUpTimer.seconds() < 0.6) {
+            robot.intake.intakeMode = Intake.IntakeMode.IDLE;
+        }
+
+        if(0.4 < intakeDropTimer.seconds() && intakeDropTimer.seconds() < 0.5) {
             robot.intake.intakeMode = Intake.IntakeMode.IDLE;
         }
 
@@ -142,7 +151,9 @@ public class TeleOP extends OpMode {
 
         if (stickyGamepad2.right_bumper) {
            robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
-           elevatorToggle = false;
+           robot.capstone.capstoneMode = Capstone.CapstoneMode.UP_CLEARANCE;
+           robot.intake.intakeRotation = Intake.IntakeRotation.UP_CLEARANCE;
+           elevatorUpToggle = false;
         }
         else if (stickyGamepad2.left_bumper) {
             robot.arm.armMode = Arm.ArmMode.FRONT;
@@ -150,23 +161,32 @@ public class TeleOP extends OpMode {
             elevatorDownTimer.reset();
         }
 
-        if(robot.elevator.elevatorMode == Elevator.ElevatorMode.UP && !elevatorToggle && robot.elevator.getDistanceLeft() < 0.5) {
+        if(robot.elevator.elevatorMode == Elevator.ElevatorMode.UP && !elevatorUpToggle && robot.elevator.getDistanceLeft() < 0.5) {
             robot.arm.armMode = Arm.ArmMode.BACK;
-            elevatorToggle = true;
+            elevatorUpToggle = true;
         }
 
-        if(0.3 < elevatorDownTimer.seconds() && elevatorDownTimer.seconds() < 0.4) {
+        if(0.5 < elevatorDownTimer.seconds() && elevatorDownTimer.seconds() < 0.6) {
             robot.elevator.elevatorMode = Elevator.ElevatorMode.DOWN;
+            elevatorDownToggle = false;
+        }
+
+        if(robot.elevator.elevatorMode == Elevator.ElevatorMode.DOWN && !elevatorDownToggle && robot.elevator.getDistanceLeft() < 0.5) {
+            robot.capstone.capstoneMode = Capstone.CapstoneMode.UP;
+            if(robot.intake.intakeRotation == Intake.IntakeRotation.UP_CLEARANCE) {
+                robot.intake.intakeRotation = Intake.IntakeRotation.UP;
+            }
+            elevatorDownToggle = true;
         }
 
         if (robot.elevator.elevatorMode == Elevator.ElevatorMode.UP ||
                 robot.elevator.elevatorMode == Elevator.ElevatorMode.MANUAL) {
             if (gamepad2.right_trigger > 0.1) {
                 robot.elevator.elevatorMode = Elevator.ElevatorMode.MANUAL;
-                robot.elevator.manualPower = gamepad2.right_trigger * 0.25;
+                robot.elevator.manualPower = gamepad2.right_trigger * 0.3;
             } else if (gamepad2.left_trigger > 0.1) {
                 robot.elevator.elevatorMode = Elevator.ElevatorMode.MANUAL;
-                robot.elevator.manualPower = -gamepad2.left_trigger * (-0.05);
+                robot.elevator.manualPower = gamepad2.left_trigger * (-0.1);
             } else {
                 if (robot.elevator.elevatorMode == Elevator.ElevatorMode.MANUAL) {
                     robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
@@ -203,11 +223,15 @@ public class TeleOP extends OpMode {
 
         // endregion
 
+        telemetry.addData("Intake rotation", robot.intake.intakeRotation);
+        telemetry.addData("Intake mode", robot.intake.intakeMode);
+        telemetry.addData("Intake blocker", robot.intake.intakeBlockerRampMode);
         telemetry.addData("Elevator mode", robot.elevator.elevatorMode);
         telemetry.addData("Elevator target height", robot.elevator.targetHeight);
         telemetry.addData("Elevator current height", robot.elevator.getCurrentHeight());
         telemetry.addData("Elevator isBusy", robot.elevator.isBusy());
         telemetry.addData("Elevator power", robot.elevator.motorLeft.getPower());
+//        telemetry.addData("Last PID controller error", robot.elevator.getLastControllerError());
 
         telemetry.update();
     }
