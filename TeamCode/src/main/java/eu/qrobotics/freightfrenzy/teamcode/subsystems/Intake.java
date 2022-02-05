@@ -18,6 +18,7 @@ public class Intake implements Subsystem {
 
     public enum IntakeRotation {
         UP,
+        UP_CLEARANCE,
         DOWN
     }
 
@@ -26,19 +27,21 @@ public class Intake implements Subsystem {
         RAMP
     }
 
-    public static double INTAKE_IN_SPEED = 0.9;
-    public static double INTAKE_IN_SLOW_SPEED = 0.4;
+    public static double INTAKE_IN_SPEED = 1.0;
+    public static double INTAKE_IN_SLOW_SPEED = 0.3;
     public static double INTAKE_IDLE_SPEED = 0;
     public static double INTAKE_OUT_SPEED = -0.8;
     public static double INTAKE_OUT_SLOW_SPEED = -0.4;
 
     public static double INTAKE_UP_POSITION_LEFT = 0.865;
     public static double INTAKE_UP_POSITION_RIGHT = 0.185;
+    public static double INTAKE_UP_CLEARANCE_POSITION_LEFT = 0.82;
+    public static double INTAKE_UP_CLEARANCE_POSITION_RIGHT = 0.23;
     public static double INTAKE_DOWN_POSITION_LEFT = 0.405;
     public static double INTAKE_DOWN_POSITION_RIGHT = 0.645;
 
     public static double INTAKE_BLOCKER_BLOCK_POSITION = 0.45;
-    public static double INTAKE_BLOCKER_RAMP_POSITION = 0.72;
+    public static double INTAKE_BLOCKER_RAMP_POSITION = 0.78;
 
     public IntakeMode intakeMode;
     public IntakeRotation intakeRotation;
@@ -91,18 +94,22 @@ public class Intake implements Subsystem {
         }
         prevIntakeMode = intakeMode;
 
-        if(intakeRotation != prevIntakeRotation) {
+//        if(intakeRotation != prevIntakeRotation) {
             switch (intakeRotation) {
                 case UP:
                     intakePivotServoLeft.setPosition(INTAKE_UP_POSITION_LEFT);
                     intakePivotServoRight.setPosition(INTAKE_UP_POSITION_RIGHT);
+                    break;
+                case UP_CLEARANCE:
+                    intakePivotServoLeft.setPosition(INTAKE_UP_CLEARANCE_POSITION_LEFT);
+                    intakePivotServoRight.setPosition(INTAKE_UP_CLEARANCE_POSITION_RIGHT);
                     break;
                 case DOWN:
                     intakePivotServoLeft.setPosition(INTAKE_DOWN_POSITION_LEFT);
                     intakePivotServoRight.setPosition(INTAKE_DOWN_POSITION_RIGHT);
                     break;
             }
-        }
+//        }
         prevIntakeRotation = intakeRotation;
 
         if(intakeBlockerRampMode != prevIntakeBlockerRampMode) {
