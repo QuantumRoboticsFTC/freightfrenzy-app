@@ -116,11 +116,15 @@ public abstract class BaseTeleOP extends OpMode {
         else if (stickyGamepad2.b) {
             if(robot.intake.intakeRotation == Intake.IntakeRotation.UP && robot.elevator.elevatorMode == Elevator.ElevatorMode.DOWN && robot.arm.armMode == Arm.ArmMode.FRONT) {
                 robot.intake.intakeBlockerRampMode = Intake.IntakeBlockerRampMode.RAMP;
+                robot.intake.intakeRotation = Intake.IntakeRotation.TRANSFER;
+                robot.arm.armMode = Arm.ArmMode.TRANSFER;
                 robot.intake.intakeMode = Intake.IntakeMode.IN_SLOW;
                 intakeDropTimer.reset();
             }
-            robot.intake.intakeRotation = Intake.IntakeRotation.UP;
-            intakeUpTimer.reset();
+            else {
+                robot.intake.intakeRotation = Intake.IntakeRotation.UP;
+                intakeUpTimer.reset();
+            }
         }
 
         if(0.5 < intakeDownTimer.seconds() && intakeDownTimer.seconds() < 0.6) {
@@ -129,12 +133,18 @@ public abstract class BaseTeleOP extends OpMode {
             }
         }
 
-        if(0.5 < intakeUpTimer.seconds() && intakeUpTimer.seconds() < 0.6) {
+        if(0.2 < intakeUpTimer.seconds() && intakeUpTimer.seconds() < 0.3) {
             robot.intake.intakeMode = Intake.IntakeMode.IDLE;
         }
 
         if(0.4 < intakeDropTimer.seconds() && intakeDropTimer.seconds() < 0.5) {
             robot.intake.intakeMode = Intake.IntakeMode.IDLE;
+        }
+        if(1.0 < intakeDropTimer.seconds() && intakeDropTimer.seconds() < 1.1) {
+            robot.intake.intakeRotation = Intake.IntakeRotation.UP;
+            if(robot.arm.armMode == Arm.ArmMode.TRANSFER && robot.elevator.elevatorMode == Elevator.ElevatorMode.DOWN) {
+                robot.arm.armMode = Arm.ArmMode.FRONT;
+            }
         }
 
         if(robot.elevator.elevatorMode == Elevator.ElevatorMode.DOWN) {
@@ -196,17 +206,27 @@ public abstract class BaseTeleOP extends OpMode {
         }
 
         if (stickyGamepad2.x && robot.arm.armMode == Arm.ArmMode.BACK) {
-            if(robot.arm.trapdoorMode != Arm.TrapdoorMode.OPEN)
-                robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
-            else
+            if(robot.elevator.targetHeight == Elevator.TargetHeight.CAP) {
                 robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN_REVERSE;
+            }
+            else {
+                if (robot.arm.trapdoorMode != Arm.TrapdoorMode.OPEN)
+                    robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
+                else
+                    robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN_REVERSE;
+            }
         }
 
         if (stickyGamepad2.y && robot.arm.armMode == Arm.ArmMode.BACK) {
-            if(robot.arm.trapdoorMode != Arm.TrapdoorMode.OPEN_REVERSE)
+            if(robot.elevator.targetHeight == Elevator.TargetHeight.CAP) {
                 robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN_REVERSE;
-            else
-                robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
+            }
+            else {
+                if (robot.arm.trapdoorMode != Arm.TrapdoorMode.OPEN_REVERSE)
+                    robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN_REVERSE;
+                else
+                    robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
+            }
         }
 
         if(stickyGamepad2.back) {

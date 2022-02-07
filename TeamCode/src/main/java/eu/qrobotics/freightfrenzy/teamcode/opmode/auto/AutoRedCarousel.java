@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -30,6 +31,7 @@ import eu.qrobotics.freightfrenzy.teamcode.util.Alliance;
 
 @Config
 @Autonomous
+@Disabled
 public class AutoRedCarousel extends LinearOpMode {
 
     public static int LEFT_TSE_UP_X = 600;

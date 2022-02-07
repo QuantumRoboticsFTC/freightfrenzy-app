@@ -18,6 +18,7 @@ public class Intake implements Subsystem {
 
     public enum IntakeRotation {
         UP,
+        TRANSFER,
         UP_CLEARANCE,
         DOWN
     }
@@ -35,6 +36,8 @@ public class Intake implements Subsystem {
 
     public static double INTAKE_UP_POSITION_LEFT = 0.865;
     public static double INTAKE_UP_POSITION_RIGHT = 0.185;
+    public static double INTAKE_TRANSFER_POSITION_LEFT = 0.900;
+    public static double INTAKE_TRANSFER_POSITION_RIGHT = 0.150;
     public static double INTAKE_UP_CLEARANCE_POSITION_LEFT = 0.82;
     public static double INTAKE_UP_CLEARANCE_POSITION_RIGHT = 0.23;
     public static double INTAKE_DOWN_POSITION_LEFT = 0.405;
@@ -99,6 +102,10 @@ public class Intake implements Subsystem {
                 case UP:
                     intakePivotServoLeft.setPosition(INTAKE_UP_POSITION_LEFT);
                     intakePivotServoRight.setPosition(INTAKE_UP_POSITION_RIGHT);
+                    break;
+                case TRANSFER:
+                    intakePivotServoLeft.setPosition(INTAKE_TRANSFER_POSITION_LEFT);
+                    intakePivotServoRight.setPosition(INTAKE_TRANSFER_POSITION_RIGHT);
                     break;
                 case UP_CLEARANCE:
                     intakePivotServoLeft.setPosition(INTAKE_UP_CLEARANCE_POSITION_LEFT);

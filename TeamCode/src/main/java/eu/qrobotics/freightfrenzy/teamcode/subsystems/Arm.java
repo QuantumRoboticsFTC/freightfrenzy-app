@@ -9,7 +9,7 @@ public class Arm implements Subsystem {
 
     public enum ArmMode {
         FRONT,
-        MID,
+        TRANSFER,
         BACK,
         CAPSTONE
     }
@@ -22,8 +22,8 @@ public class Arm implements Subsystem {
 
     public static double ARM_FRONT_LEFT_POSITION = 0.04;
     public static double ARM_FRONT_RIGHT_POSITION = 0.96;
-    public static double ARM_MID_LEFT_POSITION = 0.5;
-    public static double ARM_MID_RIGHT_POSITION = 0.5;
+    public static double ARM_TRANSFER_LEFT_POSITION = 0.10;
+    public static double ARM_TRANSFER_RIGHT_POSITION = 0.90;
     public static double ARM_BACK_LEFT_POSITION = 0.95;
     public static double ARM_BACK_RIGHT_POSITION = 0.05;
     public static double ARM_CAPSTONE_LEFT_POSITION = 0.11;
@@ -63,9 +63,9 @@ public class Arm implements Subsystem {
                     armServoLeft.setPosition(ARM_FRONT_LEFT_POSITION);
                     armServoRight.setPosition(ARM_FRONT_RIGHT_POSITION);
                     break;
-                case MID:
-                    armServoLeft.setPosition(ARM_MID_LEFT_POSITION);
-                    armServoRight.setPosition(ARM_MID_RIGHT_POSITION);
+                case TRANSFER:
+                    armServoLeft.setPosition(ARM_TRANSFER_LEFT_POSITION);
+                    armServoRight.setPosition(ARM_TRANSFER_RIGHT_POSITION);
                     break;
                 case BACK:
                     armServoLeft.setPosition(ARM_BACK_LEFT_POSITION);

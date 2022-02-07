@@ -51,8 +51,8 @@ public class TrajectoriesRedWarehouse {
 
             trajectories.add(new TrajectoryBuilder(new Pose2d(38 + cycle * 2, -66, Math.toRadians(0)), Math.toRadians(180), BASE_VEL_CONSTRAINT, BASE_ACCEL_CONSTRAINT)
                     .lineToConstantHeading(new Vector2d(36 + cycle * 2, -68))
-                    .splineToConstantHeading(new Vector2d(6 + cycle, -70), Math.toRadians(90))
-                    .lineToSplineHeading(new Pose2d(6 + cycle, -34 + cycle, Math.toRadians(-30)))
+                    .splineToConstantHeading(new Vector2d(8 + cycle, -70), Math.toRadians(90))
+                    .lineToSplineHeading(new Pose2d(8 + cycle, -34 + cycle, Math.toRadians(-30)))
                     .build()
             );
         }
@@ -88,8 +88,8 @@ public class TrajectoriesRedWarehouse {
 
             trajectories.add(new TrajectoryBuilder(new Pose2d(38 + cycle * 2, -66, Math.toRadians(0)), Math.toRadians(180), BASE_VEL_CONSTRAINT, BASE_ACCEL_CONSTRAINT)
                     .lineToConstantHeading(new Vector2d(36 + cycle * 2, -70))
-                    .splineToConstantHeading(new Vector2d(6 + cycle, -72), Math.toRadians(90))
-                    .lineToSplineHeading(new Pose2d(6 + cycle, -34 + cycle, Math.toRadians(-30)))
+                    .splineToConstantHeading(new Vector2d(8 + cycle, -72), Math.toRadians(90))
+                    .lineToSplineHeading(new Pose2d(8 + cycle, -34 + cycle, Math.toRadians(-30)))
                     .build()
             );
         }
