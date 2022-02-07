@@ -135,9 +135,9 @@ public class AutoRedCarousel extends LinearOpMode {
 
         robot.drivetrain.followTrajectorySync(trajectories.get(0));
 
-        robot.capstone.capstoneMode = Capstone.CapstoneMode.DOWN;
-        robot.sleep(0.75);
-        robot.capstone.capstoneMode = Capstone.CapstoneMode.UP;
+//        robot.capstone.capstoneMode = Capstone.CapstoneMode.DOWN;
+//        robot.sleep(0.75);
+//        robot.capstone.capstoneMode = Capstone.CapstoneMode.UP;
 
         robot.drivetrain.followTrajectorySync(trajectories.get(1));
 
@@ -153,7 +153,7 @@ public class AutoRedCarousel extends LinearOpMode {
                 break;
         }
         robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
-        robot.capstone.capstoneMode = Capstone.CapstoneMode.UP_CLEARANCE;
+//        robot.capstone.capstoneMode = Capstone.CapstoneMode.UP_CLEARANCE;
         while(robot.elevator.getDistanceLeft() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
             robot.sleep(0.01);
         }
@@ -175,7 +175,7 @@ public class AutoRedCarousel extends LinearOpMode {
             robot.sleep(0.01);
         }
 
-        robot.capstone.capstoneMode = Capstone.CapstoneMode.UP;
+//        robot.capstone.capstoneMode = Capstone.CapstoneMode.UP;
 
         while (robot.drivetrain.isBusy() && opModeIsActive() && !isStopRequested()) {
             robot.sleep(0.01);
@@ -201,7 +201,7 @@ public class AutoRedCarousel extends LinearOpMode {
 
         robot.drivetrain.followTrajectory(trajectories.get(5));
 
-        robot.capstone.capstoneMode = Capstone.CapstoneMode.UP_CLEARANCE;
+//        robot.capstone.capstoneMode = Capstone.CapstoneMode.UP_CLEARANCE;
         robot.sleep(0.5);
         robot.elevator.targetHeight = Elevator.TargetHeight.HIGH;
         robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
@@ -231,7 +231,7 @@ public class AutoRedCarousel extends LinearOpMode {
             robot.sleep(0.01);
         }
 
-        robot.capstone.capstoneMode = Capstone.CapstoneMode.UP;
+//        robot.capstone.capstoneMode = Capstone.CapstoneMode.UP;
 
         while(robot.drivetrain.isBusy() && opModeIsActive() && !isStopRequested()) {
             robot.sleep(0.01);

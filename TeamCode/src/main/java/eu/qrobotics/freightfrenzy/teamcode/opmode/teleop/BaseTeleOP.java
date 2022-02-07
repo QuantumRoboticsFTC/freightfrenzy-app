@@ -53,7 +53,7 @@ public abstract class BaseTeleOP extends OpMode {
     ElapsedTime intakeDropTimer = new ElapsedTime(0);
     ElapsedTime intakeUpTimer = new ElapsedTime(0);
     ElapsedTime intakeDownTimer = new ElapsedTime(0);
-    ElapsedTime capstoneTimer = new ElapsedTime(0);
+//    ElapsedTime capstoneTimer = new ElapsedTime(0);
     ElapsedTime elevatorDownTimer = new ElapsedTime(0);
 
     boolean elevatorUpToggle = true;
@@ -85,11 +85,29 @@ public abstract class BaseTeleOP extends OpMode {
         if (stickyGamepad1.right_bumper) {
             driveMode = DriveMode.NORMAL;
         }
-        if(gamepad1.right_trigger > 0.1) {
-            robot.carousel.spin();
+
+        if(gamepad1.dpad_up) {
+            robot.capstone.tiltDirection = Capstone.TiltDirection.UP;
+        } else if (gamepad1.dpad_down) {
+            robot.capstone.tiltDirection = Capstone.TiltDirection.DOWN;
+        } else {
+            robot.capstone.tiltDirection = Capstone.TiltDirection.IDLE;
         }
-        if(gamepad1.left_trigger > 0.1) {
-            robot.carousel.stopSpin();
+
+        if(gamepad1.dpad_left) {
+            robot.capstone.swivelDirection = Capstone.SwivelDirection.LEFT;
+        } else if (gamepad1.dpad_right) {
+            robot.capstone.swivelDirection = Capstone.SwivelDirection.RIGHT;
+        } else {
+            robot.capstone.swivelDirection = Capstone.SwivelDirection.IDLE;
+        }
+
+        if(gamepad1.a) {
+            robot.capstone.extendMode = Capstone.ExtendMode.EXTEND;
+        } else if (gamepad1.b) {
+            robot.capstone.extendMode = Capstone.ExtendMode.RETRACT;
+        } else {
+            robot.capstone.extendMode = Capstone.ExtendMode.IDLE;
         }
 
         //endregion
@@ -161,7 +179,7 @@ public abstract class BaseTeleOP extends OpMode {
 
         if (stickyGamepad2.right_bumper) {
            robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
-           robot.capstone.capstoneMode = Capstone.CapstoneMode.UP_CLEARANCE;
+//           robot.capstone.capstoneMode = Capstone.CapstoneMode.UP_CLEARANCE;
            robot.intake.intakeRotation = Intake.IntakeRotation.UP_CLEARANCE;
            elevatorUpToggle = false;
         }
@@ -182,7 +200,7 @@ public abstract class BaseTeleOP extends OpMode {
         }
 
         if(robot.elevator.elevatorMode == Elevator.ElevatorMode.DOWN && !elevatorDownToggle && robot.elevator.getDistanceLeft() < 0.5) {
-            robot.capstone.capstoneMode = Capstone.CapstoneMode.UP;
+//            robot.capstone.capstoneMode = Capstone.CapstoneMode.UP;
             if(robot.intake.intakeRotation == Intake.IntakeRotation.UP_CLEARANCE) {
                 robot.intake.intakeRotation = Intake.IntakeRotation.UP;
             }
@@ -230,16 +248,22 @@ public abstract class BaseTeleOP extends OpMode {
         }
 
         if(stickyGamepad2.back) {
-            robot.arm.armMode = Arm.ArmMode.CAPSTONE;
-            robot.capstone.capstoneMode = Capstone.CapstoneMode.OUTTAKE;
-            robot.intake.intakeRotation = Intake.IntakeRotation.DOWN;
-            capstoneTimer.reset();
+            robot.carousel.spin();
+        } else {
+            robot.carousel.stopSpin();
         }
 
-        if(0.5 < capstoneTimer.seconds() && capstoneTimer.seconds() < 0.6) {
-            robot.capstone.capstoneMode = Capstone.CapstoneMode.UP;
-            robot.intake.intakeRotation = Intake.IntakeRotation.UP;
-        }
+//        if(stickyGamepad2.back) {
+//            robot.arm.armMode = Arm.ArmMode.CAPSTONE;
+//            robot.capstone.capstoneMode = Capstone.CapstoneMode.OUTTAKE;
+//            robot.intake.intakeRotation = Intake.IntakeRotation.DOWN;
+//            capstoneTimer.reset();
+//        }
+//
+//        if(0.5 < capstoneTimer.seconds() && capstoneTimer.seconds() < 0.6) {
+//            robot.capstone.capstoneMode = Capstone.CapstoneMode.UP;
+//            robot.intake.intakeRotation = Intake.IntakeRotation.UP;
+//        }
 
         // endregion
 

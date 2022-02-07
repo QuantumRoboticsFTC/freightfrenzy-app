@@ -133,9 +133,9 @@ public class AutoRedWarehouse extends LinearOpMode {
 
         robot.drivetrain.followTrajectorySync(trajectories.get(0));
 
-        robot.capstone.capstoneMode = Capstone.CapstoneMode.DOWN;
-        robot.sleep(0.75);
-        robot.capstone.capstoneMode = Capstone.CapstoneMode.UP;
+//        robot.capstone.capstoneMode = Capstone.CapstoneMode.DOWN;
+//        robot.sleep(0.75);
+//        robot.capstone.capstoneMode = Capstone.CapstoneMode.UP;
 
         robot.drivetrain.followTrajectorySync(trajectories.get(1));
 
@@ -151,7 +151,7 @@ public class AutoRedWarehouse extends LinearOpMode {
                 break;
         }
         robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
-        robot.capstone.capstoneMode = Capstone.CapstoneMode.UP_CLEARANCE;
+//        robot.capstone.capstoneMode = Capstone.CapstoneMode.UP_CLEARANCE;
         while(robot.elevator.getDistanceLeft() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
             robot.sleep(0.01);
         }
@@ -174,7 +174,7 @@ public class AutoRedWarehouse extends LinearOpMode {
                 robot.sleep(0.01);
             }
 
-            robot.capstone.capstoneMode = Capstone.CapstoneMode.UP;
+//            robot.capstone.capstoneMode = Capstone.CapstoneMode.UP;
             robot.intake.intakeRotation = Intake.IntakeRotation.DOWN;
             robot.sleep(0.4);
             robot.intake.intakeMode = Intake.IntakeMode.OUT;
@@ -233,7 +233,7 @@ public class AutoRedWarehouse extends LinearOpMode {
             robot.intake.intakeBlockerRampMode = Intake.IntakeBlockerRampMode.BLOCK;
             robot.elevator.targetHeight = Elevator.TargetHeight.HIGH;
             robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
-            robot.capstone.capstoneMode = Capstone.CapstoneMode.UP_CLEARANCE;
+//            robot.capstone.capstoneMode = Capstone.CapstoneMode.UP_CLEARANCE;
             while (robot.elevator.getDistanceLeft() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
                 robot.sleep(0.01);
             }
