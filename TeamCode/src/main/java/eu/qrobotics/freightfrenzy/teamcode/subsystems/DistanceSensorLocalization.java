@@ -15,7 +15,7 @@ import eu.qrobotics.freightfrenzy.teamcode.util.Alliance;
 public class DistanceSensorLocalization implements Subsystem {
     public static Pose2d LEFT_SENSOR_POSE = new Pose2d(2.5, 6.72, Math.toRadians(90));
     public static Pose2d RIGHT_SENSOR_POSE = new Pose2d(2.5, -6.72, Math.toRadians(-90));
-    public static Pose2d FRONT_SENSOR_POSE = new Pose2d(6.47, 5.39, Math.toRadians(0));
+    public static Pose2d FRONT_SENSOR_POSE = new Pose2d(6.00, 5.39, Math.toRadians(0));
 
     public static double LEFT_WALL_Y = 72;
     public static double RIGHT_WALL_Y = -72;

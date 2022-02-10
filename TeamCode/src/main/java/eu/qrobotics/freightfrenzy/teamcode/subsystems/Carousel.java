@@ -13,6 +13,7 @@ public class Carousel implements Subsystem {
     private DcMotor carouselMotor;
     private boolean isAutonomous;
 
+    public static double START_VEL = 0.2;
     public static double ACCELERATION_RATE = 0.7; // power increase / second
     public static double TIME = 2.0; // seconds
 
@@ -44,21 +45,21 @@ public class Carousel implements Subsystem {
     }
 
     public boolean isBusy() {
-        return timer.seconds() < getTIME();
+        return timer.seconds() < getTargetTime();
     }
 
-    private double getTIME() {
+    private double getTargetTime() {
         return isAutonomous ? TIME_AUTONOMOUS : TIME;
     }
 
-    private double getACCELERATION() {
+    private double getAcceleration() {
         return isAutonomous ? ACCELERATION_RATE_AUTONOMOUS : ACCELERATION_RATE;
     }
 
     private double getPower() {
         double carouselPower = 0;
-        if(timer.seconds() < getTIME()) {
-            carouselPower = getACCELERATION() * timer.seconds();
+        if(timer.seconds() < getTargetTime()) {
+            carouselPower = START_VEL + getAcceleration() * timer.seconds();
         }
         carouselPower = Math.min(carouselPower, 1);
         return carouselPower;
