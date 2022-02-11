@@ -11,7 +11,7 @@ import org.openftc.easyopencv.OpenCvTracker;
 public class TeamShippingElementTracker extends OpenCvTracker {
     private Point pt1, pt2;
     private double[] hslThresholdHue = {100.0, 140.0};
-    private double[] hslThresholdSaturation = {85.0, 255.0};
+    private double[] hslThresholdSaturation = {55.0, 255.0};
     private double[] hslThresholdLuminance = {0.0, 255.0};
     private Mat mask, hsl, result;
     private Scalar count;
