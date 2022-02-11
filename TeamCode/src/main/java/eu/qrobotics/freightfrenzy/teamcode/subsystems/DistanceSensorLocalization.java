@@ -97,12 +97,19 @@ public class DistanceSensorLocalization implements Subsystem {
                 frontSensor.initialize();
             }
 
-            if(left > 65000) {
-                frontSensor.initialize();
-            }
-
-            if(right > 65000) {
-                frontSensor.initialize();
+            switch(alliance) {
+                case RED:
+                    if (right > 65000) {
+                        rightSensor.initialize();
+                    }
+                    break;
+                case BLUE:
+                    if (left > 65000) {
+                        leftSensor.initialize();
+                    }
+                    break;
+                default:
+                    break;
             }
 
             frontSensorAverage.add(mmToInches(front));

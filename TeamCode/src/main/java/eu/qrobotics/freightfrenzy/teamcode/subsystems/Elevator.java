@@ -57,7 +57,7 @@ public class Elevator implements Subsystem {
         },
         MID(6),
         HIGH(13),
-        CAP(18) {
+        AUTO_HIGH(17) {
             @Override
             public TargetHeight next() {
                 return this;
