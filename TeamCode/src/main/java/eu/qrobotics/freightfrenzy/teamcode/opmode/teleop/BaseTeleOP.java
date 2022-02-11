@@ -53,11 +53,12 @@ public abstract class BaseTeleOP extends OpMode {
     ElapsedTime intakeDropTimer = new ElapsedTime(0);
     ElapsedTime intakeUpTimer = new ElapsedTime(0);
     ElapsedTime intakeDownTimer = new ElapsedTime(0);
-//    ElapsedTime capstoneTimer = new ElapsedTime(0);
     ElapsedTime elevatorDownTimer = new ElapsedTime(0);
 
     boolean elevatorUpToggle = true;
     boolean elevatorDownToggle = true;
+
+    boolean keepCapstoneMode = true;
 
     @Override
     public void loop() {
@@ -102,11 +103,22 @@ public abstract class BaseTeleOP extends OpMode {
             robot.capstone.swivelDirection = Capstone.SwivelDirection.IDLE;
         }
 
+        if(gamepad1.x) {
+            robot.capstone.extendMode = Capstone.ExtendMode.EXTEND;
+            keepCapstoneMode = true;
+            Capstone.CAPSTONE_TILT_POSITION = 0.8;
+        }
+        if(gamepad1.y) {
+            robot.capstone.extendMode = Capstone.ExtendMode.RETRACT;
+            keepCapstoneMode = true;
+        }
         if(gamepad1.a) {
             robot.capstone.extendMode = Capstone.ExtendMode.EXTEND;
+            keepCapstoneMode = false;
         } else if (gamepad1.b) {
             robot.capstone.extendMode = Capstone.ExtendMode.RETRACT;
-        } else {
+            keepCapstoneMode = false;
+        } else if (!keepCapstoneMode) {
             robot.capstone.extendMode = Capstone.ExtendMode.IDLE;
         }
 
@@ -132,7 +144,11 @@ public abstract class BaseTeleOP extends OpMode {
             intakeDownTimer.reset();
         }
         else if (stickyGamepad2.b) {
-            if(robot.intake.intakeRotation == Intake.IntakeRotation.UP && robot.elevator.elevatorMode == Elevator.ElevatorMode.DOWN && robot.arm.armMode == Arm.ArmMode.FRONT) {
+            if((robot.intake.intakeRotation == Intake.IntakeRotation.UP ||
+                    robot.intake.intakeRotation == Intake.IntakeRotation.TRANSFER)
+                && robot.elevator.elevatorMode == Elevator.ElevatorMode.DOWN
+                && (robot.arm.armMode == Arm.ArmMode.FRONT ||
+                    robot.arm.armMode == Arm.ArmMode.TRANSFER)) {
                 robot.intake.intakeBlockerRampMode = Intake.IntakeBlockerRampMode.RAMP;
                 robot.intake.intakeRotation = Intake.IntakeRotation.TRANSFER;
                 robot.arm.armMode = Arm.ArmMode.TRANSFER;
@@ -173,15 +189,15 @@ public abstract class BaseTeleOP extends OpMode {
             } else if (stickyGamepad2.dpad_down) {
                 robot.elevator.targetHeight = Elevator.TargetHeight.LOW;
             } else if (stickyGamepad2.dpad_right) {
-                robot.elevator.targetHeight = Elevator.TargetHeight.CAP;
+                robot.elevator.targetHeight = Elevator.TargetHeight.AUTO_HIGH;
             }
         }
 
         if (stickyGamepad2.right_bumper) {
-           robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
-//           robot.capstone.capstoneMode = Capstone.CapstoneMode.UP_CLEARANCE;
-           robot.intake.intakeRotation = Intake.IntakeRotation.UP_CLEARANCE;
-           elevatorUpToggle = false;
+            robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
+            robot.intake.intakeRotation = Intake.IntakeRotation.UP_CLEARANCE;
+            Capstone.CAPSTONE_TILT_POSITION = Math.min(Capstone.CAPSTONE_TILT_POSITION, 0.5);
+            elevatorUpToggle = false;
         }
         else if (stickyGamepad2.left_bumper) {
             robot.arm.armMode = Arm.ArmMode.FRONT;
@@ -189,7 +205,7 @@ public abstract class BaseTeleOP extends OpMode {
             elevatorDownTimer.reset();
         }
 
-        if(robot.elevator.elevatorMode == Elevator.ElevatorMode.UP && !elevatorUpToggle && robot.elevator.getDistanceLeft() < 0.5) {
+        if(robot.elevator.elevatorMode == Elevator.ElevatorMode.UP && !elevatorUpToggle && robot.elevator.getDistanceLeft() < 3.0) {
             robot.arm.armMode = Arm.ArmMode.BACK;
             elevatorUpToggle = true;
         }
@@ -200,7 +216,6 @@ public abstract class BaseTeleOP extends OpMode {
         }
 
         if(robot.elevator.elevatorMode == Elevator.ElevatorMode.DOWN && !elevatorDownToggle && robot.elevator.getDistanceLeft() < 0.5) {
-//            robot.capstone.capstoneMode = Capstone.CapstoneMode.UP;
             if(robot.intake.intakeRotation == Intake.IntakeRotation.UP_CLEARANCE) {
                 robot.intake.intakeRotation = Intake.IntakeRotation.UP;
             }
@@ -224,7 +239,7 @@ public abstract class BaseTeleOP extends OpMode {
         }
 
         if (stickyGamepad2.x && robot.arm.armMode == Arm.ArmMode.BACK) {
-            if(robot.elevator.targetHeight == Elevator.TargetHeight.CAP) {
+            if(robot.elevator.targetHeight == Elevator.TargetHeight.AUTO_HIGH) {
                 robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN_REVERSE;
             }
             else {
@@ -236,7 +251,7 @@ public abstract class BaseTeleOP extends OpMode {
         }
 
         if (stickyGamepad2.y && robot.arm.armMode == Arm.ArmMode.BACK) {
-            if(robot.elevator.targetHeight == Elevator.TargetHeight.CAP) {
+            if(robot.elevator.targetHeight == Elevator.TargetHeight.AUTO_HIGH) {
                 robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN_REVERSE;
             }
             else {
@@ -249,21 +264,10 @@ public abstract class BaseTeleOP extends OpMode {
 
         if(stickyGamepad2.back) {
             robot.carousel.spin();
-        } else {
+        }
+        else if(!gamepad2.back) {
             robot.carousel.stopSpin();
         }
-
-//        if(stickyGamepad2.back) {
-//            robot.arm.armMode = Arm.ArmMode.CAPSTONE;
-//            robot.capstone.capstoneMode = Capstone.CapstoneMode.OUTTAKE;
-//            robot.intake.intakeRotation = Intake.IntakeRotation.DOWN;
-//            capstoneTimer.reset();
-//        }
-//
-//        if(0.5 < capstoneTimer.seconds() && capstoneTimer.seconds() < 0.6) {
-//            robot.capstone.capstoneMode = Capstone.CapstoneMode.UP;
-//            robot.intake.intakeRotation = Intake.IntakeRotation.UP;
-//        }
 
         // endregion
 
@@ -275,7 +279,6 @@ public abstract class BaseTeleOP extends OpMode {
         telemetry.addData("Elevator current height", robot.elevator.getCurrentHeight());
         telemetry.addData("Elevator isBusy", robot.elevator.isBusy());
         telemetry.addData("Elevator power", robot.elevator.motorLeft.getPower());
-//        telemetry.addData("Last PID controller error", robot.elevator.getLastControllerError());
 
         telemetry.update();
     }
