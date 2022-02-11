@@ -28,7 +28,7 @@ public class Capstone implements Subsystem {
     }
 
     public static double CAPSTONE_SWIVEL_POSITION = 0.5;
-    public static double CAPSTONE_TILT_POSITION = 0.525;
+    public static double CAPSTONE_TILT_POSITION = 0.3;
 
     public ExtendMode extendMode;
     public TiltDirection tiltDirection;
