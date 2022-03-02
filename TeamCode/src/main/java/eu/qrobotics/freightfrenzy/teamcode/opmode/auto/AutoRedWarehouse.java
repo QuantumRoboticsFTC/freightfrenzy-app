@@ -22,7 +22,6 @@ import eu.qrobotics.freightfrenzy.teamcode.opmode.auto.cv.TSEPattern;
 import eu.qrobotics.freightfrenzy.teamcode.opmode.auto.cv.TeamShippingElementTracker;
 import eu.qrobotics.freightfrenzy.teamcode.opmode.auto.trajectories.TrajectoriesRedWarehouse;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Arm;
-import eu.qrobotics.freightfrenzy.teamcode.subsystems.Capstone;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Elevator;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Intake;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Robot;
@@ -32,18 +31,18 @@ import eu.qrobotics.freightfrenzy.teamcode.util.Alliance;
 @Autonomous
 public class AutoRedWarehouse extends LinearOpMode {
 
-    public static int LEFT_TSE_UP_X = 450;
-    public static int LEFT_TSE_UP_Y = 650;
-    public static int LEFT_TSE_DOWN_X = 750;
-    public static int LEFT_TSE_DOWN_Y = 1000;
-    public static int CENTER_TSE_UP_X = 1100;
-    public static int CENTER_TSE_UP_Y = 650;
-    public static int CENTER_TSE_DOWN_X = 1400;
-    public static int CENTER_TSE_DOWN_Y = 1000;
-    public static int RIGHT_TSE_UP_X = 1600;
-    public static int RIGHT_TSE_UP_Y = 650;
-    public static int RIGHT_TSE_DOWN_X = 1920;
-    public static int RIGHT_TSE_DOWN_Y = 1000;
+//    public static int LEFT_TSE_UP_X = 450;
+//    public static int LEFT_TSE_UP_Y = 650;
+//    public static int LEFT_TSE_DOWN_X = 750;
+//    public static int LEFT_TSE_DOWN_Y = 1000;
+    public static int CENTER_TSE_UP_X = 100;
+    public static int CENTER_TSE_UP_Y = 550;
+    public static int CENTER_TSE_DOWN_X = 500;
+    public static int CENTER_TSE_DOWN_Y = 900;
+    public static int RIGHT_TSE_UP_X = 700;
+    public static int RIGHT_TSE_UP_Y = 550;
+    public static int RIGHT_TSE_DOWN_X = 1050;
+    public static int RIGHT_TSE_DOWN_Y = 900;
 
     public static double ELEVATOR_THRESHOLD = 2;
     
@@ -52,10 +51,10 @@ public class AutoRedWarehouse extends LinearOpMode {
         Robot robot = new Robot(this, true, Alliance.RED);
         robot.drivetrain.setPoseEstimate(TrajectoriesRedWarehouse.START_POSE);
 
-        TeamShippingElementTracker leftTSE = new TeamShippingElementTracker(
-                new Point(LEFT_TSE_UP_X, LEFT_TSE_UP_Y),
-                new Point(LEFT_TSE_DOWN_X, LEFT_TSE_DOWN_Y)
-        );
+//        TeamShippingElementTracker leftTSE = new TeamShippingElementTracker(
+//                new Point(LEFT_TSE_UP_X, LEFT_TSE_UP_Y),
+//                new Point(LEFT_TSE_DOWN_X, LEFT_TSE_DOWN_Y)
+//        );
         TeamShippingElementTracker centerTSE = new TeamShippingElementTracker(
                 new Point(CENTER_TSE_UP_X, CENTER_TSE_UP_Y),
                 new Point(CENTER_TSE_DOWN_X, CENTER_TSE_DOWN_Y)
@@ -66,7 +65,7 @@ public class AutoRedWarehouse extends LinearOpMode {
         );
 
         OpenCvTrackerApiPipeline trackerApiPipeline = new OpenCvTrackerApiPipeline();
-        trackerApiPipeline.addTracker(leftTSE);
+//        trackerApiPipeline.addTracker(leftTSE);
         trackerApiPipeline.addTracker(centerTSE);
         trackerApiPipeline.addTracker(rightTSE);
 
@@ -94,9 +93,11 @@ public class AutoRedWarehouse extends LinearOpMode {
 
         TSEPattern tsePattern = TSEPattern.RIGHT;
         while (!opModeIsActive() && !isStopRequested()) {
-            double[] counts = {average(leftTSE.getCount()),
-                    average(centerTSE.getCount()),
-                    average(rightTSE.getCount())};
+            double[] counts = {
+                /*average(leftTSE.getCount())*/ 100,
+                average(centerTSE.getCount()),
+                average(rightTSE.getCount())
+            };
             int maxIdx = 0;
             double max = 0;
             for (int i = 0; i < counts.length; i++) {
@@ -147,7 +148,6 @@ public class AutoRedWarehouse extends LinearOpMode {
                 break;
         }
         robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
-//        robot.capstone.capstoneMode = Capstone.CapstoneMode.UP_CLEARANCE;
         while(robot.elevator.getDistanceLeft() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
             robot.sleep(0.01);
         }
@@ -159,6 +159,7 @@ public class AutoRedWarehouse extends LinearOpMode {
         for (int cycle = 0; cycle < 3; cycle++) {
             robot.drivetrain.followTrajectory(trajectories.get(1 + cycle * 2));
 
+            robot.intake.intakeMode = Intake.IntakeMode.OUT;
             robot.sleep(0.2);
             robot.arm.trapdoorMode = Arm.TrapdoorMode.CLOSED;
             robot.sleep(0.1);
@@ -170,15 +171,7 @@ public class AutoRedWarehouse extends LinearOpMode {
                 robot.sleep(0.01);
             }
 
-            robot.sleep(0.3);
-
-//            robot.capstone.capstoneMode = Capstone.CapstoneMode.UP;
-            robot.intake.intakeRotation = Intake.IntakeRotation.DOWN;
-            robot.sleep(0.2);
-            robot.intake.intakeMode = Intake.IntakeMode.OUT;
-            robot.sleep(0.2);
             robot.intake.intakeMode = Intake.IntakeMode.IN;
-            robot.intake.intakeBlockerRampMode = Intake.IntakeBlockerRampMode.BLOCK;
 
             while (robot.drivetrain.isBusy() && opModeIsActive() && !isStopRequested()) {
                 robot.sleep(0.01);
@@ -186,55 +179,27 @@ public class AutoRedWarehouse extends LinearOpMode {
 
             robot.distanceSensorLocalization.enabled = true;
 
-            robot.sleep(0.8);
+            robot.sleep(1.0);
 
             Pose2d pose = robot.distanceSensorLocalization.getRobotPose();
-            if(pose.getY() > -48) {
-                pose = new Pose2d(pose.getX(), -65, pose.getHeading());
+            if(pose.getY() < -50 && pose.getX() > 0) {
+                robot.drivetrain.setPoseEstimate(pose);
             }
-            if(pose.getX() < 0) {
-                pose = new Pose2d(43, pose.getY(), pose.getHeading());
-            }
-            robot.drivetrain.setPoseEstimate(pose);
             robot.distanceSensorLocalization.enabled = false;
 
             robot.drivetrain.followTrajectory(trajectories.get(2 + cycle * 2));
 
-            robot.intake.intakeMode = Intake.IntakeMode.IDLE;
+            robot.intake.intakeMode = Intake.IntakeMode.OUT;
 
-            robot.sleep(0.1);
+            robot.sleep(2.0);
 
-            robot.intake.intakeMode = Intake.IntakeMode.IN;
-
-            robot.sleep(0.05);
-
-            robot.intake.intakeRotation = Intake.IntakeRotation.UP;
-
-            robot.sleep(0.1);
-
-            robot.intake.intakeMode = Intake.IntakeMode.IDLE;
-
-            robot.sleep(0.1);
-
-            robot.intake.intakeRotation = Intake.IntakeRotation.TRANSFER;
-            robot.arm.armMode = Arm.ArmMode.TRANSFER;
-            robot.intake.intakeMode = Intake.IntakeMode.IN_SLOW;
-            robot.intake.intakeBlockerRampMode = Intake.IntakeBlockerRampMode.RAMP;
-
-            robot.sleep(1.0);
-
-            robot.intake.intakeMode = Intake.IntakeMode.IN;
-            robot.sleep(0.05);
-            robot.intake.intakeMode = Intake.IntakeMode.IDLE;
-            robot.sleep(0.5);
-            robot.intake.intakeBlockerRampMode = Intake.IntakeBlockerRampMode.BLOCK;
             robot.elevator.targetHeight = Elevator.TargetHeight.AUTO_HIGH;
             robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
-//            robot.capstone.capstoneMode = Capstone.CapstoneMode.UP_CLEARANCE;
             while (robot.elevator.getDistanceLeft() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
                 robot.sleep(0.01);
             }
 
+            robot.intake.intakeMode = Intake.IntakeMode.IDLE;
             robot.arm.armMode = Arm.ArmMode.BACK;
 
             robot.sleep(0.6);
@@ -243,12 +208,7 @@ public class AutoRedWarehouse extends LinearOpMode {
                 robot.sleep(0.01);
             }
 
-            if(tsePattern == TSEPattern.MIDDLE) {
-                robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
-            }
-            else {
-                robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN_REVERSE;
-            }
+            robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN_REVERSE;
             robot.sleep(0.4);
         }
 
@@ -256,13 +216,11 @@ public class AutoRedWarehouse extends LinearOpMode {
 
         robot.sleep(0.2);
         robot.arm.trapdoorMode = Arm.TrapdoorMode.CLOSED;
-        robot.sleep(0.2);
+        robot.sleep(0.4);
         robot.arm.armMode = Arm.ArmMode.FRONT;
         robot.sleep(0.3);
         robot.elevator.elevatorMode = Elevator.ElevatorMode.DOWN;
         robot.sleep(0.5);
-        robot.intake.intakeRotation = Intake.IntakeRotation.DOWN;
-        robot.intake.intakeBlockerRampMode = Intake.IntakeBlockerRampMode.BLOCK;
         robot.intake.intakeMode = Intake.IntakeMode.IN;
 
         while (robot.drivetrain.isBusy() && opModeIsActive() && !isStopRequested()) {

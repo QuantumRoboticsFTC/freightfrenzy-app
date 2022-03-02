@@ -189,15 +189,12 @@ public class AutoRedCarousel extends LinearOpMode {
 
         robot.drivetrain.followTrajectorySync(trajectories.get(3));
 
-        robot.intake.intakeRotation = Intake.IntakeRotation.DOWN;
         robot.intake.intakeMode = Intake.IntakeMode.IN;
 
         robot.drivetrain.followTrajectorySync(trajectories.get(4));
 
-        robot.intake.intakeRotation = Intake.IntakeRotation.UP;
         robot.sleep(0.4);
         robot.intake.intakeMode = Intake.IntakeMode.IN_SLOW;
-        robot.intake.intakeBlockerRampMode = Intake.IntakeBlockerRampMode.RAMP;
 
         robot.drivetrain.followTrajectory(trajectories.get(5));
 

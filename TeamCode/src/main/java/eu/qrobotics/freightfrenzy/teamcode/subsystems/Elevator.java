@@ -31,10 +31,10 @@ public class Elevator implements Subsystem {
     public static double THRESHOLD_LEVEL_1 = 1;
     public static double THRESHOLD_LEVEL_2 = 3;
     public static double THRESHOLD_LEVEL_3 = 5;
-    public static double DOWN_POWER_1 = -0.01;
-    public static double DOWN_POWER_2 = -0.2;
-    public static double DOWN_POWER_3 = -0.4;
-    public static double DOWN_POWER_4 = -0.6;
+    public static double DOWN_POWER_1 = -0.02;
+    public static double DOWN_POWER_2 = -0.05;
+    public static double DOWN_POWER_3 = -0.1;
+    public static double DOWN_POWER_4 = -0.2;
     public static double HOLD_POWER = 0.1;
     public static double LEVEL_1_POWER = 0.4;
     public static double LEVEL_2_POWER = 0.6;
@@ -49,14 +49,14 @@ public class Elevator implements Subsystem {
     }
 
     public enum TargetHeight {
-        LOW(0) {
+        LOW(1) {
             @Override
             public TargetHeight previous() {
                 return this;
             }
         },
-        MID(6),
-        HIGH(13),
+        MID(7),
+        HIGH(15),
         AUTO_HIGH(17) {
             @Override
             public TargetHeight next() {

@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -82,10 +83,10 @@ public class Capstone implements Subsystem {
         }
         switch (swivelDirection) {
             case LEFT:
-                CAPSTONE_SWIVEL_POSITION -= 0.05 * deltaTime.seconds();
+                CAPSTONE_SWIVEL_POSITION -= 0.03 * deltaTime.seconds();
                 break;
             case RIGHT:
-                CAPSTONE_SWIVEL_POSITION += 0.05 * deltaTime.seconds();
+                CAPSTONE_SWIVEL_POSITION += 0.03 * deltaTime.seconds();
                 break;
             case IDLE:
                 break;

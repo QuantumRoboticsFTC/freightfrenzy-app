@@ -14,8 +14,8 @@ public class Carousel implements Subsystem {
     private boolean isAutonomous;
 
     public static double START_VEL = 0.2;
-    public static double ACCELERATION_RATE = 0.7; // power increase / second
-    public static double TIME = 2.0; // seconds
+    public static double ACCELERATION_RATE = 0.1; // power increase / second
+    public static double TIME = 3.0; // seconds
 
     public static double ACCELERATION_RATE_AUTONOMOUS = 0.4; // power increase / second
     public static double TIME_AUTONOMOUS = 3.0; // seconds
