@@ -34,7 +34,7 @@ public class DistanceSensorLocalization implements Subsystem {
         frontSensor = new DistanceSensorFiltered(hardwareMap.get(Rev2mDistanceSensor.class, "frontDistanceSensor"));
     }
 
-    public boolean enabled = false;
+    private boolean enabled = false;
 
     private Pose2d lastPose = new Pose2d();
 
@@ -47,6 +47,17 @@ public class DistanceSensorLocalization implements Subsystem {
 
     private double mmToInches(double mm) {
         return mm / 25.4;
+    }
+
+    public void enable() {
+        this.enabled = true;
+//        leftSensor.reset();
+        rightSensor.reset();
+        frontSensor.reset();
+    }
+
+    public void disable() {
+        this.enabled = false;
     }
 
     @Override

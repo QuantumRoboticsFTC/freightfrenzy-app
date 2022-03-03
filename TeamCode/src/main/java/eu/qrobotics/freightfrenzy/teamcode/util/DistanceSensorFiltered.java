@@ -14,6 +14,10 @@ public class DistanceSensorFiltered {
         this.sensor = sensor;
     }
 
+    public void reset() {
+        sensorFilter.reset();
+    }
+
     public double getDistance() {
         double reading = sensor.getDistance(DistanceUnit.MM);
 

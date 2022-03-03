@@ -177,7 +177,7 @@ public class AutoRedWarehouse extends LinearOpMode {
                 robot.sleep(0.01);
             }
 
-            robot.distanceSensorLocalization.enabled = true;
+            robot.distanceSensorLocalization.enable();
 
             robot.sleep(1.0);
 
@@ -185,7 +185,12 @@ public class AutoRedWarehouse extends LinearOpMode {
             if(pose.getY() < -50 && pose.getX() > 0) {
                 robot.drivetrain.setPoseEstimate(pose);
             }
-            robot.distanceSensorLocalization.enabled = false;
+            else {
+                telemetry.addLine("Sensor failed. Setting fallback position");
+                telemetry.update();
+                robot.drivetrain.setPoseEstimate(new Pose2d(48 + cycle * 4, -68 + cycle * 3 + 1));
+            }
+            robot.distanceSensorLocalization.disable();
 
             robot.drivetrain.followTrajectory(trajectories.get(2 + cycle * 2));
 

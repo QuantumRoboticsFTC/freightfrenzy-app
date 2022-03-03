@@ -29,7 +29,7 @@ public class DistanceSensorLocalizationTest extends OpMode {
     @Override
     public void init() {
         robot = new Robot(this, false, Alliance.RED);
-        robot.distanceSensorLocalization.enabled = true;
+        robot.distanceSensorLocalization.enable();
     }
 
     @Override
@@ -46,9 +46,9 @@ public class DistanceSensorLocalizationTest extends OpMode {
         fieldOverlay.setStroke("#3F51B5");
         DashboardUtil.drawRobot(fieldOverlay, robotPose);
 
-        packet.put("Front", robot.distanceSensorLocalization.frontSensor.getDistance(DistanceUnit.INCH));
-        packet.put("Right", robot.distanceSensorLocalization.rightSensor.getDistance(DistanceUnit.INCH));
-        packet.put("Left", robot.distanceSensorLocalization.leftSensor.getDistance(DistanceUnit.INCH));
+        packet.put("Front", robot.distanceSensorLocalization.frontSensor.getDistance());
+        packet.put("Right", robot.distanceSensorLocalization.rightSensor.getDistance());
+//        packet.put("Left", robot.distanceSensorLocalization.leftSensor.getDistance());
 
         FtcDashboard.getInstance().sendTelemetryPacket(packet);
     }

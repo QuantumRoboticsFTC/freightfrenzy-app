@@ -1,14 +1,15 @@
 package eu.qrobotics.freightfrenzy.teamcode.util;
 
 public class KalmanFilter {
+    private final double initialState;
+    private final double initialCovarianceGuess;
     private double x; // estimate
-    private final double initialCovarianceGuess; // your initial covariance guess
     private double p; // estimate error
 
     public KalmanFilter(double initialState, double initialCovarianceGuess) {
-        this.x = initialState;
-        this.p = initialCovarianceGuess;
+        this.initialState = initialState;
         this.initialCovarianceGuess = initialCovarianceGuess;
+        reset();
     }
 
     public double update(double reading) {
@@ -26,5 +27,10 @@ public class KalmanFilter {
         p = (1 - K) * p;
 
         return x;
+    }
+
+    public void reset() {
+        this.x = initialState;
+        this.p = initialCovarianceGuess;
     }
 }
