@@ -29,6 +29,10 @@ public class TrajectoriesRedWarehouse {
         return new TrajectoryBuilder(getTrajectorySequenceEndPose(trajectories), startTangent, BASE_VEL_CONSTRAINT, BASE_ACCEL_CONSTRAINT);
     }
 
+    private static TrajectoryBuilder makeTrajectoryBuilder(Pose2d pose, double startTangent) {
+        return new TrajectoryBuilder(pose, startTangent, BASE_VEL_CONSTRAINT, BASE_ACCEL_CONSTRAINT);
+    }
+
     public static List<Trajectory> getTrajectoriesA() {
         List<Trajectory> trajectories = new ArrayList<>();
 
@@ -37,23 +41,27 @@ public class TrajectoriesRedWarehouse {
                 .build()
         );
 
-        for (int cycle = 0; cycle < 3; cycle++) {
-            trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(-80))
-                    .splineToSplineHeading(new Pose2d(16, -69, Math.toRadians(0)), Math.toRadians(0))
-                    .lineToConstantHeading(new Vector2d(48 + cycle * 2, -69))
+        for (int cycle = 0; cycle < 4; cycle++) {
+            trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(-75))
+                    .splineToSplineHeading(new Pose2d(6, -68 - cycle * 0.5, Math.toRadians(0)), Math.toRadians(-30))
+                    .splineToConstantHeading(new Vector2d(20, -74), Math.toRadians(0))
+                    .lineToConstantHeading(new Vector2d(30 + cycle * 4, -74))
+                    .splineToConstantHeading(new Vector2d(48 + cycle * 4, -74 + cycle * 3), Math.toRadians(0))
                     .build()
             );
 
-            trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(180))
-                    .lineToConstantHeading(new Vector2d(36 + cycle * 2, -67))
-                    .splineToConstantHeading(new Vector2d(16, -67), Math.toRadians(180))
-                    .splineToSplineHeading(new Pose2d(-4, -53, Math.toRadians(-80)), Math.toRadians(100))
+            trajectories.add(makeTrajectoryBuilder(new Pose2d(48 + cycle * 4, -68 + cycle * 3, Math.toRadians(0)), Math.toRadians(180))
+                    .splineToConstantHeading(new Vector2d(36 + cycle * 4, -69), Math.toRadians(180))
+                    .splineToConstantHeading(new Vector2d(16, -69), Math.toRadians(180))
+                    .splineToConstantHeading(new Vector2d(4, -66), Math.toRadians(150))
+                    .splineToSplineHeading(new Pose2d(-4, -54 - cycle * 0.5, Math.toRadians(-80)), Math.toRadians(100))
                     .build()
             );
         }
-        trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(-80))
-                .splineToSplineHeading(new Pose2d(16, -70, Math.toRadians(0)), Math.toRadians(0))
-                .lineToConstantHeading(new Vector2d(48, -70))
+        trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(-75))
+                .splineToSplineHeading(new Pose2d(6, -70, Math.toRadians(0)), Math.toRadians(-30))
+                .splineToConstantHeading(new Vector2d(20, -72), Math.toRadians(0))
+                .lineToConstantHeading(new Vector2d(54, -72))
                 .build()
         );
 
@@ -68,24 +76,27 @@ public class TrajectoriesRedWarehouse {
                 .build()
         );
 
-        for (int cycle = 0; cycle < 3; cycle++) {
-            trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(-80))
-                    .splineToSplineHeading(new Pose2d(16, -69, Math.toRadians(0)), Math.toRadians(0))
-                    .lineToConstantHeading(new Vector2d(48 + cycle * 2, -69))
+        for (int cycle = 0; cycle < 4; cycle++) {
+            trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(-75))
+                    .splineToSplineHeading(new Pose2d(6, -68 - cycle * 0.5, Math.toRadians(0)), Math.toRadians(-30))
+                    .splineToConstantHeading(new Vector2d(20, -74), Math.toRadians(0))
+                    .lineToConstantHeading(new Vector2d(30 + cycle * 4, -74))
+                    .splineToConstantHeading(new Vector2d(48 + cycle * 4, -74 + cycle * 3), Math.toRadians(0))
                     .build()
             );
 
-            trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(180))
-                    .lineToConstantHeading(new Vector2d(36 + cycle * 2, -67))
-                    .splineToConstantHeading(new Vector2d(16, -67), Math.toRadians(180))
-                    .splineToSplineHeading(new Pose2d(-4, -53, Math.toRadians(-80)), Math.toRadians(100))
+            trajectories.add(makeTrajectoryBuilder(new Pose2d(48 + cycle * 4, -68 + cycle * 3, Math.toRadians(0)), Math.toRadians(180))
+                    .splineToConstantHeading(new Vector2d(36 + cycle * 4, -69), Math.toRadians(180))
+                    .splineToConstantHeading(new Vector2d(16, -69), Math.toRadians(180))
+                    .splineToConstantHeading(new Vector2d(4, -66), Math.toRadians(150))
+                    .splineToSplineHeading(new Pose2d(-4, -53 - cycle * 0.5, Math.toRadians(-80)), Math.toRadians(100))
                     .build()
             );
         }
-
-        trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(-80))
-                .splineToSplineHeading(new Pose2d(16, -70, Math.toRadians(0)), Math.toRadians(0))
-                .lineToConstantHeading(new Vector2d(48, -70))
+        trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(-75))
+                .splineToSplineHeading(new Pose2d(6, -70, Math.toRadians(0)), Math.toRadians(-30))
+                .splineToConstantHeading(new Vector2d(20, -72), Math.toRadians(0))
+                .lineToConstantHeading(new Vector2d(54, -72))
                 .build()
         );
 
@@ -100,23 +111,28 @@ public class TrajectoriesRedWarehouse {
                 .build()
         );
 
-        for (int cycle = 0; cycle < 3; cycle++) {
-            trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(-80))
-                    .splineToSplineHeading(new Pose2d(16, -69, Math.toRadians(0)), Math.toRadians(0))
-                    .lineToConstantHeading(new Vector2d(48 + cycle * 2, -69))
+        for (int cycle = 0; cycle < 4; cycle++) {
+            trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(-75))
+                    .splineToSplineHeading(new Pose2d(6, -68 - cycle * 0.5, Math.toRadians(0)), Math.toRadians(-30))
+                    .splineToConstantHeading(new Vector2d(20, -74), Math.toRadians(0))
+                    .lineToConstantHeading(new Vector2d(30 + cycle * 4, -74))
+                    .splineToConstantHeading(new Vector2d(48 + cycle * 4, -74 + cycle * 3), Math.toRadians(0))
                     .build()
             );
 
-            trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(180))
-                    .lineToConstantHeading(new Vector2d(36 + cycle * 2, -67))
-                    .splineToConstantHeading(new Vector2d(16, -67), Math.toRadians(180))
-                    .splineToSplineHeading(new Pose2d(-4, -53, Math.toRadians(-80)), Math.toRadians(100))
+            trajectories.add(makeTrajectoryBuilder(new Pose2d(48 + cycle * 4, -68 + cycle * 3, Math.toRadians(0)), Math.toRadians(180))
+                    .splineToConstantHeading(new Vector2d(36 + cycle * 4, -69), Math.toRadians(180))
+                    .splineToConstantHeading(new Vector2d(16, -69), Math.toRadians(180))
+                    .splineToConstantHeading(new Vector2d(4, -66), Math.toRadians(150))
+                    .splineToSplineHeading(new Pose2d(-4, -53 - cycle * 0.5, Math.toRadians(-80)), Math.toRadians(100))
                     .build()
             );
         }
-        trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(-80))
-                .splineToSplineHeading(new Pose2d(16, -70, Math.toRadians(0)), Math.toRadians(0))
-                .lineToConstantHeading(new Vector2d(48, -70))
+
+        trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(-75))
+                .splineToSplineHeading(new Pose2d(6, -70, Math.toRadians(0)), Math.toRadians(-30))
+                .splineToConstantHeading(new Vector2d(20, -72), Math.toRadians(0))
+                .lineToConstantHeading(new Vector2d(54, -72))
                 .build()
         );
 

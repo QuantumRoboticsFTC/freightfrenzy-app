@@ -2,6 +2,7 @@ package eu.qrobotics.freightfrenzy.teamcode.opmode.auto;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -48,6 +49,7 @@ public class AutoRedWarehouse extends LinearOpMode {
     
     @Override
     public void runOpMode() throws InterruptedException {
+        telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
         Robot robot = new Robot(this, true, Alliance.RED);
         robot.drivetrain.setPoseEstimate(TrajectoriesRedWarehouse.START_POSE);
 
@@ -156,7 +158,7 @@ public class AutoRedWarehouse extends LinearOpMode {
         robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN_REVERSE;
         robot.sleep(0.2);
 
-        for (int cycle = 0; cycle < 3; cycle++) {
+        for (int cycle = 0; cycle < 4; cycle++) {
             robot.drivetrain.followTrajectory(trajectories.get(1 + cycle * 2));
 
             robot.intake.intakeMode = Intake.IntakeMode.OUT;
@@ -196,7 +198,7 @@ public class AutoRedWarehouse extends LinearOpMode {
 
             robot.intake.intakeMode = Intake.IntakeMode.OUT;
 
-            robot.sleep(2.0);
+            robot.sleep(1.0);
 
             robot.elevator.targetHeight = Elevator.TargetHeight.AUTO_HIGH;
             robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
@@ -217,7 +219,7 @@ public class AutoRedWarehouse extends LinearOpMode {
             robot.sleep(0.4);
         }
 
-        robot.drivetrain.followTrajectory(trajectories.get(7));
+        robot.drivetrain.followTrajectory(trajectories.get(9));
 
         robot.sleep(0.2);
         robot.arm.trapdoorMode = Arm.TrapdoorMode.CLOSED;
