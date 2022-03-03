@@ -45,7 +45,7 @@ public class Intake implements Subsystem {
     public static boolean IS_DISABLED = false;
 
     public boolean hasElement() {
-        return intakeSensor.getDistance(DistanceUnit.CM) < 25;
+        return intakeSensor.getDistance(DistanceUnit.CM) < 45;
     }
 
     @Override
