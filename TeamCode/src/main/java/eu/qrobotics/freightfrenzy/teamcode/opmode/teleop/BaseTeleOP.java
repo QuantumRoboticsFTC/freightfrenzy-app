@@ -62,6 +62,8 @@ public abstract class BaseTeleOP extends OpMode {
     boolean keepCapstoneMode = true;
     boolean joyStickControl = false;
 
+    Elevator.ElevatorMode prevElevatorMode;
+
     @Override
     public void loop() {
         stickyGamepad1.update();
@@ -129,12 +131,7 @@ public abstract class BaseTeleOP extends OpMode {
         // region Driver 2 controls
 
         if (gamepad2.left_stick_y < -0.1 && robot.elevator.elevatorMode == Elevator.ElevatorMode.DOWN && robot.arm.armMode == Arm.ArmMode.FRONT) {
-            if(gamepad2.left_stick_button) {
-                robot.intake.intakeMode = Intake.IntakeMode.IN_SLOW;
-            }
-            else {
-                robot.intake.intakeMode = Intake.IntakeMode.IN;
-            }
+            robot.intake.intakeMode = Intake.IntakeMode.IN;
             joyStickControl = true;
         } else if (gamepad2.left_stick_y > 0.1) {
             if (gamepad2.left_stick_button)
@@ -198,24 +195,31 @@ public abstract class BaseTeleOP extends OpMode {
             elevatorDownToggle = false;
         }
 
-        if(robot.elevator.elevatorMode == Elevator.ElevatorMode.DOWN && !elevatorDownToggle && robot.elevator.getDistanceLeft() < 0.5) {
+        if(robot.elevator.elevatorMode == Elevator.ElevatorMode.DOWN && !elevatorDownToggle && robot.elevator.getDistanceLeft() < 1.0) {
             robot.intake.intakeMode = Intake.IntakeMode.IN;
             elevatorDownToggle = true;
         }
 
-        if (robot.elevator.elevatorMode == Elevator.ElevatorMode.UP ||
-                robot.elevator.elevatorMode == Elevator.ElevatorMode.MANUAL) {
-            if (gamepad2.right_trigger > 0.1) {
-                robot.elevator.elevatorMode = Elevator.ElevatorMode.MANUAL;
-                robot.elevator.manualPower = gamepad2.right_trigger * 0.3;
-            } else if (gamepad2.left_trigger > 0.1) {
-                robot.elevator.elevatorMode = Elevator.ElevatorMode.MANUAL;
-                robot.elevator.manualPower = gamepad2.left_trigger * (-0.1);
-            } else {
-                if (robot.elevator.elevatorMode == Elevator.ElevatorMode.MANUAL) {
-                    robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
+        if (gamepad2.right_trigger > 0.1) {
+            if(robot.elevator.elevatorMode != Elevator.ElevatorMode.MANUAL)
+                prevElevatorMode = robot.elevator.elevatorMode;
+            robot.elevator.elevatorMode = Elevator.ElevatorMode.MANUAL;
+            robot.elevator.manualPower = gamepad2.right_trigger * 0.3;
+        } else if (gamepad2.left_trigger > 0.1) {
+            if(robot.elevator.elevatorMode != Elevator.ElevatorMode.MANUAL)
+                prevElevatorMode = robot.elevator.elevatorMode;
+            robot.elevator.elevatorMode = Elevator.ElevatorMode.MANUAL;
+            robot.elevator.manualPower = gamepad2.left_trigger * (-0.1);
+        } else {
+            if (robot.elevator.elevatorMode == Elevator.ElevatorMode.MANUAL) {
+                if(prevElevatorMode == Elevator.ElevatorMode.DOWN) {
+                    robot.elevator.reset();
+                }
+                else {
                     robot.elevator.offsetPosition = robot.elevator.getCurrentHeight() - robot.elevator.targetHeight.getHeight();
                 }
+                robot.elevator.elevatorMode = prevElevatorMode;
+                prevElevatorMode = null;
             }
         }
 
@@ -256,6 +260,7 @@ public abstract class BaseTeleOP extends OpMode {
 
         if(0.5 < intakeElementTimer.seconds() && intakeElementTimer.seconds() < 0.6) {
             robot.intake.intakeMode = Intake.IntakeMode.OUT;
+            joyStickControl = false;
         }
 
         // endregion

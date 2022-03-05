@@ -173,6 +173,8 @@ public class AutoRedWarehouse extends LinearOpMode {
                 robot.sleep(0.01);
             }
 
+            robot.elevator.manualPower = -0.075;
+            robot.elevator.elevatorMode = Elevator.ElevatorMode.MANUAL;
             robot.intake.intakeMode = Intake.IntakeMode.IN;
 
             while (robot.drivetrain.isBusy() && opModeIsActive() && !isStopRequested()) {
@@ -200,6 +202,7 @@ public class AutoRedWarehouse extends LinearOpMode {
 
             robot.sleep(1.0);
 
+            robot.elevator.manualPower = 0;
             robot.elevator.targetHeight = Elevator.TargetHeight.AUTO_HIGH;
             robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
             while (robot.elevator.getDistanceLeft() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {

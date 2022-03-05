@@ -144,6 +144,10 @@ public class Elevator implements Subsystem {
         return (targetHeight.getHeight() + offsetPosition) - getCurrentHeight();
     }
 
+    public void reset() {
+        downPosition = getEncoder();
+    }
+
     @Override
     public void update() {
         switch (elevatorMode) {
