@@ -24,17 +24,21 @@ public class Elevator implements Subsystem {
     }
 
     public static double THRESHOLD_DOWN = 1;
-    public static double THRESHOLD_DOWN_LEVEL_1 = 3;
-    public static double THRESHOLD_DOWN_LEVEL_2 = 5;
+    public static double THRESHOLD_DOWN_LEVEL_1 = 4;
+    public static double THRESHOLD_DOWN_LEVEL_2 = 8;
     public static double THRESHOLD_DOWN_LEVEL_3 = 10;
     public static double THRESHOLD = 0.5;
     public static double THRESHOLD_LEVEL_1 = 1;
     public static double THRESHOLD_LEVEL_2 = 3;
     public static double THRESHOLD_LEVEL_3 = 5;
-    public static double DOWN_POWER_1 = -0.02;
-    public static double DOWN_POWER_2 = -0.05;
-    public static double DOWN_POWER_3 = -0.1;
-    public static double DOWN_POWER_4 = -0.2;
+//    public static double DOWN_POWER_1 = -0.01;
+//    public static double DOWN_POWER_2 = -0.02;
+//    public static double DOWN_POWER_3 = -0.05;
+//    public static double DOWN_POWER_4 = -0.1;
+    public static double DOWN_POWER_1 = 0;
+    public static double DOWN_POWER_2 = 0;
+    public static double DOWN_POWER_3 = 0;
+    public static double DOWN_POWER_4 = 0;
     public static double HOLD_POWER = 0.1;
     public static double LEVEL_1_POWER = 0.4;
     public static double LEVEL_2_POWER = 0.6;
@@ -49,15 +53,14 @@ public class Elevator implements Subsystem {
     }
 
     public enum TargetHeight {
-        LOW(1) {
+        LOW(0) {
             @Override
             public TargetHeight previous() {
                 return this;
             }
         },
-        MID(7),
-        HIGH(15),
-        AUTO_HIGH(17) {
+        MID(6),
+        HIGH(11) {
             @Override
             public TargetHeight next() {
                 return this;
@@ -91,16 +94,17 @@ public class Elevator implements Subsystem {
     public ElevatorMode elevatorMode;
     public TargetHeight targetHeight;
 
-    public DcMotorEx motorLeft, motorRight;
+//    public DcMotorEx motorLeft;
+    public DcMotorEx motorRight;
     private Robot robot;
 
     Elevator(HardwareMap hardwareMap, Robot robot) {
         this.robot = robot;
 
-        motorLeft = hardwareMap.get(DcMotorEx.class, "elevatorLeft");
+//        motorLeft = hardwareMap.get(DcMotorEx.class, "elevatorLeft");
         motorRight = hardwareMap.get(DcMotorEx.class, "elevatorRight");
 
-        motorLeft.setDirection(DcMotor.Direction.REVERSE);
+//        motorLeft.setDirection(DcMotor.Direction.REVERSE);
         motorRight.setDirection(DcMotor.Direction.FORWARD);
 
 //        motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -189,7 +193,7 @@ public class Elevator implements Subsystem {
 
     private void setPower(double power) {
         if(power != prevPower) {
-            motorLeft.setPower(power);
+//            motorLeft.setPower(power);
             motorRight.setPower(power);
         }
         prevPower = power;

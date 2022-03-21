@@ -2,7 +2,6 @@ package eu.qrobotics.freightfrenzy.teamcode.opmode.auto;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -23,9 +22,9 @@ import eu.qrobotics.freightfrenzy.teamcode.opmode.auto.cv.TSEPattern;
 import eu.qrobotics.freightfrenzy.teamcode.opmode.auto.cv.TeamShippingElementTracker;
 import eu.qrobotics.freightfrenzy.teamcode.opmode.auto.trajectories.TrajectoriesRedCarousel;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Arm;
-import eu.qrobotics.freightfrenzy.teamcode.subsystems.Capstone;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Elevator;
-import eu.qrobotics.freightfrenzy.teamcode.subsystems.Intake;
+import eu.qrobotics.freightfrenzy.teamcode.subsystems.HorizontalArm;
+import eu.qrobotics.freightfrenzy.teamcode.subsystems.IntakeCarousel;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Robot;
 import eu.qrobotics.freightfrenzy.teamcode.util.Alliance;
 
@@ -153,13 +152,13 @@ public class AutoRedCarousel extends LinearOpMode {
                 break;
         }
         robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
-//        robot.capstone.capstoneMode = Capstone.CapstoneMode.UP_CLEARANCE;
+        robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.MID;
+        robot.arm.armMode = Arm.ArmMode.HIGH;
         while(robot.elevator.getDistanceLeft() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
             robot.sleep(0.01);
         }
-        robot.arm.armMode = Arm.ArmMode.BACK;
         robot.sleep(0.6);
-        robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN_REVERSE;
+        robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
         robot.sleep(0.2);
 
         robot.drivetrain.followTrajectory(trajectories.get(2));
@@ -181,27 +180,30 @@ public class AutoRedCarousel extends LinearOpMode {
             robot.sleep(0.01);
         }
 
-        robot.carousel.spin();
+        robot.intakeCarousel.frontIntakeMode = IntakeCarousel.IntakeMode.CAROUSEL;
+        robot.intakeCarousel.rearIntakeMode = IntakeCarousel.IntakeMode.CAROUSEL;
+        robot.intakeCarousel.spin();
 
-        while (robot.carousel.isBusy() && opModeIsActive() && !isStopRequested()) {
+        while (robot.intakeCarousel.isCarouselBusy() && opModeIsActive() && !isStopRequested()) {
             robot.sleep(0.01);
         }
 
         robot.drivetrain.followTrajectorySync(trajectories.get(3));
 
-        robot.intake.intakeMode = Intake.IntakeMode.IN;
+        robot.intakeCarousel.frontIntakeMode = IntakeCarousel.IntakeMode.IN;
 
         robot.drivetrain.followTrajectorySync(trajectories.get(4));
 
         robot.sleep(0.4);
-        robot.intake.intakeMode = Intake.IntakeMode.IN_SLOW;
+        robot.intakeCarousel.frontIntakeMode = IntakeCarousel.IntakeMode.IN_SLOW;
 
         robot.drivetrain.followTrajectory(trajectories.get(5));
 
-//        robot.capstone.capstoneMode = Capstone.CapstoneMode.UP_CLEARANCE;
         robot.sleep(0.5);
         robot.elevator.targetHeight = Elevator.TargetHeight.HIGH;
         robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
+        robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.MID;
+        robot.arm.armMode = Arm.ArmMode.HIGH;
 
         while(robot.elevator.getDistanceLeft() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
             robot.sleep(0.01);
@@ -211,9 +213,8 @@ public class AutoRedCarousel extends LinearOpMode {
             robot.sleep(0.01);
         }
 
-        robot.arm.armMode = Arm.ArmMode.BACK;
         robot.sleep(0.6);
-        robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN_REVERSE;
+        robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
         robot.sleep(0.4);
         robot.arm.trapdoorMode = Arm.TrapdoorMode.CLOSED;
         robot.sleep(0.2);

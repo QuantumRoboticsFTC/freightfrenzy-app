@@ -28,12 +28,12 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
     private LynxModule hub2;
 
     public Drivetrain drivetrain;
-    public Intake intake;
+    public IntakeCarousel intakeCarousel;
     public Elevator elevator;
+    public HorizontalArm horizontalArm;
     public Arm arm;
-    public Carousel carousel;
-    public Capstone capstone;
-    public DistanceSensorLocalization distanceSensorLocalization;
+//    public Capstone capstone;
+//    public DistanceSensorLocalization distanceSensorLocalization;
 
     private List<Subsystem> subsystems;
     private List<Subsystem> subsystemsWithProblems;
@@ -91,7 +91,7 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
         dashboard.setTelemetryTransmissionInterval(25);
 
         hub1 = opMode.hardwareMap.get(LynxModule.class, "Control Hub");
-        hub2 = opMode.hardwareMap.get(LynxModule.class, "Expansion Hub 2");
+        hub2 = opMode.hardwareMap.get(LynxModule.class, "Expansion Hub 10");
 
         hub1.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         hub2.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
@@ -107,8 +107,8 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
         }
 
         try {
-            intake = new Intake(opMode.hardwareMap, this);
-            subsystems.add(intake);
+            intakeCarousel = new IntakeCarousel(opMode.hardwareMap, isAutonomous);
+            subsystems.add(intakeCarousel);
         } catch (Exception e) {
             Log.w(TAG, "skipping Intake");
         }
@@ -121,35 +121,34 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
         }
 
         try {
+            horizontalArm = new HorizontalArm(opMode.hardwareMap, this);
+            subsystems.add(horizontalArm);
+        } catch (Exception e) {
+            Log.w(TAG, "skipping HorizontalArms");
+        }
+
+        try {
             arm = new Arm(opMode.hardwareMap, this);
             subsystems.add(arm);
         } catch (Exception e) {
             Log.w(TAG, "skipping Arm");
         }
 
-        try {
-            carousel = new Carousel(opMode.hardwareMap, this, isAutonomous, alliance);
-            subsystems.add(carousel);
-        }
-        catch (Exception e) {
-            Log.w(TAG, "skipping Carousel");
-        }
+//        try {
+//            capstone = new Capstone(opMode.hardwareMap, this);
+//            subsystems.add(capstone);
+//        }
+//        catch (Exception e) {
+//            Log.w(TAG, "skipping Capstone");
+//        }
 
-        try {
-            capstone = new Capstone(opMode.hardwareMap, this);
-            subsystems.add(capstone);
-        }
-        catch (Exception e) {
-            Log.w(TAG, "skipping Capstone");
-        }
-
-        try {
-            distanceSensorLocalization = new DistanceSensorLocalization(opMode.hardwareMap, this, alliance);
-            subsystems.add(distanceSensorLocalization);
-        }
-        catch (Exception e) {
-            Log.w(TAG, "skipping DistanceSensorLocalization");
-        }
+//        try {
+//            distanceSensorLocalization = new DistanceSensorLocalization(opMode.hardwareMap, this, alliance);
+//            subsystems.add(distanceSensorLocalization);
+//        }
+//        catch (Exception e) {
+//            Log.w(TAG, "skipping DistanceSensorLocalization");
+//        }
 
         //endregion
         for (Subsystem subsystem : subsystems) {

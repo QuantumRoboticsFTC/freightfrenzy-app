@@ -9,26 +9,24 @@ public class Arm implements Subsystem {
 
     public enum ArmMode {
         FRONT,
-        BACK,
-        CAPSTONE
+        HIGH,
+        LOW
     }
 
     public enum TrapdoorMode {
         CLOSED,
         OPEN,
-        OPEN_REVERSE,
     }
 
     public static double ARM_FRONT_LEFT_POSITION = 0.00;
     public static double ARM_FRONT_RIGHT_POSITION = 1.00;
-    public static double ARM_BACK_LEFT_POSITION = 0.95;
-    public static double ARM_BACK_RIGHT_POSITION = 0.05;
-    public static double ARM_CAPSTONE_LEFT_POSITION = 0.11;
-    public static double ARM_CAPSTONE_RIGHT_POSITION = 0.89;
+    public static double ARM_HIGH_LEFT_POSITION = 0.29;
+    public static double ARM_HIGH_RIGHT_POSITION = 0.7;
+    public static double ARM_LOW_LEFT_POSITION = 0.59;
+    public static double ARM_LOW_RIGHT_POSITION = 0.6;
 
     public static double TRAPDOOR_CLOSED_POSITION = 0.75;
     public static double TRAPDOOR_OPEN_POSITION = 0.55;
-    public static double TRAPDOOR_OPEN_REVERSE_POSITION = 1.00;
 
     public ArmMode armMode;
     public TrapdoorMode trapdoorMode;
@@ -60,13 +58,13 @@ public class Arm implements Subsystem {
                     armServoLeft.setPosition(ARM_FRONT_LEFT_POSITION);
                     armServoRight.setPosition(ARM_FRONT_RIGHT_POSITION);
                     break;
-                case BACK:
-                    armServoLeft.setPosition(ARM_BACK_LEFT_POSITION);
-                    armServoRight.setPosition(ARM_BACK_RIGHT_POSITION);
+                case HIGH:
+                    armServoLeft.setPosition(ARM_HIGH_LEFT_POSITION);
+                    armServoRight.setPosition(ARM_HIGH_RIGHT_POSITION);
                     break;
-                case CAPSTONE:
-                    armServoLeft.setPosition(ARM_CAPSTONE_LEFT_POSITION);
-                    armServoRight.setPosition(ARM_CAPSTONE_RIGHT_POSITION);
+                case LOW:
+                    armServoLeft.setPosition(ARM_LOW_LEFT_POSITION);
+                    armServoRight.setPosition(ARM_LOW_RIGHT_POSITION);
                     break;
             }
         }
@@ -79,9 +77,6 @@ public class Arm implements Subsystem {
                     break;
                 case OPEN:
                     trapdoorServo.setPosition(TRAPDOOR_OPEN_POSITION);
-                    break;
-                case OPEN_REVERSE:
-                    trapdoorServo.setPosition(TRAPDOOR_OPEN_REVERSE_POSITION);
                     break;
             }
         }

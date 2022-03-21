@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import eu.qrobotics.freightfrenzy.teamcode.util.StickyGamepad;
 
 @TeleOp(name = "Double Servo Programmer", group = "Test")
-@Disabled
+//@Disabled
 public class DoubleServoProgrammer extends OpMode {
     enum ProgrammerMode {
         Low, Medium, High;
@@ -65,13 +65,13 @@ public class DoubleServoProgrammer extends OpMode {
     private ProgrammerMode programmerMode = ProgrammerMode.High;
 
     // initial servo positions
-    private double currentPositionLeft = 0.55;
-    private double currentPositionRight = 0.5;
+    private double currentPositionLeft = 0.7;
+    private double currentPositionRight = 0.275;
 
     @Override
     public void init() {
-        leftServo = hardwareMap.get(Servo.class, "intakePivotServoLeft");
-        rightServo = hardwareMap.get(Servo.class, "intakePivotServoRight");
+        leftServo = hardwareMap.get(Servo.class, "outtakeLinkageLeft");
+        rightServo = hardwareMap.get(Servo.class, "outtakeLinkageRight");
 
         stickyGamepad = new StickyGamepad(gamepad1);
 

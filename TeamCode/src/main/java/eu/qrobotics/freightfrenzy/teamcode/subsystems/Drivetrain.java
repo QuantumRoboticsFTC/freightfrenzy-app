@@ -32,10 +32,14 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import eu.qrobotics.freightfrenzy.teamcode.util.AxesSigns;
+import eu.qrobotics.freightfrenzy.teamcode.util.BNO055IMUUtil;
 import eu.qrobotics.freightfrenzy.teamcode.util.DashboardUtil;
 import eu.qrobotics.freightfrenzy.teamcode.util.MecanumUtil;
 
 import static eu.qrobotics.freightfrenzy.teamcode.subsystems.DriveConstants.*;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 
 @Config
 public class Drivetrain extends MecanumDrive implements Subsystem {
@@ -102,6 +106,7 @@ public class Drivetrain extends MecanumDrive implements Subsystem {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         imu.initialize(parameters);
+        BNO055IMUUtil.remapAxes(imu, AxesOrder.YZX, AxesSigns.NPP);
 
         poseHistory = new LinkedList<>();
 
@@ -136,6 +141,8 @@ public class Drivetrain extends MecanumDrive implements Subsystem {
         if (RUN_USING_ENCODER && MOTOR_VELO_PID != null) {
             setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         }
+
+//        setLocalizer(new Odometry(hardwareMap, this));
     }
 
     public void turn(double angle) {
@@ -279,6 +286,8 @@ public class Drivetrain extends MecanumDrive implements Subsystem {
         fieldOverlay.setStroke("#3F51B5");
         DashboardUtil.drawRobot(fieldOverlay, currentPose);
 
+        packet.put("Battery", batteryVoltageSensor.getVoltage());
+
         dashboard.sendTelemetryPacket(packet);
     }
 
@@ -298,7 +307,7 @@ public class Drivetrain extends MecanumDrive implements Subsystem {
 
     @Override
     public Double getExternalHeadingVelocity() {
-        return (double) imu.getAngularVelocity().zRotationRate;
+        return (double) imu.getAngularVelocity().yRotationRate;
     }
 
     @NonNull
