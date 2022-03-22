@@ -5,11 +5,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Arm;
-import eu.qrobotics.freightfrenzy.teamcode.subsystems.Capstone;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Elevator;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.HorizontalArm;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.IntakeCarousel;
@@ -22,6 +18,13 @@ public abstract class BaseTeleOP extends OpMode {
         NORMAL,
         SLOW,
         SUPER_SLOW
+    }
+
+    enum OuttakeTarget {
+        HIGH,
+        MID,
+        LOW,
+        SHARED
     }
 
     Robot robot;
@@ -39,8 +42,6 @@ public abstract class BaseTeleOP extends OpMode {
 
         robot = new Robot(this, false, getAlliance());
 
-        robot.elevator.targetHeight = Elevator.TargetHeight.HIGH;
-
         stickyGamepad1 = new StickyGamepad(gamepad1);
         stickyGamepad2 = new StickyGamepad(gamepad2);
 
@@ -57,14 +58,12 @@ public abstract class BaseTeleOP extends OpMode {
 //    ElapsedTime intakeElementTimer = new ElapsedTime(0);
     ElapsedTime intakeUpTimer = new ElapsedTime(0);
     ElapsedTime elevatorDownTimer = new ElapsedTime(0);
+    ElapsedTime dropTimer = new ElapsedTime(0);
 
-//    boolean elevatorUpToggle = true;
-//    boolean elevatorDownToggle = true;
-
-//    boolean keepCapstoneMode = true;
     boolean joyStickControl = false;
 
 //    Elevator.ElevatorMode prevElevatorMode;
+    OuttakeTarget outtakeTarget = OuttakeTarget.HIGH;
 
     @Override
     public void loop() {
@@ -92,41 +91,6 @@ public abstract class BaseTeleOP extends OpMode {
         if (stickyGamepad1.right_bumper) {
             driveMode = DriveMode.NORMAL;
         }
-
-//        if(gamepad1.dpad_up) {
-//            robot.capstone.tiltDirection = Capstone.TiltDirection.UP;
-//        } else if (gamepad1.dpad_down) {
-//            robot.capstone.tiltDirection = Capstone.TiltDirection.DOWN;
-//        } else {
-//            robot.capstone.tiltDirection = Capstone.TiltDirection.IDLE;
-//        }
-//
-//        if(gamepad1.dpad_left) {
-//            robot.capstone.swivelDirection = Capstone.SwivelDirection.LEFT;
-//        } else if (gamepad1.dpad_right) {
-//            robot.capstone.swivelDirection = Capstone.SwivelDirection.RIGHT;
-//        } else {
-//            robot.capstone.swivelDirection = Capstone.SwivelDirection.IDLE;
-//        }
-
-//        if(gamepad1.x) {
-//            robot.capstone.extendMode = Capstone.ExtendMode.EXTEND;
-//            keepCapstoneMode = true;
-//            Capstone.CAPSTONE_TILT_POSITION = 0.8;
-//        }
-//        if(gamepad1.y) {
-//            robot.capstone.extendMode = Capstone.ExtendMode.RETRACT;
-//            keepCapstoneMode = true;
-//        }
-//        if(gamepad1.a) {
-//            robot.capstone.extendMode = Capstone.ExtendMode.EXTEND;
-//            keepCapstoneMode = false;
-//        } else if (gamepad1.b) {
-//            robot.capstone.extendMode = Capstone.ExtendMode.RETRACT;
-//            keepCapstoneMode = false;
-//        } else if (!keepCapstoneMode) {
-//            robot.capstone.extendMode = Capstone.ExtendMode.IDLE;
-//        }
 
         //endregion
 
@@ -181,53 +145,71 @@ public abstract class BaseTeleOP extends OpMode {
             robot.intakeCarousel.rearIntakeRotation = IntakeCarousel.IntakeRotation.UP;
             intakeUpTimer.reset();
             joyStickControl = false;
+            robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
         }
 
-        if(1.0 < intakeUpTimer.seconds() && intakeUpTimer.seconds() < 1.1) {
+        if(0.6 < intakeUpTimer.seconds() && intakeUpTimer.seconds() < 0.7) {
             robot.intakeCarousel.frontIntakeMode = IntakeCarousel.IntakeMode.OUT;
             robot.intakeCarousel.rearIntakeMode = IntakeCarousel.IntakeMode.OUT;
         }
 
-        if(2.0 < intakeUpTimer.seconds() && intakeUpTimer.seconds() < 2.1) {
+        if(1.5 < intakeUpTimer.seconds() && intakeUpTimer.seconds() < 1.6) {
             robot.intakeCarousel.frontIntakeMode = IntakeCarousel.IntakeMode.IDLE;
             robot.intakeCarousel.rearIntakeMode = IntakeCarousel.IntakeMode.IDLE;
         }
 
         if(robot.elevator.elevatorMode == Elevator.ElevatorMode.DOWN) {
             if (stickyGamepad2.dpad_up) {
-                robot.elevator.targetHeight = Elevator.TargetHeight.HIGH;
+                outtakeTarget = OuttakeTarget.HIGH;
             } else if (stickyGamepad2.dpad_left) {
-                robot.elevator.targetHeight = Elevator.TargetHeight.MID;
+                outtakeTarget = OuttakeTarget.MID;
             } else if (stickyGamepad2.dpad_down) {
-                robot.elevator.targetHeight = Elevator.TargetHeight.LOW;
+                outtakeTarget = OuttakeTarget.LOW;
             } else if (stickyGamepad2.dpad_right) {
-                robot.elevator.targetHeight = Elevator.TargetHeight.LOW;
+                outtakeTarget = OuttakeTarget.SHARED;
             }
         }
 
         if (stickyGamepad2.right_bumper) {
-            robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
-            robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.MID;
-            robot.arm.armMode = Arm.ArmMode.HIGH;
             robot.intakeCarousel.frontIntakeMode = IntakeCarousel.IntakeMode.IDLE;
             robot.intakeCarousel.rearIntakeMode = IntakeCarousel.IntakeMode.IDLE;
-//            elevatorUpToggle = false;
+            robot.arm.trapdoorMode = Arm.TrapdoorMode.CLOSED;
+            switch (outtakeTarget) {
+                case HIGH:
+                    robot.elevator.targetHeight = Elevator.TargetHeight.HIGH;
+                    break;
+                case MID:
+                    robot.elevator.targetHeight = Elevator.TargetHeight.MID;
+                    break;
+                case LOW:
+                case SHARED:
+                    robot.elevator.targetHeight = Elevator.TargetHeight.LOW;
+                    break;
+            }
+            robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
+            if(outtakeTarget == OuttakeTarget.SHARED) {
+                robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.IN;
+                if(robot.arm.armMode == Arm.ArmMode.HIGH) {
+                    robot.arm.armMode =  Arm.ArmMode.LOW;
+                }
+                else {
+                    robot.arm.armMode = Arm.ArmMode.HIGH;
+                }
+            }
+            else {
+                robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.MID;
+                robot.arm.armMode = Arm.ArmMode.UP;
+            }
         }
         else if (stickyGamepad2.left_bumper) {
-            robot.arm.trapdoorMode = Arm.TrapdoorMode.CLOSED;
+            robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
             robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.IN;
             robot.arm.armMode = Arm.ArmMode.FRONT;
             elevatorDownTimer.reset();
         }
 
-//        if(robot.elevator.elevatorMode == Elevator.ElevatorMode.UP && !elevatorUpToggle && robot.elevator.getDistanceLeft() < 3.0) {
-//            robot.arm.armMode = Arm.ArmMode.BACK;
-//            elevatorUpToggle = true;
-//        }
-
         if(0.6 < elevatorDownTimer.seconds() && elevatorDownTimer.seconds() < 0.7) {
             robot.elevator.elevatorMode = Elevator.ElevatorMode.DOWN;
-//            elevatorDownToggle = false;
         }
 
 //        if (gamepad2.right_trigger > 0.1) {
@@ -254,6 +236,16 @@ public abstract class BaseTeleOP extends OpMode {
 //        }
 
         if (stickyGamepad2.x && robot.arm.armMode != Arm.ArmMode.FRONT) {
+            if(outtakeTarget == OuttakeTarget.SHARED) {
+                robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
+            }
+            else {
+                robot.arm.armMode = Arm.ArmMode.HIGH;
+                dropTimer.reset();
+            }
+        }
+
+        if(0.2 < dropTimer.seconds() && dropTimer.seconds() < 0.3) {
             robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
         }
 
@@ -277,7 +269,7 @@ public abstract class BaseTeleOP extends OpMode {
 
         // endregion
 
-        telemetry.addData("Intake current (mA)", robot.intakeCarousel.frontIntakeMotor.getCurrent(CurrentUnit.MILLIAMPS));
+        telemetry.addData("Outtake Target", outtakeTarget);
         telemetry.addData("Intake mode", robot.intakeCarousel.frontIntakeMode);
 //        telemetry.addData("Intake sensor", robot.intakeCarousel.intakeSensor.getDistance(DistanceUnit.CM));
         telemetry.addData("Elevator mode", robot.elevator.elevatorMode);

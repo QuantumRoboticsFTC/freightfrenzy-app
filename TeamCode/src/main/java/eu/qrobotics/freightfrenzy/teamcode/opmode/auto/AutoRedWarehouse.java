@@ -3,7 +3,6 @@ package eu.qrobotics.freightfrenzy.teamcode.opmode.auto;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -126,6 +125,7 @@ public class AutoRedWarehouse extends LinearOpMode {
 
         robot.drivetrain.followTrajectorySync(trajectories.get(0));
 
+        robot.arm.trapdoorMode = Arm.TrapdoorMode.CLOSED;
         switch(tsePattern) {
             case LEFT:
                 robot.elevator.targetHeight = Elevator.TargetHeight.LOW;
@@ -137,7 +137,7 @@ public class AutoRedWarehouse extends LinearOpMode {
                 break;
             case RIGHT:
                 robot.elevator.targetHeight = Elevator.TargetHeight.HIGH;
-                robot.arm.armMode = Arm.ArmMode.HIGH;
+                robot.arm.armMode = Arm.ArmMode.UP;
                 break;
         }
         robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
@@ -154,7 +154,6 @@ public class AutoRedWarehouse extends LinearOpMode {
 
             robot.intakeCarousel.frontIntakeRotation = IntakeCarousel.IntakeRotation.DOWN;
             robot.intakeCarousel.frontIntakeMode = IntakeCarousel.IntakeMode.IN;
-            robot.arm.trapdoorMode = Arm.TrapdoorMode.CLOSED;
             robot.arm.armMode = Arm.ArmMode.FRONT;
             robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.IN;
             robot.sleep(1.0);
@@ -194,9 +193,10 @@ public class AutoRedWarehouse extends LinearOpMode {
 
             robot.sleep(1.0);
 
+            robot.arm.trapdoorMode = Arm.TrapdoorMode.CLOSED;
             robot.elevator.targetHeight = Elevator.TargetHeight.HIGH;
             robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.MID;
-            robot.arm.armMode = Arm.ArmMode.HIGH;
+            robot.arm.armMode = Arm.ArmMode.UP;
             robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
             while (robot.elevator.getDistanceLeft() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
                 robot.sleep(0.01);
@@ -216,7 +216,7 @@ public class AutoRedWarehouse extends LinearOpMode {
 
         robot.intakeCarousel.frontIntakeRotation = IntakeCarousel.IntakeRotation.DOWN;
         robot.intakeCarousel.frontIntakeMode = IntakeCarousel.IntakeMode.IN;
-        robot.arm.trapdoorMode = Arm.TrapdoorMode.CLOSED;
+        robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
         robot.arm.armMode = Arm.ArmMode.FRONT;
         robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.IN;
         robot.sleep(1.0);

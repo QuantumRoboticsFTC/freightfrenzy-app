@@ -9,6 +9,7 @@ public class Arm implements Subsystem {
 
     public enum ArmMode {
         FRONT,
+        UP,
         HIGH,
         LOW
     }
@@ -20,13 +21,15 @@ public class Arm implements Subsystem {
 
     public static double ARM_FRONT_LEFT_POSITION = 0.00;
     public static double ARM_FRONT_RIGHT_POSITION = 1.00;
-    public static double ARM_HIGH_LEFT_POSITION = 0.29;
-    public static double ARM_HIGH_RIGHT_POSITION = 0.7;
+    public static double ARM_UP_LEFT_POSITION = 0.29;
+    public static double ARM_UP_RIGHT_POSITION = 0.7;
+    public static double ARM_HIGH_LEFT_POSITION = 0.44;
+    public static double ARM_HIGH_RIGHT_POSITION = 0.55;
     public static double ARM_LOW_LEFT_POSITION = 0.59;
     public static double ARM_LOW_RIGHT_POSITION = 0.6;
 
-    public static double TRAPDOOR_CLOSED_POSITION = 0.75;
-    public static double TRAPDOOR_OPEN_POSITION = 0.55;
+    public static double TRAPDOOR_CLOSED_POSITION = 0.4;
+    public static double TRAPDOOR_OPEN_POSITION = 0.7;
 
     public ArmMode armMode;
     public TrapdoorMode trapdoorMode;
@@ -43,7 +46,7 @@ public class Arm implements Subsystem {
         trapdoorServo = hardwareMap.get(Servo.class, "trapdoorServo");
 
         armMode = ArmMode.FRONT;
-        trapdoorMode = TrapdoorMode.CLOSED;
+        trapdoorMode = TrapdoorMode.OPEN;
     }
 
     public static boolean IS_DISABLED = false;
@@ -57,6 +60,10 @@ public class Arm implements Subsystem {
                 case FRONT:
                     armServoLeft.setPosition(ARM_FRONT_LEFT_POSITION);
                     armServoRight.setPosition(ARM_FRONT_RIGHT_POSITION);
+                    break;
+                case UP:
+                    armServoLeft.setPosition(ARM_UP_LEFT_POSITION);
+                    armServoRight.setPosition(ARM_UP_RIGHT_POSITION);
                     break;
                 case HIGH:
                     armServoLeft.setPosition(ARM_HIGH_LEFT_POSITION);

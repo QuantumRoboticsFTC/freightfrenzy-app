@@ -153,7 +153,7 @@ public class AutoRedCarousel extends LinearOpMode {
         }
         robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
         robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.MID;
-        robot.arm.armMode = Arm.ArmMode.HIGH;
+        robot.arm.armMode = Arm.ArmMode.UP;
         while(robot.elevator.getDistanceLeft() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
             robot.sleep(0.01);
         }
@@ -203,7 +203,7 @@ public class AutoRedCarousel extends LinearOpMode {
         robot.elevator.targetHeight = Elevator.TargetHeight.HIGH;
         robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
         robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.MID;
-        robot.arm.armMode = Arm.ArmMode.HIGH;
+        robot.arm.armMode = Arm.ArmMode.UP;
 
         while(robot.elevator.getDistanceLeft() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
             robot.sleep(0.01);

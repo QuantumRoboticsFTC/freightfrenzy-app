@@ -35,11 +35,11 @@ public class Elevator implements Subsystem {
 //    public static double DOWN_POWER_2 = -0.02;
 //    public static double DOWN_POWER_3 = -0.05;
 //    public static double DOWN_POWER_4 = -0.1;
-    public static double DOWN_POWER_1 = 0;
-    public static double DOWN_POWER_2 = 0;
+    public static double DOWN_POWER_1 = 0.02;
+    public static double DOWN_POWER_2 = 0.02;
     public static double DOWN_POWER_3 = 0;
     public static double DOWN_POWER_4 = 0;
-    public static double HOLD_POWER = 0.1;
+    public static double HOLD_POWER = 0.11;
     public static double LEVEL_1_POWER = 0.4;
     public static double LEVEL_2_POWER = 0.6;
     public static double LEVEL_3_POWER = 0.85;
@@ -59,8 +59,8 @@ public class Elevator implements Subsystem {
                 return this;
             }
         },
-        MID(6),
-        HIGH(11) {
+        MID(4),
+        HIGH(10) {
             @Override
             public TargetHeight next() {
                 return this;
