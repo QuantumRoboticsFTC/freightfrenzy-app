@@ -32,6 +32,7 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
     public Elevator elevator;
     public HorizontalArm horizontalArm;
     public Arm arm;
+    public OdometryRetract odometryRetract;
 //    public Capstone capstone;
 //    public DistanceSensorLocalization distanceSensorLocalization;
 
@@ -132,6 +133,13 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
             subsystems.add(arm);
         } catch (Exception e) {
             Log.w(TAG, "skipping Arm");
+        }
+
+        try {
+            odometryRetract = new OdometryRetract(opMode.hardwareMap, isAutonomous);
+            subsystems.add(odometryRetract);
+        } catch (Exception e) {
+            Log.w(TAG, "skipping OdometryRetract");
         }
 
 //        try {

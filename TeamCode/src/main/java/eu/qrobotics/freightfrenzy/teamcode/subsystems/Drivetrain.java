@@ -142,7 +142,7 @@ public class Drivetrain extends MecanumDrive implements Subsystem {
             setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         }
 
-//        setLocalizer(new Odometry(hardwareMap, this));
+        setLocalizer(new Odometry(hardwareMap, this));
     }
 
     public void turn(double angle) {
