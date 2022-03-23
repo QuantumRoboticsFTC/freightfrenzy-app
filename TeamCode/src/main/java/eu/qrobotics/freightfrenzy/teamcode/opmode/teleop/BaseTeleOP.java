@@ -61,6 +61,8 @@ public abstract class BaseTeleOP extends OpMode {
     ElapsedTime dropTimer = new ElapsedTime(0);
 
     boolean joyStickControl = false;
+    boolean prevIntakeHasElementFront = false;
+    boolean prevIntakeHasElementRear = false;
 
 //    Elevator.ElevatorMode prevElevatorMode;
     OuttakeTarget outtakeTarget = OuttakeTarget.HIGH;
@@ -258,20 +260,25 @@ public abstract class BaseTeleOP extends OpMode {
             robot.intakeCarousel.stopSpin();
         }
 
-//        if(!robot.intakeCarousel.hasElement() || robot.intakeCarousel.frontIntakeMode != IntakeCarousel.IntakeMode.IN || !elevatorDownToggle || robot.elevator.elevatorMode != Elevator.ElevatorMode.DOWN) {
-//            intakeElementTimer.reset();
-//        }
-//
-//        if(0.5 < intakeElementTimer.seconds() && intakeElementTimer.seconds() < 0.6) {
-//            robot.intakeCarousel.frontIntakeMode = IntakeCarousel.IntakeMode.OUT;
-//            joyStickControl = false;
-//        }
+        if(robot.intakeCarousel.hasElementFront() && !prevIntakeHasElementFront) {
+            gamepad1.rumbleBlips(3);
+            gamepad2.rumbleBlips(3);
+        }
+
+        prevIntakeHasElementFront = robot.intakeCarousel.hasElementFront();
+
+        if(robot.intakeCarousel.hasElementRear() && !prevIntakeHasElementRear) {
+            gamepad1.rumbleBlips(3);
+            gamepad2.rumbleBlips(3);
+        }
+
+        prevIntakeHasElementRear = robot.intakeCarousel.hasElementRear();
 
         // endregion
 
         telemetry.addData("Outtake Target", outtakeTarget);
         telemetry.addData("Intake mode", robot.intakeCarousel.frontIntakeMode);
-//        telemetry.addData("Intake sensor", robot.intakeCarousel.intakeSensor.getDistance(DistanceUnit.CM));
+//        telemetry.addData("Intake sensor", robot.intakeCarousel.frontSensor.getDistance(DistanceUnit.MM));
         telemetry.addData("Elevator mode", robot.elevator.elevatorMode);
         telemetry.addData("Elevator target height", robot.elevator.targetHeight);
         telemetry.addData("Elevator current height", robot.elevator.getCurrentHeight());

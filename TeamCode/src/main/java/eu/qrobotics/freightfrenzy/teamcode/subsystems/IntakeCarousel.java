@@ -1,7 +1,7 @@
 package eu.qrobotics.freightfrenzy.teamcode.subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.hardware.ColorRangeSensor;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -58,11 +58,14 @@ public class IntakeCarousel implements Subsystem {
     private IntakeRotation prevFrontIntakeRotation;
     private IntakeRotation prevRearIntakeRotation;
 
-    public DcMotorEx frontIntakeMotor;
-    public DcMotorEx rearIntakeMotor;
+    private DcMotorEx frontIntakeMotor;
+    private DcMotorEx rearIntakeMotor;
 
-    public Servo frontIntakeServo;
-    public Servo rearIntakeServo;
+    private Servo frontIntakeServo;
+    private Servo rearIntakeServo;
+
+    private RevColorSensorV3 frontSensor;
+    private RevColorSensorV3 rearSensor;
 
     private boolean isAutonomous;
 
@@ -73,6 +76,9 @@ public class IntakeCarousel implements Subsystem {
         rearIntakeMotor = hardwareMap.get(DcMotorEx.class, "rearIntakeMotor");
         frontIntakeServo = hardwareMap.get(Servo.class, "frontIntakeServo");
         rearIntakeServo = hardwareMap.get(Servo.class, "rearIntakeServo");
+
+        frontSensor = hardwareMap.get(RevColorSensorV3.class, "frontIntakeSensor");
+        rearSensor = hardwareMap.get(RevColorSensorV3.class, "rearIntakeSensor");
 
         frontIntakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -114,6 +120,14 @@ public class IntakeCarousel implements Subsystem {
         }
         carouselPower = Math.min(carouselPower, 1);
         return carouselPower;
+    }
+
+    public boolean hasElementFront() {
+        return frontSensor.getDistance(DistanceUnit.MM) < 26;
+    }
+
+    public boolean hasElementRear() {
+        return rearSensor.getDistance(DistanceUnit.MM) < 26;
     }
 
     @Override
