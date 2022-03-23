@@ -25,8 +25,8 @@ public class Arm implements Subsystem {
     public static double ARM_UP_RIGHT_POSITION = 0.7;
     public static double ARM_HIGH_LEFT_POSITION = 0.44;
     public static double ARM_HIGH_RIGHT_POSITION = 0.55;
-    public static double ARM_LOW_LEFT_POSITION = 0.59;
-    public static double ARM_LOW_RIGHT_POSITION = 0.6;
+    public static double ARM_LOW_LEFT_POSITION = 0.6;
+    public static double ARM_LOW_RIGHT_POSITION = 0.4;
 
     public static double TRAPDOOR_CLOSED_POSITION = 0.4;
     public static double TRAPDOOR_OPEN_POSITION = 0.7;
