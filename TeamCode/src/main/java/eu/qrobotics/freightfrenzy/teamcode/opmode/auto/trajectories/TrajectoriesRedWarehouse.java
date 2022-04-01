@@ -13,9 +13,9 @@ import java.util.List;
 import static eu.qrobotics.freightfrenzy.teamcode.subsystems.DriveConstants.*;
 
 public class TrajectoriesRedWarehouse {
-    public static Pose2d START_POSE = new Pose2d(-31, -65, Math.toRadians(0));
+    public static Pose2d START_POSE = new Pose2d(8, -65, Math.toRadians(0));
 
-    public static int CYCLE_COUNT = 1;
+    public static int CYCLE_COUNT = 5;
 
     private static Pose2d getTrajectorySequenceEndPose(List<Trajectory> trajectories) {
         if(trajectories.size() == 0)
@@ -39,23 +39,31 @@ public class TrajectoriesRedWarehouse {
         List<Trajectory> trajectories = new ArrayList<>();
 
         trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(180))
-                .lineToConstantHeading(new Vector2d(-10, -65))
+                .lineToConstantHeading(new Vector2d(-12, -65))
                 .build()
         );
 
         for (int cycle = 0; cycle < CYCLE_COUNT; cycle++) {
-            trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(0))
-                    .lineToConstantHeading(new Vector2d(46 + cycle * 4, -67))
+            double xOffset = cycle * 1.75;
+            double yOffset = -0.25 * cycle - (cycle > 4 ? 1 : 0);
+
+            trajectories.add(makeTrajectoryBuilder(new Pose2d((cycle == 0 ? -10 : -14), -65, Math.toRadians(0)), Math.toRadians(0))
+                    .lineToConstantHeading(new Vector2d(43 + xOffset, -65 + yOffset))
                     .build()
             );
 
-            trajectories.add(makeTrajectoryBuilder(new Pose2d(48 + cycle * 4, -65, Math.toRadians(0)), Math.toRadians(180))
-                    .lineToConstantHeading(new Vector2d(-10, -66))
+            trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(0), SLOW_VEL_CONSTRAINT, SLOW_ACCEL_CONSTRAINT)
+                    .lineToSplineHeading(new Pose2d(43 + xOffset + 3, -65 + yOffset + 3, Math.toRadians(20)))
+                    .build()
+            );
+
+            trajectories.add(makeTrajectoryBuilder(new Pose2d(43 + xOffset, -65, Math.toRadians(0)), Math.toRadians(180))
+                    .lineToConstantHeading(new Vector2d(-15, -65 - 0.25 * cycle - (cycle > 4 ? 1 : 0)))
                     .build()
             );
         }
-        trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(0))
-                .lineToConstantHeading(new Vector2d(52, -67))
+        trajectories.add(makeTrajectoryBuilder(new Pose2d(-14, -65, Math.toRadians(0)), Math.toRadians(0))
+                .lineToConstantHeading(new Vector2d(44, -66))
                 .build()
         );
 
