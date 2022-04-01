@@ -10,6 +10,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+import eu.qrobotics.freightfrenzy.teamcode.util.Alliance;
+
 @Config
 public class IntakeCarousel implements Subsystem {
 
@@ -24,27 +26,31 @@ public class IntakeCarousel implements Subsystem {
 
     public enum IntakeRotation {
         UP,
-        DOWN
+        DOWN,
+        CAROUSEL
     }
 
     public static double INTAKE_IN_SPEED = 1.0;
-    public static double INTAKE_IN_SLOW_SPEED = 0.7;
+    public static double INTAKE_IN_SLOW_SPEED = 0.3;
     public static double INTAKE_IDLE_SPEED = 0;
     public static double INTAKE_OUT_SPEED = -1.0;
     public static double INTAKE_OUT_SLOW_SPEED = -0.4;
 
-    public static double FRONT_INTAKE_UP_POSITION = 0.275;
-    public static double FRONT_INTAKE_DOWN_POSITION = 0.775;
+    public static double FRONT_INTAKE_UP_POSITION = 0.755;
+    public static double FRONT_INTAKE_DOWN_POSITION = 0.24;
+    public static double FRONT_INTAKE_CAROUSEL_POSITION = 0.6;
 
-    public static double REAR_INTAKE_UP_POSITION = 0.775;
-    public static double REAR_INTAKE_DOWN_POSITION = 0.275;
+    public static double REAR_INTAKE_UP_POSITION = 0.28;
+    public static double REAR_INTAKE_DOWN_POSITION = 0.787;
+    public static double REAR_INTAKE_CAROUSEL_POSITION = 0.43;
 
     public static double START_VEL = 0.2;
     public static double ACCELERATION_RATE = 0.175; // power increase / second
     public static double TIME = 3.0; // seconds
 
-    public static double ACCELERATION_RATE_AUTONOMOUS = 0.4; // power increase / second
-    public static double TIME_AUTONOMOUS = 3.0; // seconds
+    public static double ACCELERATION_RATE_AUTONOMOUS = 0.125; // power increase / second
+    public static double MAX_VEL_AUTONOMOUS = 0.4; // power
+    public static double TIME_AUTONOMOUS = 5.0; // seconds
 
     public IntakeMode frontIntakeMode;
     public IntakeMode rearIntakeMode;
@@ -64,13 +70,15 @@ public class IntakeCarousel implements Subsystem {
     private Servo frontIntakeServo;
     private Servo rearIntakeServo;
 
-    private RevColorSensorV3 frontSensor;
-    private RevColorSensorV3 rearSensor;
+    public RevColorSensorV3 frontSensor;
+    public RevColorSensorV3 rearSensor;
 
     private boolean isAutonomous;
+    private Alliance alliance;
 
-    IntakeCarousel(HardwareMap hardwareMap, boolean isAutonomous) {
+    IntakeCarousel(HardwareMap hardwareMap, boolean isAutonomous, Alliance alliance) {
         this.isAutonomous = isAutonomous;
+        this.alliance = alliance;
 
         frontIntakeMotor = hardwareMap.get(DcMotorEx.class, "frontIntakeMotor");
         rearIntakeMotor = hardwareMap.get(DcMotorEx.class, "rearIntakeMotor");
@@ -118,8 +126,8 @@ public class IntakeCarousel implements Subsystem {
         if(timer.seconds() < getTargetTime()) {
             carouselPower = START_VEL + getAcceleration() * timer.seconds();
         }
-        carouselPower = Math.min(carouselPower, 1);
-        return carouselPower;
+        carouselPower = Math.min(carouselPower, isAutonomous ? MAX_VEL_AUTONOMOUS : 1);
+        return (alliance == Alliance.BLUE ? -1 : 1) * carouselPower;
     }
 
     public boolean hasElementFront() {
@@ -127,7 +135,7 @@ public class IntakeCarousel implements Subsystem {
     }
 
     public boolean hasElementRear() {
-        return rearSensor.getDistance(DistanceUnit.MM) < 26;
+        return rearSensor.getDistance(DistanceUnit.MM) < 22;
     }
 
     @Override
@@ -178,7 +186,7 @@ public class IntakeCarousel implements Subsystem {
             }
 //        }
         if(rearIntakeMode == IntakeMode.CAROUSEL) {
-            rearIntakeMotor.setPower(getCarouselPower());
+            rearIntakeMotor.setPower(-getCarouselPower());
         }
         prevRearIntakeMode = rearIntakeMode;
 
@@ -189,6 +197,9 @@ public class IntakeCarousel implements Subsystem {
                     break;
                 case DOWN:
                     frontIntakeServo.setPosition(FRONT_INTAKE_DOWN_POSITION);
+                    break;
+                case CAROUSEL:
+                    frontIntakeServo.setPosition(FRONT_INTAKE_CAROUSEL_POSITION);
                     break;
             }
 //        }
@@ -201,6 +212,9 @@ public class IntakeCarousel implements Subsystem {
                     break;
                 case DOWN:
                     rearIntakeServo.setPosition(REAR_INTAKE_DOWN_POSITION);
+                    break;
+                case CAROUSEL:
+                    rearIntakeServo.setPosition(REAR_INTAKE_CAROUSEL_POSITION);
                     break;
             }
 //        }

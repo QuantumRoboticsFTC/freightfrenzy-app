@@ -35,8 +35,8 @@ public class Elevator implements Subsystem {
 //    public static double DOWN_POWER_2 = -0.02;
 //    public static double DOWN_POWER_3 = -0.05;
 //    public static double DOWN_POWER_4 = -0.1;
-    public static double DOWN_POWER_1 = 0.02;
-    public static double DOWN_POWER_2 = 0.02;
+    public static double DOWN_POWER_1 = 0;
+    public static double DOWN_POWER_2 = 0;
     public static double DOWN_POWER_3 = 0;
     public static double DOWN_POWER_4 = 0;
     public static double HOLD_POWER = 0.11;
@@ -59,7 +59,7 @@ public class Elevator implements Subsystem {
                 return this;
             }
         },
-        MID(4),
+        MID(1),
         HIGH(10) {
             @Override
             public TargetHeight next() {
@@ -152,6 +152,8 @@ public class Elevator implements Subsystem {
         downPosition = getEncoder();
     }
 
+    private int singleBrake = 1000;
+
     @Override
     public void update() {
         switch (elevatorMode) {
@@ -161,14 +163,27 @@ public class Elevator implements Subsystem {
                 offsetPosition = 0;
                 if (getCurrentHeight() <= THRESHOLD_DOWN)
                     setPower(0);
-                else if(getCurrentHeight() <= THRESHOLD_DOWN_LEVEL_1)
-                    setPower(DOWN_POWER_1);
-                else if(getCurrentHeight() <= THRESHOLD_DOWN_LEVEL_2)
-                    setPower(DOWN_POWER_2);
-                else if(getCurrentHeight() <= THRESHOLD_DOWN_LEVEL_3)
-                    setPower(DOWN_POWER_3);
-                else
-                    setPower(DOWN_POWER_4);
+//                else if(getCurrentHeight() <= THRESHOLD_DOWN_LEVEL_1)
+//                    setPower(DOWN_POWER_1);
+//                else if(getCurrentHeight() <= THRESHOLD_DOWN_LEVEL_2)
+//                    setPower(DOWN_POWER_2);
+//                else if(getCurrentHeight() <= THRESHOLD_DOWN_LEVEL_3)
+//                    setPower(DOWN_POWER_3);
+//                else
+//                    setPower(DOWN_POWER_4);
+                else if(getCurrentHeight() <= THRESHOLD_DOWN_LEVEL_1) {
+                    if(singleBrake < 3) {
+                        setPower(0.01);
+                        singleBrake++;
+                    }
+                    else {
+                        setPower(-0.15);
+                    }
+                }
+                else {
+                    singleBrake = 0;
+                    setPower(0);
+                }
                 break;
             case UP:
                 double error = getError();
@@ -184,7 +199,7 @@ public class Elevator implements Subsystem {
                     setPower(LEVEL_4_POWER * Math.signum(error));
                 break;
             case MANUAL:
-                setPower(manualPower);
+                setPower((getCurrentHeight() > 1 ? HOLD_POWER : 0) + manualPower);
                 break;
         }
     }

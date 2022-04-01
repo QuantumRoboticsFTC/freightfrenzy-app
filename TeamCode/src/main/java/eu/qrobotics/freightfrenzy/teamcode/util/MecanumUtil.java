@@ -64,10 +64,15 @@ public class MecanumUtil {
     public static Motion joystickToMotion(double leftStickX,
                                           double leftStickY,
                                           double rightStickX,
-                                          double rightStickY) {
+                                          double rightStickY,
+                                          boolean reverseFront) {
         double vD = Math.min(Math.sqrt(Math.pow(leftStickX, 2) +
                         Math.pow(leftStickY, 2)),
                 1);
+        if(reverseFront) {
+            leftStickX = -leftStickX;
+            leftStickY = -leftStickY;
+        }
         double thetaD = Math.atan2(-leftStickX, -leftStickY);
         double vTheta = -rightStickX;
         return new Motion(vD, thetaD, vTheta);

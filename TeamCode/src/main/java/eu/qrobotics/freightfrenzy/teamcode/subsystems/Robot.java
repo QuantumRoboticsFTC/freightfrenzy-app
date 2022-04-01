@@ -108,7 +108,7 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
         }
 
         try {
-            intakeCarousel = new IntakeCarousel(opMode.hardwareMap, isAutonomous);
+            intakeCarousel = new IntakeCarousel(opMode.hardwareMap, isAutonomous, alliance);
             subsystems.add(intakeCarousel);
         } catch (Exception e) {
             Log.w(TAG, "skipping Intake");

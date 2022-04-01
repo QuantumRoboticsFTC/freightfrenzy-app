@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -12,6 +13,7 @@ import eu.qrobotics.freightfrenzy.teamcode.util.Alliance;
 import eu.qrobotics.freightfrenzy.teamcode.util.DashboardUtil;
 
 @TeleOp(group = "Test")
+@Disabled
 public class LocalizationTest extends OpMode {
     Robot robot;
 

@@ -29,17 +29,14 @@ public class DriveConstants {
     public static double MAX_VEL = 60;
     public static double MAX_ACCEL = 40;
 
-    public static TrajectoryVelocityConstraint BASE_VEL_CONSTRAINT = new MecanumVelocityConstraint(45, TRACK_WIDTH, WHEEL_BASE, LATERAL_MULTIPLIER);
-    public static TrajectoryAccelerationConstraint BASE_ACCEL_CONSTRAINT = new ProfileAccelerationConstraint(90);
+    public static TrajectoryVelocityConstraint BASE_VEL_CONSTRAINT = new MecanumVelocityConstraint(50, TRACK_WIDTH, WHEEL_BASE, LATERAL_MULTIPLIER);
+    public static TrajectoryAccelerationConstraint BASE_ACCEL_CONSTRAINT = new ProfileAccelerationConstraint(100);
 
     public static TrajectoryVelocityConstraint NORMAL_VEL_CONSTRAINT = new MecanumVelocityConstraint(25, TRACK_WIDTH, WHEEL_BASE, LATERAL_MULTIPLIER);
     public static TrajectoryAccelerationConstraint NORMAL_ACCEL_CONSTRAINT = new ProfileAccelerationConstraint(60);
 
-    public static TrajectoryVelocityConstraint SLOW_VEL_CONSTRAINT = new MecanumVelocityConstraint(5, TRACK_WIDTH, WHEEL_BASE, LATERAL_MULTIPLIER);
-    public static TrajectoryAccelerationConstraint SLOW_ACCEL_CONSTRAINT = new ProfileAccelerationConstraint(20);
-
-    public static TrajectoryVelocityConstraint YEET_VEL_CONSTRAINT = new MecanumVelocityConstraint(60, TRACK_WIDTH, WHEEL_BASE, LATERAL_MULTIPLIER);
-    public static TrajectoryAccelerationConstraint YEET_ACCEL_CONSTRAINT = new ProfileAccelerationConstraint(120);
+    public static TrajectoryVelocityConstraint SLOW_VEL_CONSTRAINT = new MecanumVelocityConstraint(7, TRACK_WIDTH, WHEEL_BASE, LATERAL_MULTIPLIER);
+    public static TrajectoryAccelerationConstraint SLOW_ACCEL_CONSTRAINT = new ProfileAccelerationConstraint(50);
 
     public static final double TICKS_PER_REV = 384.5;
     public static final double MAX_RPM = 435;
