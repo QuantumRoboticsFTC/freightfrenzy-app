@@ -50,22 +50,22 @@ public class TrajectoriesBlueWarehouse {
             double xOffset = cycle * 1.75;
             double yOffset = 0.25 * cycle + (cycle > 4 ? 1 : 0);
 
-            trajectories.add(makeTrajectoryBuilder(new Pose2d((cycle == 0 ? -10 : -14), 65, Math.toRadians(0)), Math.toRadians(180))
-                    .lineToConstantHeading(new Vector2d(43 + xOffset, -65 + yOffset))
+            trajectories.add(makeTrajectoryBuilder(new Pose2d((cycle == 0 ? -10 : -14), 65, Math.toRadians(180)), Math.toRadians(180))
+                    .lineToConstantHeading(new Vector2d(43 + xOffset, 65 + yOffset))
                     .build()
             );
 
             trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(0), SLOW_VEL_CONSTRAINT, SLOW_ACCEL_CONSTRAINT)
-                    .lineToSplineHeading(new Pose2d(43 + xOffset + 3, 65 + yOffset + 3, Math.toRadians(-20)))
+                    .lineToSplineHeading(new Pose2d(43 + xOffset + 3, 65 + yOffset - 3, Math.toRadians(160)))
                     .build()
             );
 
-            trajectories.add(makeTrajectoryBuilder(new Pose2d(43 + xOffset, -65, Math.toRadians(0)), Math.toRadians(0))
+            trajectories.add(makeTrajectoryBuilder(new Pose2d(43 + xOffset, 65, Math.toRadians(180)), Math.toRadians(0))
                     .lineToConstantHeading(new Vector2d(-14, 65 + 0.25 * cycle + (cycle > 4 ? 1 : 0)))
                     .build()
             );
         }
-        trajectories.add(makeTrajectoryBuilder(new Pose2d(-14, 65, Math.toRadians(0)), Math.toRadians(180))
+        trajectories.add(makeTrajectoryBuilder(new Pose2d(-14, 65, Math.toRadians(180)), Math.toRadians(180))
                 .lineToConstantHeading(new Vector2d(44, 66))
                 .build()
         );

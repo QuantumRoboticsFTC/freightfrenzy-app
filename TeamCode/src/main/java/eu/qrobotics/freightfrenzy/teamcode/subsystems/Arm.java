@@ -33,8 +33,8 @@ public class Arm implements Subsystem {
     public static double ARM_UP_RIGHT_POSITION = 0.67;
     public static double ARM_HIGH_LEFT_POSITION = 0.45;
     public static double ARM_HIGH_RIGHT_POSITION = 0.52;
-    public static double ARM_LOW_LEFT_POSITION = 0.6;
-    public static double ARM_LOW_RIGHT_POSITION = 0.37;
+    public static double ARM_LOW_LEFT_POSITION = 0.58;
+    public static double ARM_LOW_RIGHT_POSITION = 0.39;
     public static double ARM_CAPSTONE_PICKUP_LEFT_POSITION = 0.73;
     public static double ARM_CAPSTONE_PICKUP_RIGHT_POSITION = 0.24;
     public static double ARM_CAPSTONE_UP_LEFT_POSITION = 0.54;

@@ -28,8 +28,8 @@ public class HorizontalArm implements Subsystem {
     public static double LINKAGE_AUTO_MID_RIGHT_POSITION = 0.53;
     public static double LINKAGE_AUTO_HIGH_LEFT_POSITION = 0.5;
     public static double LINKAGE_AUTO_HIGH_RIGHT_POSITION = 0.48;
-    public static double LINKAGE_LOW_LEFT_POSITION = 0.54;
-    public static double LINKAGE_LOW_RIGHT_POSITION = 0.44;
+    public static double LINKAGE_LOW_LEFT_POSITION = 0.55;
+    public static double LINKAGE_LOW_RIGHT_POSITION = 0.43;
     public static double LINKAGE_FULL_LEFT_POSITION = 0.45;
     public static double LINKAGE_FULL_RIGHT_POSITION = 0.53;
     public static double LINKAGE_CAPSTONE_PICKUP_LEFT_POSITION = 0.60;

@@ -98,7 +98,7 @@ public class AutoRedWarehouse extends LinearOpMode {
                     average(leftTSE.getCount()),
                     average(centerTSE.getCount()),
 //                    average(rightTSE.getCount())
-                    5e6
+                    4e6
             };
             int maxIdx = 0;
             double max = 0;
@@ -181,7 +181,12 @@ public class AutoRedWarehouse extends LinearOpMode {
             robot.sleep(0.01);
         }
 
-        robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
+        if(tsePattern == TSEPattern.LEFT) {
+            robot.arm.trapdoorMode = Arm.TrapdoorMode.LOW;
+        }
+        else {
+            robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
+        }
         robot.sleep(0.3);
 
         boolean safetyStop = false;
@@ -261,10 +266,10 @@ public class AutoRedWarehouse extends LinearOpMode {
             robot.arm.armMode = Arm.ArmMode.HIGH;
 
             if(cycle == 0) {
-                robot.sleep(0.3);
+                robot.sleep(0.6);
             }
             else {
-                robot.sleep(0.4);
+                robot.sleep(0.7);
             }
 
             while(robot.elevator.getDistanceLeft() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
