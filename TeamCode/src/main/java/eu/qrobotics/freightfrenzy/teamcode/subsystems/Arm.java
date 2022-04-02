@@ -14,7 +14,8 @@ public class Arm implements Subsystem {
         LOW,
         CAPSTONE_PICKUP,
         CAPSTONE_UP,
-        CAPSTONE_PLACE
+        CAPSTONE_PLACE,
+        MANUAL
     }
 
     public enum TrapdoorMode {
@@ -23,20 +24,23 @@ public class Arm implements Subsystem {
         OPEN,
     }
 
-    public static double ARM_FRONT_LEFT_POSITION = 0.035;
-    public static double ARM_FRONT_RIGHT_POSITION = 0.965;
-    public static double ARM_UP_LEFT_POSITION = 0.29;
-    public static double ARM_UP_RIGHT_POSITION = 0.7;
-    public static double ARM_HIGH_LEFT_POSITION = 0.44;
-    public static double ARM_HIGH_RIGHT_POSITION = 0.55;
+    public static double ARM_OFFSET_MIN = 0;
+    public static double ARM_OFFSET_MAX = 0.7;
+
+    public static double ARM_FRONT_LEFT_POSITION = 0.03;
+    public static double ARM_FRONT_RIGHT_POSITION = 0.94;
+    public static double ARM_UP_LEFT_POSITION = 0.3;
+    public static double ARM_UP_RIGHT_POSITION = 0.67;
+    public static double ARM_HIGH_LEFT_POSITION = 0.45;
+    public static double ARM_HIGH_RIGHT_POSITION = 0.52;
     public static double ARM_LOW_LEFT_POSITION = 0.6;
-    public static double ARM_LOW_RIGHT_POSITION = 0.4;
-    public static double ARM_CAPSTONE_PICKUP_LEFT_POSITION = 0.70;
-    public static double ARM_CAPSTONE_PICKUP_RIGHT_POSITION = 0.30;
-    public static double ARM_CAPSTONE_UP_LEFT_POSITION = 0.57;
+    public static double ARM_LOW_RIGHT_POSITION = 0.37;
+    public static double ARM_CAPSTONE_PICKUP_LEFT_POSITION = 0.73;
+    public static double ARM_CAPSTONE_PICKUP_RIGHT_POSITION = 0.24;
+    public static double ARM_CAPSTONE_UP_LEFT_POSITION = 0.54;
     public static double ARM_CAPSTONE_UP_RIGHT_POSITION = 0.43;
     public static double ARM_CAPSTONE_PLACE_LEFT_POSITION = 0.65;
-    public static double ARM_CAPSTONE_PLACE_RIGHT_POSITION = 0.35;
+    public static double ARM_CAPSTONE_PLACE_RIGHT_POSITION = 0.32;
 
     public static double TRAPDOOR_CLOSED_POSITION = 0.45;
     public static double TRAPDOOR_LOW_POSITION = 0.67;
@@ -50,6 +54,8 @@ public class Arm implements Subsystem {
 
     private Servo armServoLeft, armServoRight;
     private Servo trapdoorServo;
+
+    public double manualOffset = 0;
 
     Arm(HardwareMap hardwareMap, Robot robot) {
         armServoLeft = hardwareMap.get(Servo.class, "armServoLeft");
@@ -66,35 +72,46 @@ public class Arm implements Subsystem {
     public void update() {
         if(IS_DISABLED) return;
 
-        if(armMode != prevArmMode) {
+        if(armMode != prevArmMode || armMode == ArmMode.MANUAL) {
             switch (armMode) {
                 case FRONT:
                     armServoLeft.setPosition(ARM_FRONT_LEFT_POSITION);
                     armServoRight.setPosition(ARM_FRONT_RIGHT_POSITION);
+                    manualOffset = 0.0;
                     break;
                 case UP:
                     armServoLeft.setPosition(ARM_UP_LEFT_POSITION);
                     armServoRight.setPosition(ARM_UP_RIGHT_POSITION);
+                    manualOffset = ARM_UP_LEFT_POSITION - ARM_FRONT_LEFT_POSITION;
                     break;
                 case HIGH:
                     armServoLeft.setPosition(ARM_HIGH_LEFT_POSITION);
                     armServoRight.setPosition(ARM_HIGH_RIGHT_POSITION);
+                    manualOffset = ARM_HIGH_LEFT_POSITION - ARM_FRONT_LEFT_POSITION;
                     break;
                 case LOW:
                     armServoLeft.setPosition(ARM_LOW_LEFT_POSITION);
                     armServoRight.setPosition(ARM_LOW_RIGHT_POSITION);
+                    manualOffset = ARM_LOW_LEFT_POSITION - ARM_FRONT_LEFT_POSITION;
                     break;
                 case CAPSTONE_PICKUP:
                     armServoLeft.setPosition(ARM_CAPSTONE_PICKUP_LEFT_POSITION);
                     armServoRight.setPosition(ARM_CAPSTONE_PICKUP_RIGHT_POSITION);
+                    manualOffset = ARM_CAPSTONE_PICKUP_LEFT_POSITION - ARM_FRONT_LEFT_POSITION;
                     break;
                 case CAPSTONE_UP:
                     armServoLeft.setPosition(ARM_CAPSTONE_UP_LEFT_POSITION);
                     armServoRight.setPosition(ARM_CAPSTONE_UP_RIGHT_POSITION);
+                    manualOffset = ARM_CAPSTONE_UP_LEFT_POSITION - ARM_FRONT_LEFT_POSITION;
                     break;
                 case CAPSTONE_PLACE:
                     armServoLeft.setPosition(ARM_CAPSTONE_PLACE_LEFT_POSITION);
                     armServoRight.setPosition(ARM_CAPSTONE_PLACE_RIGHT_POSITION);
+                    manualOffset = ARM_CAPSTONE_PLACE_LEFT_POSITION - ARM_FRONT_LEFT_POSITION;
+                    break;
+                case MANUAL:
+                    armServoLeft.setPosition(ARM_FRONT_LEFT_POSITION + manualOffset);
+                    armServoRight.setPosition(ARM_FRONT_RIGHT_POSITION - manualOffset);
                     break;
             }
         }

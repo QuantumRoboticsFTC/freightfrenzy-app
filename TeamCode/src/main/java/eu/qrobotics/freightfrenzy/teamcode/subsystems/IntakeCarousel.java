@@ -2,6 +2,7 @@ package eu.qrobotics.freightfrenzy.teamcode.subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -38,14 +39,14 @@ public class IntakeCarousel implements Subsystem {
 
     public static double FRONT_INTAKE_UP_POSITION = 0.755;
     public static double FRONT_INTAKE_DOWN_POSITION = 0.24;
-    public static double FRONT_INTAKE_CAROUSEL_POSITION = 0.6;
+    public static double FRONT_INTAKE_CAROUSEL_POSITION = 0.62;
 
     public static double REAR_INTAKE_UP_POSITION = 0.28;
     public static double REAR_INTAKE_DOWN_POSITION = 0.787;
-    public static double REAR_INTAKE_CAROUSEL_POSITION = 0.43;
+    public static double REAR_INTAKE_CAROUSEL_POSITION = 0.41;
 
-    public static double START_VEL = 0.2;
-    public static double ACCELERATION_RATE = 0.175; // power increase / second
+    public static double START_VEL = 0.23;
+    public static double ACCELERATION_RATE = 0.15; // power increase / second
     public static double TIME = 3.0; // seconds
 
     public static double ACCELERATION_RATE_AUTONOMOUS = 0.125; // power increase / second
@@ -89,6 +90,9 @@ public class IntakeCarousel implements Subsystem {
         rearSensor = hardwareMap.get(RevColorSensorV3.class, "rearIntakeSensor");
 
         frontIntakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        frontIntakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rearIntakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         frontIntakeMode = IntakeMode.IDLE;
         rearIntakeMode = IntakeMode.IDLE;

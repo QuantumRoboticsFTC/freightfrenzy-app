@@ -11,6 +11,7 @@ public class StickyGamepad {
     public boolean left_stick_button, right_stick_button;
     public boolean left_trigger_button, right_trigger_button;
     public boolean back;
+    public boolean touchpad;
 
     private boolean dpad_up_down, dpad_down_down, dpad_left_down, dpad_right_down;
     private boolean a_down, b_down, x_down, y_down;
@@ -18,6 +19,7 @@ public class StickyGamepad {
     private boolean left_stick_button_down, right_stick_button_down;
     private boolean left_trigger_button_down, right_trigger_button_down;
     private boolean back_down;
+    private boolean touchpad_down;
 
     public StickyGamepad(Gamepad gamepad) {
         this.gamepad = gamepad;
@@ -202,6 +204,18 @@ public class StickyGamepad {
         } else {
             back = false;
             back_down = false;
+        }
+
+        if (gamepad.touchpad) {
+            if(touchpad_down) {
+                touchpad = false;
+            } else {
+                touchpad_down = true;
+                touchpad = true;
+            }
+        } else {
+            touchpad = false;
+            touchpad_down = false;
         }
     }
 }
