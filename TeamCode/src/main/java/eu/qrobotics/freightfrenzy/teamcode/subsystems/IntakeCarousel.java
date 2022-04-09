@@ -38,7 +38,7 @@ public class IntakeCarousel implements Subsystem {
     public static double INTAKE_OUT_SLOW_SPEED = -0.4;
 
     public static double FRONT_INTAKE_UP_POSITION = 0.755;
-    public static double FRONT_INTAKE_DOWN_POSITION = 0.24;
+    public static double FRONT_INTAKE_DOWN_POSITION = 0.25;
     public static double FRONT_INTAKE_CAROUSEL_POSITION = 0.62;
 
     public static double REAR_INTAKE_UP_POSITION = 0.28;

@@ -48,7 +48,7 @@ public class TrajectoriesBlueWarehouse {
 
         for (int cycle = 0; cycle < CYCLE_COUNT; cycle++) {
             double xOffset = cycle * 1.75;
-            double yOffset = 0.25 * cycle + (cycle > 4 ? 1 : 0);
+            double yOffset = 0.3 * cycle + (cycle > 4 ? 1 : 0);
 
             trajectories.add(makeTrajectoryBuilder(new Pose2d((cycle == 0 ? -10 : -14), 65, Math.toRadians(180)), Math.toRadians(180))
                     .lineToConstantHeading(new Vector2d(43 + xOffset, 65 + yOffset))

@@ -72,7 +72,7 @@ public class Arm implements Subsystem {
     public void update() {
         if(IS_DISABLED) return;
 
-        if(armMode != prevArmMode || armMode == ArmMode.MANUAL) {
+//        if(armMode != prevArmMode || armMode == ArmMode.MANUAL) {
             switch (armMode) {
                 case FRONT:
                     armServoLeft.setPosition(ARM_FRONT_LEFT_POSITION);
@@ -114,7 +114,7 @@ public class Arm implements Subsystem {
                     armServoRight.setPosition(ARM_FRONT_RIGHT_POSITION - manualOffset);
                     break;
             }
-        }
+//        }
         prevArmMode = armMode;
 
         if(trapdoorMode != prevTrapdoorMode) {

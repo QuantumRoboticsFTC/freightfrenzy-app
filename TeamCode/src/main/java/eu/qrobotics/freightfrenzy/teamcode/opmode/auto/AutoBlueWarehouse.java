@@ -21,7 +21,7 @@ import java.util.List;
 
 import eu.qrobotics.freightfrenzy.teamcode.opmode.auto.cv.TSEPattern;
 import eu.qrobotics.freightfrenzy.teamcode.opmode.auto.cv.TeamShippingElementTracker;
-import eu.qrobotics.freightfrenzy.teamcode.opmode.auto.trajectories.TrajectoriesRedWarehouse;
+import eu.qrobotics.freightfrenzy.teamcode.opmode.auto.trajectories.TrajectoriesBlueWarehouse;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Arm;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Elevator;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.HorizontalArm;
@@ -33,44 +33,44 @@ import eu.qrobotics.freightfrenzy.teamcode.util.Alliance;
 @Autonomous
 public class AutoBlueWarehouse extends LinearOpMode {
 
-    public static int LEFT_TSE_UP_X = 50;
-    public static int LEFT_TSE_UP_Y = 1100;
-    public static int LEFT_TSE_DOWN_X = 450;
-    public static int LEFT_TSE_DOWN_Y = 1500;
-    public static int CENTER_TSE_UP_X = 700;
+//    public static int LEFT_TSE_UP_X = 50;
+//    public static int LEFT_TSE_UP_Y = 1100;
+//    public static int LEFT_TSE_DOWN_X = 450;
+//    public static int LEFT_TSE_DOWN_Y = 1500;
+    public static int CENTER_TSE_UP_X = 200;
     public static int CENTER_TSE_UP_Y = 1100;
-    public static int CENTER_TSE_DOWN_X = 1000;
+    public static int CENTER_TSE_DOWN_X = 600;
     public static int CENTER_TSE_DOWN_Y = 1500;
-//    public static int RIGHT_TSE_UP_X = 1525;
-//    public static int RIGHT_TSE_UP_Y = 685;
-//    public static int RIGHT_TSE_DOWN_X = 1850;
-//    public static int RIGHT_TSE_DOWN_Y = 1080;
+    public static int RIGHT_TSE_UP_X = 700;
+    public static int RIGHT_TSE_UP_Y = 1100;
+    public static int RIGHT_TSE_DOWN_X = 1080;
+    public static int RIGHT_TSE_DOWN_Y = 1500;
 
     public static double ELEVATOR_THRESHOLD = 2;
-    
+
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
-        Robot robot = new Robot(this, true, Alliance.RED);
-        robot.drivetrain.setPoseEstimate(TrajectoriesRedWarehouse.START_POSE);
+        Robot robot = new Robot(this, true, Alliance.BLUE);
+        robot.drivetrain.setPoseEstimate(TrajectoriesBlueWarehouse.START_POSE);
 
-        TeamShippingElementTracker leftTSE = new TeamShippingElementTracker(
-                new Point(LEFT_TSE_UP_X, LEFT_TSE_UP_Y),
-                new Point(LEFT_TSE_DOWN_X, LEFT_TSE_DOWN_Y)
-        );
+//        TeamShippingElementTracker leftTSE = new TeamShippingElementTracker(
+//                new Point(LEFT_TSE_UP_X, LEFT_TSE_UP_Y),
+//                new Point(LEFT_TSE_DOWN_X, LEFT_TSE_DOWN_Y)
+//        );
         TeamShippingElementTracker centerTSE = new TeamShippingElementTracker(
                 new Point(CENTER_TSE_UP_X, CENTER_TSE_UP_Y),
                 new Point(CENTER_TSE_DOWN_X, CENTER_TSE_DOWN_Y)
         );
-//        TeamShippingElementTracker rightTSE = new TeamShippingElementTracker(
-//                new Point(RIGHT_TSE_UP_X, RIGHT_TSE_UP_Y),
-//                new Point(RIGHT_TSE_DOWN_X, RIGHT_TSE_DOWN_Y)
-//        );
+        TeamShippingElementTracker rightTSE = new TeamShippingElementTracker(
+                new Point(RIGHT_TSE_UP_X, RIGHT_TSE_UP_Y),
+                new Point(RIGHT_TSE_DOWN_X, RIGHT_TSE_DOWN_Y)
+        );
 
         OpenCvTrackerApiPipeline trackerApiPipeline = new OpenCvTrackerApiPipeline();
-        trackerApiPipeline.addTracker(leftTSE);
+//        trackerApiPipeline.addTracker(leftTSE);
         trackerApiPipeline.addTracker(centerTSE);
-//        trackerApiPipeline.addTracker(rightTSE);
+        trackerApiPipeline.addTracker(rightTSE);
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         OpenCvCamera webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
@@ -90,15 +90,15 @@ public class AutoBlueWarehouse extends LinearOpMode {
 
         FtcDashboard.getInstance().startCameraStream(webcam, 30);
 
-        List<Trajectory> trajectories = TrajectoriesRedWarehouse.getTrajectories();
+        List<Trajectory> trajectories = TrajectoriesBlueWarehouse.getTrajectories();
 
         TSEPattern tsePattern = TSEPattern.RIGHT;
         while (!opModeIsActive() && !isStopRequested()) {
             double[] counts = {
-                    average(leftTSE.getCount()),
+//                    average(leftTSE.getCount()),
+                    4e6,
                     average(centerTSE.getCount()),
-//                    average(rightTSE.getCount())
-                    4e6
+                    average(rightTSE.getCount())
             };
             int maxIdx = 0;
             double max = 0;
@@ -181,12 +181,17 @@ public class AutoBlueWarehouse extends LinearOpMode {
             robot.sleep(0.01);
         }
 
-        robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
+        if(tsePattern == TSEPattern.LEFT) {
+            robot.arm.trapdoorMode = Arm.TrapdoorMode.LOW;
+        }
+        else {
+            robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
+        }
         robot.sleep(0.3);
 
         boolean safetyStop = false;
 
-        for (int cycle = 0; cycle < TrajectoriesRedWarehouse.CYCLE_COUNT; cycle++) {
+        for (int cycle = 0; cycle < TrajectoriesBlueWarehouse.CYCLE_COUNT; cycle++) {
             robot.drivetrain.followTrajectory(trajectories.get(1 + cycle * 3));
 
             robot.arm.armMode = Arm.ArmMode.UP;
@@ -213,10 +218,10 @@ public class AutoBlueWarehouse extends LinearOpMode {
 
             robot.sleep(0.2);
 
-            if(!robot.intakeCarousel.hasElementFront()) {
+            if(!robot.intakeCarousel.hasElementRear()) {
                 robot.drivetrain.followTrajectory(trajectories.get(2 + cycle * 3));
 
-                while(robot.drivetrain.isBusy() && !robot.intakeCarousel.hasElementFront() && opModeIsActive() && !isStopRequested()) {
+                while(robot.drivetrain.isBusy() && !robot.intakeCarousel.hasElementRear() && opModeIsActive() && !isStopRequested()) {
                     robot.sleep(0.01);
                 }
 
@@ -253,6 +258,7 @@ public class AutoBlueWarehouse extends LinearOpMode {
             robot.arm.armMode = Arm.ArmMode.UP;
 
             robot.sleep(0.3);
+            robot.intakeCarousel.rearIntakeMode = IntakeCarousel.IntakeMode.IDLE;
 
             robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.AUTO_HIGH;
 
@@ -281,7 +287,7 @@ public class AutoBlueWarehouse extends LinearOpMode {
         }
 
         if(!safetyStop) {
-            robot.drivetrain.followTrajectory(trajectories.get(TrajectoriesRedWarehouse.CYCLE_COUNT * 3 + 1));
+            robot.drivetrain.followTrajectory(trajectories.get(TrajectoriesBlueWarehouse.CYCLE_COUNT * 3 + 1));
 
 //            robot.intakeCarousel.rearIntakeRotation = IntakeCarousel.IntakeRotation.DOWN;
 //            robot.intakeCarousel.rearIntakeMode = IntakeCarousel.IntakeMode.IN;

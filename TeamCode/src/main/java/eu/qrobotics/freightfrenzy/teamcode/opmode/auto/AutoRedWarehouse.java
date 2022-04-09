@@ -258,6 +258,7 @@ public class AutoRedWarehouse extends LinearOpMode {
             robot.arm.armMode = Arm.ArmMode.UP;
 
             robot.sleep(0.3);
+            robot.intakeCarousel.frontIntakeMode = IntakeCarousel.IntakeMode.IDLE;
 
             robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.AUTO_HIGH;
 

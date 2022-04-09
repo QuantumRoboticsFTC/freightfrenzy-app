@@ -341,7 +341,8 @@ public abstract class BaseTeleOP extends OpMode {
             }
         }
 
-        if(robot.elevator.elevatorMode == Elevator.ElevatorMode.UP || robot.elevator.elevatorMode == Elevator.ElevatorMode.MANUAL) {
+        if(robot.elevator.elevatorMode == Elevator.ElevatorMode.UP || robot.elevator.elevatorMode == Elevator.ElevatorMode.MANUAL
+         || robot.horizontalArm.linkageMode == HorizontalArm.LinkageMode.MANUAL || robot.horizontalArm.linkageMode == HorizontalArm.LinkageMode.SAFETY_PUSH) {
             if (gamepad2.right_stick_y > 0.1) {
                 robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.MANUAL;
                 robot.horizontalArm.manualOffset -= 0.0075;
