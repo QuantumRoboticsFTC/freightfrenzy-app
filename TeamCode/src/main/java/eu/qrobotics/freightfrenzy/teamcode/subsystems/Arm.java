@@ -1,8 +1,11 @@
 package eu.qrobotics.freightfrenzy.teamcode.subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @Config
 public class Arm implements Subsystem {
@@ -55,6 +58,8 @@ public class Arm implements Subsystem {
     private Servo armServoLeft, armServoRight;
     private Servo trapdoorServo;
 
+    public RevColorSensorV3 sensor;
+
     public double manualOffset = 0;
 
     Arm(HardwareMap hardwareMap, Robot robot) {
@@ -65,8 +70,14 @@ public class Arm implements Subsystem {
         armServoLeft.setDirection(Servo.Direction.REVERSE);
         armServoRight.setDirection(Servo.Direction.REVERSE);
 
+        sensor = hardwareMap.get(RevColorSensorV3.class, "outtakeSensor");
+
         armMode = ArmMode.FRONT;
         trapdoorMode = TrapdoorMode.OPEN;
+    }
+
+    public boolean hasElement() {
+        return sensor.getDistance(DistanceUnit.MM) < 50;
     }
 
     public static boolean IS_DISABLED = false;
