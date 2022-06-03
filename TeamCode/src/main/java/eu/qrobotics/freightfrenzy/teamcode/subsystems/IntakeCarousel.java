@@ -22,7 +22,8 @@ public class IntakeCarousel implements Subsystem {
         IDLE,
         OUT,
         OUT_SLOW,
-        CAROUSEL
+        CAROUSEL,
+        BUTTERFLY
     }
 
     public enum IntakeRotation {
@@ -31,11 +32,17 @@ public class IntakeCarousel implements Subsystem {
         CAROUSEL
     }
 
+    public enum ButterflyRotation {
+        UP,
+        DOWN
+    }
+
     public static double INTAKE_IN_SPEED = 1.0;
     public static double INTAKE_IN_SLOW_SPEED = 0.3;
     public static double INTAKE_IDLE_SPEED = 0;
     public static double INTAKE_OUT_SPEED = -1.0;
     public static double INTAKE_OUT_SLOW_SPEED = -0.4;
+    public static double INTAKE_BUTTERFLY_SPEED = 1.0;
 
     public static double FRONT_INTAKE_UP_POSITION = 0.755;
     public static double FRONT_INTAKE_DOWN_POSITION = 0.25;
@@ -44,6 +51,12 @@ public class IntakeCarousel implements Subsystem {
     public static double REAR_INTAKE_UP_POSITION = 0.28;
     public static double REAR_INTAKE_DOWN_POSITION = 0.787;
     public static double REAR_INTAKE_CAROUSEL_POSITION = 0.41;
+
+    public static double FRONT_BUTTERFLY_UP_POSITION = 0.36;
+    public static double FRONT_BUTTERFLY_DOWN_POSITION = 0.88;
+
+    public static double REAR_BUTTERFLY_UP_POSITION = 0.73;
+    public static double REAR_BUTTERFLY_DOWN_POSITION = 0.25;
 
     public static double START_VEL = 0.23;
     public static double ACCELERATION_RATE = 0.15; // power increase / second
@@ -59,6 +72,9 @@ public class IntakeCarousel implements Subsystem {
     public IntakeRotation frontIntakeRotation;
     public IntakeRotation rearIntakeRotation;
 
+    public ButterflyRotation frontButterflyRotation;
+    public ButterflyRotation rearButterflyRotation;
+
     private IntakeMode prevFrontIntakeMode;
     private IntakeMode prevRearIntakeMode;
 
@@ -70,6 +86,9 @@ public class IntakeCarousel implements Subsystem {
 
     private Servo frontIntakeServo;
     private Servo rearIntakeServo;
+
+    private Servo frontButterflyServo;
+    private Servo rearButterflyServo;
 
     public RevColorSensorV3 frontSensor;
     public RevColorSensorV3 rearSensor;
@@ -83,8 +102,16 @@ public class IntakeCarousel implements Subsystem {
 
         frontIntakeMotor = hardwareMap.get(DcMotorEx.class, "frontIntakeMotor");
         rearIntakeMotor = hardwareMap.get(DcMotorEx.class, "rearIntakeMotor");
+
         frontIntakeServo = hardwareMap.get(Servo.class, "frontIntakeServo");
         rearIntakeServo = hardwareMap.get(Servo.class, "rearIntakeServo");
+
+        frontButterflyServo = hardwareMap.get(Servo.class, "butterflyServoFront");
+        rearButterflyServo = hardwareMap.get(Servo.class, "butterflyServoRear");
+
+        // DSServos are inverted
+        frontIntakeServo.setDirection(Servo.Direction.REVERSE);
+        rearIntakeServo.setDirection(Servo.Direction.REVERSE);
 
         frontSensor = hardwareMap.get(RevColorSensorV3.class, "frontIntakeSensor");
         rearSensor = hardwareMap.get(RevColorSensorV3.class, "rearIntakeSensor");
@@ -99,6 +126,9 @@ public class IntakeCarousel implements Subsystem {
 
         frontIntakeRotation = IntakeRotation.UP;
         rearIntakeRotation = IntakeRotation.UP;
+
+        frontButterflyRotation = ButterflyRotation.UP;
+        rearButterflyRotation = ButterflyRotation.UP;
     }
 
     public static boolean IS_DISABLED = false;
@@ -163,6 +193,9 @@ public class IntakeCarousel implements Subsystem {
                 case OUT_SLOW:
                     frontIntakeMotor.setPower(INTAKE_OUT_SLOW_SPEED);
                     break;
+                case BUTTERFLY:
+                    frontIntakeMotor.setPower(INTAKE_BUTTERFLY_SPEED);
+                    break;
             }
 //        }
         if(frontIntakeMode == IntakeMode.CAROUSEL) {
@@ -187,6 +220,9 @@ public class IntakeCarousel implements Subsystem {
                 case OUT_SLOW:
                     rearIntakeMotor.setPower(INTAKE_OUT_SLOW_SPEED);
                     break;
+                case BUTTERFLY:
+                    rearIntakeMotor.setPower(INTAKE_BUTTERFLY_SPEED);
+                    break;
             }
 //        }
         if(rearIntakeMode == IntakeMode.CAROUSEL) {
@@ -210,18 +246,42 @@ public class IntakeCarousel implements Subsystem {
         prevFrontIntakeRotation = frontIntakeRotation;
 
 //        if(rearIntakeRotation != prevRearIntakeRotation) {
-            switch (rearIntakeRotation) {
-                case UP:
-                    rearIntakeServo.setPosition(REAR_INTAKE_UP_POSITION);
-                    break;
-                case DOWN:
-                    rearIntakeServo.setPosition(REAR_INTAKE_DOWN_POSITION);
-                    break;
-                case CAROUSEL:
-                    rearIntakeServo.setPosition(REAR_INTAKE_CAROUSEL_POSITION);
-                    break;
-            }
+        switch (rearIntakeRotation) {
+            case UP:
+                rearIntakeServo.setPosition(REAR_INTAKE_UP_POSITION);
+                break;
+            case DOWN:
+                rearIntakeServo.setPosition(REAR_INTAKE_DOWN_POSITION);
+                break;
+            case CAROUSEL:
+                rearIntakeServo.setPosition(REAR_INTAKE_CAROUSEL_POSITION);
+                break;
+        }
 //        }
         prevRearIntakeRotation = rearIntakeRotation;
+
+//        if(frontButterflyRotation != prevFrontButterflyRotation) {
+        switch (frontButterflyRotation) {
+            case UP:
+                frontButterflyServo.setPosition(FRONT_BUTTERFLY_UP_POSITION);
+                break;
+            case DOWN:
+                frontButterflyServo.setPosition(FRONT_BUTTERFLY_DOWN_POSITION);
+                break;
+        }
+//        }
+//        prevFrontButterflyRotation = frontButterflyRotation;
+
+//        if(rearButterflyRotation != prevRearButterflyRotation) {
+        switch (rearButterflyRotation) {
+            case UP:
+                rearButterflyServo.setPosition(REAR_BUTTERFLY_UP_POSITION);
+                break;
+            case DOWN:
+                rearButterflyServo.setPosition(REAR_BUTTERFLY_DOWN_POSITION);
+                break;
+        }
+//        }
+//        prevRearButterflyRotation = rearButterflyRotation;
     }
 }

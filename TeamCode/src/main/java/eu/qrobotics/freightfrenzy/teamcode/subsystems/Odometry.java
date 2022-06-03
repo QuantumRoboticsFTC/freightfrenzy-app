@@ -59,8 +59,8 @@ public class Odometry extends TwoTrackingWheelLocalizer {
 
         this.drivetrain = drivetrain;
 
-        parallelEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "rightFront"));
-        perpendicularEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "rightRear"));
+        parallelEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "rightRear"));
+        perpendicularEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "rightFront"));
 
         perpendicularEncoder.setDirection(Encoder.Direction.REVERSE);
     }

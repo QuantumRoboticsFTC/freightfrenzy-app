@@ -73,22 +73,22 @@ public class AutoRedWarehouse extends LinearOpMode {
 //        trackerApiPipeline.addTracker(rightTSE);
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        OpenCvCamera webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            @Override
-            public void onOpened() {
-                webcam.startStreaming(1920,1080, OpenCvCameraRotation.SIDEWAYS_LEFT);
-            }
+//        OpenCvCamera webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+//        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+//            @Override
+//            public void onOpened() {
+//                webcam.startStreaming(1920,1080, OpenCvCameraRotation.SIDEWAYS_LEFT);
+//            }
+//
+//            @Override
+//            public void onError(int errorCode) {
+//
+//            }
+//        });
+//        webcam.setPipeline(trackerApiPipeline);
+//        webcam.showFpsMeterOnViewport(true);
 
-            @Override
-            public void onError(int errorCode) {
-
-            }
-        });
-        webcam.setPipeline(trackerApiPipeline);
-        webcam.showFpsMeterOnViewport(true);
-
-        FtcDashboard.getInstance().startCameraStream(webcam, 30);
+//        FtcDashboard.getInstance().startCameraStream(webcam, 30);
 
         List<Trajectory> trajectories = TrajectoriesRedWarehouse.getTrajectories();
 
@@ -124,7 +124,7 @@ public class AutoRedWarehouse extends LinearOpMode {
 
         ElapsedTime safetyStopTimer = new ElapsedTime();
 
-        webcam.closeCameraDeviceAsync(() -> {});
+//        webcam.closeCameraDeviceAsync(() -> {});
 
         if(!isStopRequested()) {
             robot.start();
@@ -162,7 +162,7 @@ public class AutoRedWarehouse extends LinearOpMode {
             robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.NORMAL;
         }
 
-        robot.sleep(0.5);
+        robot.sleep(0.2);
 
         if(tsePattern == TSEPattern.LEFT) {
             robot.arm.armMode = Arm.ArmMode.LOW;
@@ -171,7 +171,7 @@ public class AutoRedWarehouse extends LinearOpMode {
             robot.arm.armMode = Arm.ArmMode.HIGH;
         }
 
-        robot.sleep(0.68);
+        robot.sleep(0.25);
 
         while(robot.elevator.getDistanceLeft() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
             robot.sleep(0.01);
@@ -187,7 +187,7 @@ public class AutoRedWarehouse extends LinearOpMode {
         else {
             robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
         }
-        robot.sleep(0.3);
+        robot.sleep(0.25);
 
         boolean safetyStop = false;
 
@@ -201,7 +201,7 @@ public class AutoRedWarehouse extends LinearOpMode {
             robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.IN;
             robot.elevator.elevatorMode = Elevator.ElevatorMode.DOWN;
 
-            robot.sleep(0.3);
+            robot.sleep(0.1);
 
             robot.arm.armMode = Arm.ArmMode.FRONT;
 
@@ -216,7 +216,7 @@ public class AutoRedWarehouse extends LinearOpMode {
                 robot.sleep(0.01);
             }
 
-            robot.sleep(0.2);
+            robot.sleep(0.1);
 
             if(!robot.intakeCarousel.hasElementFront()) {
                 robot.drivetrain.followTrajectory(trajectories.get(2 + cycle * 3));
@@ -249,7 +249,7 @@ public class AutoRedWarehouse extends LinearOpMode {
             while (robot.intakeCarousel.hasElementRear() && opModeIsActive() && !isStopRequested()) {
                 robot.sleep(0.01);
             }
-            robot.sleep(1.1);
+            robot.sleep(1.0);
 
             robot.arm.trapdoorMode = Arm.TrapdoorMode.CLOSED;
             robot.elevator.targetHeight = Elevator.TargetHeight.AUTO_HIGH;
@@ -257,21 +257,16 @@ public class AutoRedWarehouse extends LinearOpMode {
 
             robot.arm.armMode = Arm.ArmMode.UP;
 
-            robot.sleep(0.3);
+//            robot.sleep(0.1);
             robot.intakeCarousel.frontIntakeMode = IntakeCarousel.IntakeMode.IDLE;
 
             robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.AUTO_HIGH;
 
-            robot.sleep(0.5);
+            robot.sleep(0.15);
 
             robot.arm.armMode = Arm.ArmMode.HIGH;
 
-            if(cycle == 0) {
-                robot.sleep(0.6);
-            }
-            else {
-                robot.sleep(0.7);
-            }
+            robot.sleep(0.2);
 
             while(robot.elevator.getDistanceLeft() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
                 robot.sleep(0.01);
@@ -283,7 +278,7 @@ public class AutoRedWarehouse extends LinearOpMode {
 
             robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
 
-            robot.sleep(0.25);
+            robot.sleep(0.35);
         }
 
         if(!safetyStop) {

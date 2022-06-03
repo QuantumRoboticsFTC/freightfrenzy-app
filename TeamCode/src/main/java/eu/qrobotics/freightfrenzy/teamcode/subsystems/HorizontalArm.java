@@ -20,24 +20,24 @@ public class HorizontalArm implements Subsystem {
         MANUAL
     }
 
-    public static double LINKAGE_IN_LEFT_POSITION = 0.72;
-    public static double LINKAGE_IN_RIGHT_POSITION = 0.26;
-    public static double LINKAGE_NORMAL_LEFT_POSITION = 0.49;
-    public static double LINKAGE_NORMAL_RIGHT_POSITION = 0.49;
-    public static double LINKAGE_AUTO_MID_LEFT_POSITION = 0.45;
-    public static double LINKAGE_AUTO_MID_RIGHT_POSITION = 0.53;
-    public static double LINKAGE_AUTO_HIGH_LEFT_POSITION = 0.5;
-    public static double LINKAGE_AUTO_HIGH_RIGHT_POSITION = 0.48;
-    public static double LINKAGE_LOW_LEFT_POSITION = 0.555;
-    public static double LINKAGE_LOW_RIGHT_POSITION = 0.425;
-    public static double LINKAGE_FULL_LEFT_POSITION = 0.45;
-    public static double LINKAGE_FULL_RIGHT_POSITION = 0.53;
-    public static double LINKAGE_CAPSTONE_PICKUP_LEFT_POSITION = 0.65;
-    public static double LINKAGE_CAPSTONE_PICKUP_RIGHT_POSITION = 0.33;
-    public static double LINKAGE_CAPSTONE_PLACE_LEFT_POSITION = 0.54;
-    public static double LINKAGE_CAPSTONE_PLACE_RIGHT_POSITION = 0.44;
-    public static double LINKAGE_SAFETY_PUSH_LEFT_POSITION = 0.6;
-    public static double LINKAGE_SAFETY_PUSH_RIGHT_POSITION = 0.38;
+    public static double LINKAGE_IN_LEFT_POSITION = 0.725;
+    public static double LINKAGE_IN_RIGHT_POSITION = 0.245;
+    public static double LINKAGE_NORMAL_LEFT_POSITION = 0.470;
+    public static double LINKAGE_NORMAL_RIGHT_POSITION = 0.500;
+    public static double LINKAGE_AUTO_MID_LEFT_POSITION = 0.455;
+    public static double LINKAGE_AUTO_MID_RIGHT_POSITION = 0.515;
+    public static double LINKAGE_AUTO_HIGH_LEFT_POSITION = 0.505;
+    public static double LINKAGE_AUTO_HIGH_RIGHT_POSITION = 0.465;
+    public static double LINKAGE_LOW_LEFT_POSITION = 0.56;
+    public static double LINKAGE_LOW_RIGHT_POSITION = 0.41;
+    public static double LINKAGE_FULL_LEFT_POSITION = 0.455;
+    public static double LINKAGE_FULL_RIGHT_POSITION = 0.515;
+    public static double LINKAGE_CAPSTONE_PICKUP_LEFT_POSITION = 0.655;
+    public static double LINKAGE_CAPSTONE_PICKUP_RIGHT_POSITION = 0.315;
+    public static double LINKAGE_CAPSTONE_PLACE_LEFT_POSITION = 0.545;
+    public static double LINKAGE_CAPSTONE_PLACE_RIGHT_POSITION = 0.425;
+    public static double LINKAGE_SAFETY_PUSH_LEFT_POSITION = 0.605;
+    public static double LINKAGE_SAFETY_PUSH_RIGHT_POSITION = 0.365;
 
     public LinkageMode linkageMode;
 
@@ -59,7 +59,7 @@ public class HorizontalArm implements Subsystem {
     public void update() {
         if(IS_DISABLED) return;
 
-        if(linkageMode != prevArmMode || linkageMode == LinkageMode.MANUAL) {
+        if(true || linkageMode != prevArmMode || linkageMode == LinkageMode.MANUAL) {
             switch (linkageMode) {
                 case IN:
                     horizontalArmServoLeft.setPosition(LINKAGE_IN_LEFT_POSITION);

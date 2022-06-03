@@ -10,6 +10,7 @@ public class StickyGamepad {
     public boolean left_bumper, right_bumper;
     public boolean left_stick_button, right_stick_button;
     public boolean left_trigger_button, right_trigger_button;
+    public boolean left_trigger_button_release, right_trigger_button_release;
     public boolean back;
     public boolean touchpad;
 
@@ -178,8 +179,13 @@ public class StickyGamepad {
                 right_trigger_button = true;
             }
         } else {
-            right_trigger_button = false;
-            right_trigger_button_down = false;
+            if(!right_trigger_button_down) {
+                right_trigger_button_release = false;
+            }
+            else {
+                right_trigger_button_down = false;
+                right_trigger_button_release = true;
+            }
         }
 
         if (gamepad.left_trigger >= 0.2) {
@@ -190,8 +196,13 @@ public class StickyGamepad {
                 left_trigger_button = true;
             }
         } else {
-            left_trigger_button = false;
-            left_trigger_button_down = false;
+            if(!left_trigger_button_down) {
+                left_trigger_button_release = false;
+            }
+            else {
+                left_trigger_button_down = false;
+                left_trigger_button_release = true;
+            }
         }
 
         if (gamepad.back) {

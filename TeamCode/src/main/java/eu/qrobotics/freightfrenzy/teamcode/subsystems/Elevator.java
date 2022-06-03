@@ -39,7 +39,7 @@ public class Elevator implements Subsystem {
     public static double DOWN_POWER_2 = 0;
     public static double DOWN_POWER_3 = 0;
     public static double DOWN_POWER_4 = 0;
-    public static double HOLD_POWER = 0.11;
+    public static double HOLD_POWER = 0.15;
     public static double LEVEL_1_POWER = 0.4;
     public static double LEVEL_2_POWER = 0.6;
     public static double LEVEL_3_POWER = 0.85;
@@ -61,7 +61,7 @@ public class Elevator implements Subsystem {
         },
         MID(1),
         HIGH(10),
-        AUTO_HIGH(12),
+        AUTO_HIGH(12.2),
         CAPSTONE(12) {
             @Override
             public TargetHeight next() {
@@ -174,13 +174,13 @@ public class Elevator implements Subsystem {
 //                else
 //                    setPower(DOWN_POWER_4);
                 else if(getCurrentHeight() <= THRESHOLD_DOWN_LEVEL_1) {
-                    if(singleBrake < 3) {
-                        setPower(0.01);
-                        singleBrake++;
-                    }
-                    else {
+//                    if(singleBrake < 3) {
+//                        setPower(0.01);
+//                        singleBrake++;
+//                    }
+//                    else {
                         setPower(-0.15);
-                    }
+//                    }
                 }
                 else {
                     singleBrake = 0;

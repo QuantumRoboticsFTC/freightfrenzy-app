@@ -72,23 +72,23 @@ public class AutoBlueCarousel extends LinearOpMode {
         trackerApiPipeline.addTracker(centerTSE);
 //        trackerApiPipeline.addTracker(rightTSE);
 
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        OpenCvCamera webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            @Override
-            public void onOpened() {
-                webcam.startStreaming(1920,1080, OpenCvCameraRotation.SIDEWAYS_LEFT);
-            }
-
-            @Override
-            public void onError(int errorCode) {
-
-            }
-        });
-        webcam.setPipeline(trackerApiPipeline);
-        webcam.showFpsMeterOnViewport(true);
-
-        FtcDashboard.getInstance().startCameraStream(webcam, 30);
+//        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+//        OpenCvCamera webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+//        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+//            @Override
+//            public void onOpened() {
+//                webcam.startStreaming(1920,1080, OpenCvCameraRotation.SIDEWAYS_LEFT);
+//            }
+//
+//            @Override
+//            public void onError(int errorCode) {
+//
+//            }
+//        });
+//        webcam.setPipeline(trackerApiPipeline);
+//        webcam.showFpsMeterOnViewport(true);
+//
+//        FtcDashboard.getInstance().startCameraStream(webcam, 30);
 
         List<Trajectory> trajectories = TrajectoriesBlueCarousel.getTrajectories();
 
@@ -122,7 +122,7 @@ public class AutoBlueCarousel extends LinearOpMode {
             telemetry.update();
         }
 
-        webcam.closeCameraDeviceAsync(() -> {});
+//        webcam.closeCameraDeviceAsync(() -> {});
 
         robot.start();
 

@@ -33,7 +33,7 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
     public HorizontalArm horizontalArm;
     public Arm arm;
     public OdometryRetract odometryRetract;
-//    public Capstone capstone;
+    public CapstoneArm capstoneArm;
 //    public DistanceSensorLocalization distanceSensorLocalization;
 
     private List<Subsystem> subsystems;
@@ -104,51 +104,51 @@ public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarning
             drivetrain = new Drivetrain(opMode.hardwareMap, this, isAutonomous);
             subsystems.add(drivetrain);
         } catch (Exception e) {
-            Log.w(TAG, "skipping Drivetrain");
+            Log.w(TAG, "skipping Drivetrain", e);
         }
 
         try {
             intakeCarousel = new IntakeCarousel(opMode.hardwareMap, isAutonomous, alliance);
             subsystems.add(intakeCarousel);
         } catch (Exception e) {
-            Log.w(TAG, "skipping Intake");
+            Log.w(TAG, "skipping Intake", e);
         }
 
         try {
             elevator = new Elevator(opMode.hardwareMap, this);
             subsystems.add(elevator);
         } catch (Exception e) {
-            Log.w(TAG, "skipping Elevator");
+            Log.w(TAG, "skipping Elevator", e);
         }
 
         try {
             horizontalArm = new HorizontalArm(opMode.hardwareMap, this);
             subsystems.add(horizontalArm);
         } catch (Exception e) {
-            Log.w(TAG, "skipping HorizontalArms");
+            Log.w(TAG, "skipping HorizontalArm", e);
         }
 
         try {
             arm = new Arm(opMode.hardwareMap, this);
             subsystems.add(arm);
         } catch (Exception e) {
-            Log.w(TAG, "skipping Arm");
+            Log.w(TAG, "skipping Arm", e);
         }
 
         try {
             odometryRetract = new OdometryRetract(opMode.hardwareMap, isAutonomous);
             subsystems.add(odometryRetract);
         } catch (Exception e) {
-            Log.w(TAG, "skipping OdometryRetract");
+            Log.w(TAG, "skipping OdometryRetract", e);
         }
 
-//        try {
-//            capstone = new Capstone(opMode.hardwareMap, this);
-//            subsystems.add(capstone);
-//        }
-//        catch (Exception e) {
-//            Log.w(TAG, "skipping Capstone");
-//        }
+        try {
+            capstoneArm = new CapstoneArm(opMode.hardwareMap, this);
+            subsystems.add(capstoneArm);
+        }
+        catch (Exception e) {
+            Log.w(TAG, "skipping Capstone");
+        }
 
 //        try {
 //            distanceSensorLocalization = new DistanceSensorLocalization(opMode.hardwareMap, this, alliance);

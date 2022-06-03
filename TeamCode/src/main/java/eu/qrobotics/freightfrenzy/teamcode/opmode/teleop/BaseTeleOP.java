@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Arm;
+import eu.qrobotics.freightfrenzy.teamcode.subsystems.CapstoneArm;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Elevator;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.HorizontalArm;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.IntakeCarousel;
@@ -99,38 +100,91 @@ public abstract class BaseTeleOP extends OpMode {
         if (stickyGamepad1.right_bumper) {
             driveMode = DriveMode.NORMAL;
         }
+        if(gamepad1.left_stick_button) {
+            if (gamepad1.left_stick_y < -0.1) {
+                if (getAlliance() == Alliance.RED) {
+                    robot.intakeCarousel.rearButterflyRotation = IntakeCarousel.ButterflyRotation.DOWN;
+                    robot.intakeCarousel.rearIntakeMode = IntakeCarousel.IntakeMode.BUTTERFLY;
+                }
+                else {
+                    robot.intakeCarousel.frontButterflyRotation = IntakeCarousel.ButterflyRotation.DOWN;
+                    robot.intakeCarousel.frontIntakeMode = IntakeCarousel.IntakeMode.BUTTERFLY;
+                }
+            }
+            else if(gamepad1.left_stick_y > 0.1) {
+                if (getAlliance() == Alliance.RED) {
+                    robot.intakeCarousel.frontButterflyRotation = IntakeCarousel.ButterflyRotation.DOWN;
+                    robot.intakeCarousel.frontIntakeMode = IntakeCarousel.IntakeMode.BUTTERFLY;
+                }
+                else {
+                    robot.intakeCarousel.rearButterflyRotation = IntakeCarousel.ButterflyRotation.DOWN;
+                    robot.intakeCarousel.rearIntakeMode = IntakeCarousel.IntakeMode.BUTTERFLY;
+                }
+            }
+        }
+        else {
+            robot.intakeCarousel.frontButterflyRotation = IntakeCarousel.ButterflyRotation.UP;
+            robot.intakeCarousel.rearButterflyRotation = IntakeCarousel.ButterflyRotation.UP;
+            if(robot.intakeCarousel.frontIntakeMode == IntakeCarousel.IntakeMode.BUTTERFLY) {
+                robot.intakeCarousel.frontIntakeMode = IntakeCarousel.IntakeMode.IDLE;
+            }
+            if(robot.intakeCarousel.rearIntakeMode == IntakeCarousel.IntakeMode.BUTTERFLY) {
+                robot.intakeCarousel.rearIntakeMode = IntakeCarousel.IntakeMode.IDLE;
+            }
+        }
 
 
-//        if (stickyGamepad1.right_trigger_button) {
-//            if(robot.intakeCarousel.rearIntakeRotation == IntakeCarousel.IntakeRotation.DOWN) {
-//                robot.intakeCarousel.frontIntakeRotation = IntakeCarousel.IntakeRotation.UP;
-//                robot.intakeCarousel.rearIntakeRotation = IntakeCarousel.IntakeRotation.UP;
-//                intakeUpTimer.reset();
-//                joyStickControl = false;
-//                robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
-//            }
-//            else if(robot.intakeCarousel.rearIntakeRotation == IntakeCarousel.IntakeRotation.UP && robot.intakeCarousel.frontIntakeRotation == IntakeCarousel.IntakeRotation.UP) {
-//                robot.intakeCarousel.frontIntakeRotation = IntakeCarousel.IntakeRotation.DOWN;
-//                robot.intakeCarousel.frontIntakeMode = IntakeCarousel.IntakeMode.IN;
-//                robot.intakeCarousel.rearIntakeRotation = IntakeCarousel.IntakeRotation.UP;
-//                robot.intakeCarousel.rearIntakeMode = IntakeCarousel.IntakeMode.IDLE;
-//            }
-//        }
-//        else if(stickyGamepad1.left_trigger_button) {
-//            if(robot.intakeCarousel.frontIntakeRotation == IntakeCarousel.IntakeRotation.DOWN) {
-//                robot.intakeCarousel.frontIntakeRotation = IntakeCarousel.IntakeRotation.UP;
-//                robot.intakeCarousel.rearIntakeRotation = IntakeCarousel.IntakeRotation.UP;
-//                intakeUpTimer.reset();
-//                joyStickControl = false;
-//                robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
-//            }
-//            else if(robot.intakeCarousel.rearIntakeRotation == IntakeCarousel.IntakeRotation.UP && robot.intakeCarousel.frontIntakeRotation == IntakeCarousel.IntakeRotation.UP) {
-//                robot.intakeCarousel.rearIntakeRotation = IntakeCarousel.IntakeRotation.DOWN;
-//                robot.intakeCarousel.rearIntakeMode = IntakeCarousel.IntakeMode.IN;
-//                robot.intakeCarousel.frontIntakeRotation = IntakeCarousel.IntakeRotation.UP;
-//                robot.intakeCarousel.frontIntakeMode = IntakeCarousel.IntakeMode.IDLE;
-//            }
-//        }
+        if (stickyGamepad1.right_trigger_button) {
+            if(getAlliance() == Alliance.RED) {
+                robot.intakeCarousel.frontIntakeRotation = IntakeCarousel.IntakeRotation.DOWN;
+                robot.intakeCarousel.frontIntakeMode = IntakeCarousel.IntakeMode.IN;
+                robot.intakeCarousel.rearIntakeRotation = IntakeCarousel.IntakeRotation.UP;
+                robot.intakeCarousel.rearIntakeMode = IntakeCarousel.IntakeMode.IDLE;
+            }
+            else {
+                robot.intakeCarousel.rearIntakeRotation = IntakeCarousel.IntakeRotation.DOWN;
+                robot.intakeCarousel.rearIntakeMode = IntakeCarousel.IntakeMode.IN;
+                robot.intakeCarousel.frontIntakeRotation = IntakeCarousel.IntakeRotation.UP;
+                robot.intakeCarousel.frontIntakeMode = IntakeCarousel.IntakeMode.IDLE;
+            }
+        }
+        else if(stickyGamepad1.left_trigger_button) {
+            if(getAlliance() == Alliance.RED) {
+                robot.intakeCarousel.rearIntakeRotation = IntakeCarousel.IntakeRotation.DOWN;
+                robot.intakeCarousel.rearIntakeMode = IntakeCarousel.IntakeMode.IN;
+                robot.intakeCarousel.frontIntakeRotation = IntakeCarousel.IntakeRotation.UP;
+                robot.intakeCarousel.frontIntakeMode = IntakeCarousel.IntakeMode.IDLE;
+            }
+            else {
+                robot.intakeCarousel.frontIntakeRotation = IntakeCarousel.IntakeRotation.DOWN;
+                robot.intakeCarousel.frontIntakeMode = IntakeCarousel.IntakeMode.IN;
+                robot.intakeCarousel.rearIntakeRotation = IntakeCarousel.IntakeRotation.UP;
+                robot.intakeCarousel.rearIntakeMode = IntakeCarousel.IntakeMode.IDLE;
+            }
+        }
+        else if(stickyGamepad1.right_trigger_button_release || stickyGamepad1.left_trigger_button_release) {
+            robot.intakeCarousel.frontIntakeRotation = IntakeCarousel.IntakeRotation.UP;
+            robot.intakeCarousel.rearIntakeRotation = IntakeCarousel.IntakeRotation.UP;
+            intakeUpTimer.reset();
+            joyStickControl = false;
+            robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
+        }
+
+        if(gamepad1.dpad_down)
+            robot.capstoneArm.armmode = CapstoneArm.ArmMode.COLLECT;
+        if(stickyGamepad1.dpad_up) {
+            if(robot.capstoneArm.armmode == CapstoneArm.ArmMode.DOUBLE_SCORE)
+                robot.capstoneArm.armmode = CapstoneArm.ArmMode.SCORE;
+            else if(robot.capstoneArm.armmode == CapstoneArm.ArmMode.SCORE)
+                robot.capstoneArm.armmode = CapstoneArm.ArmMode.DOUBLE_SCORE;
+            else
+                robot.capstoneArm.armmode = CapstoneArm.ArmMode.SCORE;
+
+        }
+        if(gamepad1.a)
+            robot.capstoneArm.clawMode = CapstoneArm.ClawMode.CLOSED;
+        if(gamepad1.b)
+            robot.capstoneArm.clawMode = CapstoneArm.ClawMode.OPEN;
 
         //endregion
 
@@ -221,9 +275,13 @@ public abstract class BaseTeleOP extends OpMode {
             robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
         }
 
-        if(0.6 < intakeUpTimer.seconds() && intakeUpTimer.seconds() < 0.7) {
-            robot.intakeCarousel.frontIntakeMode = IntakeCarousel.IntakeMode.OUT;
-            robot.intakeCarousel.rearIntakeMode = IntakeCarousel.IntakeMode.OUT;
+        if(0.4 < intakeUpTimer.seconds() && intakeUpTimer.seconds() < 0.5) {
+            if(robot.intakeCarousel.frontIntakeRotation == IntakeCarousel.IntakeRotation.UP) {
+                robot.intakeCarousel.frontIntakeMode = IntakeCarousel.IntakeMode.OUT;
+            }
+            if(robot.intakeCarousel.rearIntakeRotation == IntakeCarousel.IntakeRotation.UP) {
+                robot.intakeCarousel.rearIntakeMode = IntakeCarousel.IntakeMode.OUT;
+            }
         }
 
         if(1.5 < intakeUpTimer.seconds() && intakeUpTimer.seconds() < 1.6) {
@@ -345,12 +403,12 @@ public abstract class BaseTeleOP extends OpMode {
          || robot.horizontalArm.linkageMode == HorizontalArm.LinkageMode.MANUAL || robot.horizontalArm.linkageMode == HorizontalArm.LinkageMode.SAFETY_PUSH) {
             if (gamepad2.right_stick_y > 0.1) {
                 robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.MANUAL;
-                robot.horizontalArm.manualOffset -= 0.0075;
+                robot.horizontalArm.manualOffset -= 0.0125;
             }
 
             if (gamepad2.right_stick_y < -0.1) {
                 robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.MANUAL;
-                robot.horizontalArm.manualOffset += 0.0075;
+                robot.horizontalArm.manualOffset += 0.0125;
             }
         }
 
@@ -394,14 +452,14 @@ public abstract class BaseTeleOP extends OpMode {
             }
         }
 
-        if(/*stickyGamepad2.back*/ stickyGamepad2.touchpad) {
+        if(stickyGamepad2.back /*stickyGamepad2.touchpad*/) {
             robot.intakeCarousel.spin();
             robot.intakeCarousel.frontIntakeMode = IntakeCarousel.IntakeMode.CAROUSEL;
             robot.intakeCarousel.rearIntakeMode = IntakeCarousel.IntakeMode.CAROUSEL;
             robot.intakeCarousel.frontIntakeRotation = IntakeCarousel.IntakeRotation.CAROUSEL;
             robot.intakeCarousel.rearIntakeRotation = IntakeCarousel.IntakeRotation.CAROUSEL;
         }
-        else if(/*!gamepad2.back*/ !gamepad2.touchpad) {
+        else if(!gamepad2.back /*!gamepad2.touchpad*/) {
             robot.intakeCarousel.stopSpin();
             if(robot.intakeCarousel.frontIntakeMode == IntakeCarousel.IntakeMode.CAROUSEL) {
                 robot.intakeCarousel.frontIntakeRotation = IntakeCarousel.IntakeRotation.UP;
