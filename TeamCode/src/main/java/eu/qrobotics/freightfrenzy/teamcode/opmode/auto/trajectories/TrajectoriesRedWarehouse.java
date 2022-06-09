@@ -15,7 +15,7 @@ import static eu.qrobotics.freightfrenzy.teamcode.subsystems.DriveConstants.*;
 public class TrajectoriesRedWarehouse {
     public static Pose2d START_POSE = new Pose2d(8, -65, Math.toRadians(0));
 
-    public static int CYCLE_COUNT = 6;
+    public static int CYCLE_COUNT = 7;
 
     private static Pose2d getTrajectorySequenceEndPose(List<Trajectory> trajectories) {
         if(trajectories.size() == 0)
@@ -44,22 +44,22 @@ public class TrajectoriesRedWarehouse {
         );
 
         for (int cycle = 0; cycle < CYCLE_COUNT; cycle++) {
-            double xOffset = cycle * 1.75;
+            double xOffset = cycle * 1.25;
             double xDepositOffset = 2 * (cycle > 1 ? 1 : 0);
-            double yOffset = -0.30 * cycle - (cycle > 4 ? 1 : 0);
+            double yOffset = 0.75 * cycle - (cycle > 4 ? 1 : 0);
 
             trajectories.add(makeTrajectoryBuilder(new Pose2d((cycle == 0 ? -10 : -14), -65, Math.toRadians(0)), Math.toRadians(0))
-                    .lineToConstantHeading(new Vector2d(40 + xOffset, -66 + yOffset))
+                    .lineToConstantHeading(new Vector2d(40 + xOffset, -68 + yOffset))
                     .build()
             );
 
-            trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(0), BASE_VEL_CONSTRAINT, BASE_ACCEL_CONSTRAINT)
-                    .lineToSplineHeading(new Pose2d(40 + xOffset + 3, -66 + yOffset + 3, Math.toRadians(20)))
+            trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(0), NORMAL_VEL_CONSTRAINT, NORMAL_ACCEL_CONSTRAINT)
+                    .lineToSplineHeading(new Pose2d(40 + xOffset + 6, -68 + yOffset + 6, Math.toRadians(20)))
                     .build()
             );
 
-            trajectories.add(makeTrajectoryBuilder(new Pose2d(40 + xOffset, -65, Math.toRadians(0)), Math.toRadians(180))
-                    .lineToConstantHeading(new Vector2d(-14, -66 - 0.25 * cycle - (cycle > 4 ? 1 : 0)))
+            trajectories.add(makeTrajectoryBuilder(new Pose2d(40 + xOffset, -68, Math.toRadians(0)), Math.toRadians(180))
+                    .lineToConstantHeading(new Vector2d(-10, -68 - 0.3 * cycle - (cycle > 4 ? 1 : 0)))
                     .build()
             );
         }

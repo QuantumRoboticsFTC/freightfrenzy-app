@@ -24,8 +24,8 @@ import eu.qrobotics.freightfrenzy.teamcode.util.Alliance;
 public class Robot implements OpModeManagerNotifier.Notifications, GlobalWarningSource {
     public static final String TAG = "Robot";
 
-    private LynxModule hub1;
-    private LynxModule hub2;
+    public LynxModule hub1;
+    public LynxModule hub2;
 
     public Drivetrain drivetrain;
     public IntakeCarousel intakeCarousel;

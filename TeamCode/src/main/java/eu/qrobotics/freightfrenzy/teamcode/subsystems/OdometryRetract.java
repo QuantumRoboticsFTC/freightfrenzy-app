@@ -6,8 +6,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 @Config
 public class OdometryRetract implements Subsystem {
-    public static double DOWN_POSITION = 0.525;
-    public static double UP_POSITION = 0.15;
+    public static double DOWN_POSITION = 0.7;
+    public static double UP_POSITION = 0.3;
 
     public boolean down;
 

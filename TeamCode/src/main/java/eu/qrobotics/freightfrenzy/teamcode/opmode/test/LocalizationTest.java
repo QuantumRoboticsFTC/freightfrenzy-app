@@ -13,7 +13,7 @@ import eu.qrobotics.freightfrenzy.teamcode.util.Alliance;
 import eu.qrobotics.freightfrenzy.teamcode.util.DashboardUtil;
 
 @TeleOp(group = "Test")
-@Disabled
+//@Disabled
 public class LocalizationTest extends OpMode {
     Robot robot;
 

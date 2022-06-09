@@ -3,10 +3,14 @@ package eu.qrobotics.freightfrenzy.teamcode.opmode.teleop;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
+import java.util.Arrays;
 
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Arm;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.CapstoneArm;
@@ -327,7 +331,7 @@ public abstract class BaseTeleOP extends OpMode {
             if(outtakeTarget == OuttakeTarget.SHARED) {
                 robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.IN;
                 if(robot.arm.armMode == Arm.ArmMode.HIGH) {
-                    robot.arm.armMode =  Arm.ArmMode.LOW;
+                    robot.arm.armMode =  Arm.ArmMode.SHARED;
                 }
                 else {
                     robot.arm.armMode = Arm.ArmMode.HIGH;
@@ -485,17 +489,23 @@ public abstract class BaseTeleOP extends OpMode {
 
         // endregion
 
-        telemetry.addData("Outtake Target", outtakeTarget);
-        telemetry.addData("Intake mode", robot.intakeCarousel.frontIntakeMode);
-        telemetry.addData("Intake Front sensor", robot.intakeCarousel.frontSensor.getDistance(DistanceUnit.MM));
-        telemetry.addData("Intake Rear sensor", robot.intakeCarousel.rearSensor.getDistance(DistanceUnit.MM));
-        telemetry.addData("Elevator mode", robot.elevator.elevatorMode);
-        telemetry.addData("Elevator target height", robot.elevator.targetHeight);
-        telemetry.addData("Elevator current height", robot.elevator.getCurrentHeight());
-        telemetry.addData("Elevator isBusy", robot.elevator.isBusy());
-        telemetry.addData("Elevator power", robot.elevator.motorRight.getPower());
-        telemetry.addData("Linkage manualOffset", robot.horizontalArm.manualOffset);
-
+//        telemetry.addData("Outtake Target", outtakeTarget);
+//        telemetry.addData("Intake mode", robot.intakeCarousel.frontIntakeMode);
+//        telemetry.addData("Intake Front sensor", robot.intakeCarousel.frontSensor.getDistance(DistanceUnit.MM));
+//        telemetry.addData("Outtake sensor", robot.arm.sensor.getDistance(DistanceUnit.MM));
+//        telemetry.addData("Intake Rear sensor", robot.intakeCarousel.rearSensor.getDistance(DistanceUnit.MM));
+//        telemetry.addData("Elevator mode", robot.elevator.elevatorMode);
+//        telemetry.addData("Elevator target height", robot.elevator.targetHeight);
+//        telemetry.addData("Elevator current height", robot.elevator.getCurrentHeight());
+//        telemetry.addData("Elevator isBusy", robot.elevator.isBusy());
+//        telemetry.addData("Elevator power", robot.elevator.motorRight.getPower());
+//        telemetry.addData("Linkage manualOffset", robot.horizontalArm.manualOffset);
+        telemetry.addData("Hub 1 current", robot.hub1.getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("Hub 2 current", robot.hub2.getCurrent(CurrentUnit.AMPS));
+        hardwareMap.getAll(DcMotorEx.class).forEach(motor -> {
+            telemetry.addData(hardwareMap.getNamesOf(motor).toArray()[0] + " current", motor.getCurrent(CurrentUnit.AMPS));
+        });
+        telemetry.addData("Voltage", hardwareMap.voltageSensor.iterator().next().getVoltage());
         telemetry.update();
     }
 

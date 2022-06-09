@@ -18,7 +18,8 @@ public class Arm implements Subsystem {
         CAPSTONE_PICKUP,
         CAPSTONE_UP,
         CAPSTONE_PLACE,
-        MANUAL
+        MANUAL,
+        SHARED
     }
 
     public enum TrapdoorMode {
@@ -34,10 +35,12 @@ public class Arm implements Subsystem {
     public static double ARM_FRONT_RIGHT_POSITION = 0.98;
     public static double ARM_UP_LEFT_POSITION = 0.27;
     public static double ARM_UP_RIGHT_POSITION = 0.71;
-    public static double ARM_HIGH_LEFT_POSITION = 0.50;
-    public static double ARM_HIGH_RIGHT_POSITION = 0.48;
+    public static double ARM_HIGH_LEFT_POSITION = 0.58;
+    public static double ARM_HIGH_RIGHT_POSITION = 0.40;
     public static double ARM_LOW_LEFT_POSITION = 0.55;
     public static double ARM_LOW_RIGHT_POSITION = 0.43;
+    public static double ARM_SHARED_LEFT_POSITION = 0.60;
+    public static double ARM_SHARED_RIGHT_POSITION = 0.38;
     public static double ARM_CAPSTONE_PICKUP_LEFT_POSITION = 0.70;
     public static double ARM_CAPSTONE_PICKUP_RIGHT_POSITION = 0.28;
     public static double ARM_CAPSTONE_UP_LEFT_POSITION = 0.51;
@@ -77,7 +80,7 @@ public class Arm implements Subsystem {
     }
 
     public boolean hasElement() {
-        return sensor.getDistance(DistanceUnit.MM) < 50;
+        return sensor.getDistance(DistanceUnit.MM) < 35;
     }
 
     public static boolean IS_DISABLED = false;
@@ -126,6 +129,10 @@ public class Arm implements Subsystem {
                 case MANUAL:
                     armServoLeft.setPosition(ARM_FRONT_LEFT_POSITION + manualOffset);
                     armServoRight.setPosition(ARM_FRONT_RIGHT_POSITION - manualOffset);
+                    break;
+                case SHARED:
+                    armServoLeft.setPosition(ARM_SHARED_LEFT_POSITION );
+                    armServoRight.setPosition(ARM_SHARED_RIGHT_POSITION );
                     break;
             }
 //        }

@@ -47,7 +47,7 @@ public class AutoRedWarehouse extends LinearOpMode {
 //    public static int RIGHT_TSE_DOWN_Y = 1080;
 
     public static double ELEVATOR_THRESHOLD = 2;
-    
+
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -126,12 +126,12 @@ public class AutoRedWarehouse extends LinearOpMode {
 
 //        webcam.closeCameraDeviceAsync(() -> {});
 
-        if(!isStopRequested()) {
+        if (!isStopRequested()) {
             robot.start();
         }
 
         robot.arm.trapdoorMode = Arm.TrapdoorMode.CLOSED;
-        switch(tsePattern) {
+        switch (tsePattern) {
             case LEFT:
                 robot.elevator.targetHeight = Elevator.TargetHeight.LOW;
                 break;
@@ -152,39 +152,35 @@ public class AutoRedWarehouse extends LinearOpMode {
 
         robot.sleep(0.3);
 
-        if(tsePattern == TSEPattern.LEFT) {
+        if (tsePattern == TSEPattern.LEFT) {
             robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.LOW;
-        }
-        else if(tsePattern == TSEPattern.RIGHT) {
+        } else if (tsePattern == TSEPattern.RIGHT) {
             robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.AUTO_HIGH;
-        }
-        else {
+        } else {
             robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.NORMAL;
         }
 
         robot.sleep(0.2);
 
-        if(tsePattern == TSEPattern.LEFT) {
+        if (tsePattern == TSEPattern.LEFT) {
             robot.arm.armMode = Arm.ArmMode.LOW;
-        }
-        else {
+        } else {
             robot.arm.armMode = Arm.ArmMode.HIGH;
         }
 
         robot.sleep(0.25);
 
-        while(robot.elevator.getDistanceLeft() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
+        while (robot.elevator.getDistanceLeft() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
             robot.sleep(0.01);
         }
 
         while (robot.drivetrain.isBusy() && opModeIsActive() && !isStopRequested()) {
             robot.sleep(0.01);
         }
-
-        if(tsePattern == TSEPattern.LEFT) {
+        robot.sleep(0.1);
+        if (tsePattern == TSEPattern.LEFT) {
             robot.arm.trapdoorMode = Arm.TrapdoorMode.LOW;
-        }
-        else {
+        } else {
             robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
         }
         robot.sleep(0.25);
@@ -208,7 +204,7 @@ public class AutoRedWarehouse extends LinearOpMode {
             robot.intakeCarousel.frontIntakeRotation = IntakeCarousel.IntakeRotation.DOWN;
             robot.intakeCarousel.frontIntakeMode = IntakeCarousel.IntakeMode.IN;
 
-            while(robot.elevator.getCurrentHeight() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
+            while (robot.elevator.getCurrentHeight() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
                 robot.sleep(0.01);
             }
 
@@ -216,19 +212,19 @@ public class AutoRedWarehouse extends LinearOpMode {
                 robot.sleep(0.01);
             }
 
-            robot.sleep(0.1);
+            robot.sleep(0.07);
 
-            if(!robot.intakeCarousel.hasElementFront()) {
+            if (!robot.intakeCarousel.hasElementFront()) {
                 robot.drivetrain.followTrajectory(trajectories.get(2 + cycle * 3));
 
-                while(robot.drivetrain.isBusy() && !robot.intakeCarousel.hasElementFront() && opModeIsActive() && !isStopRequested()) {
+                while (robot.drivetrain.isBusy() && !robot.intakeCarousel.hasElementFront() && opModeIsActive() && !isStopRequested()) {
                     robot.sleep(0.01);
                 }
 
                 robot.drivetrain.cancelTrajectory();
             }
 
-            if(30 - safetyStopTimer.seconds() < 4) {
+            if (30 - safetyStopTimer.seconds() < 3) {
                 safetyStop = true;
                 break;
             }
@@ -238,50 +234,50 @@ public class AutoRedWarehouse extends LinearOpMode {
             robot.intakeCarousel.frontIntakeRotation = IntakeCarousel.IntakeRotation.UP;
             robot.intakeCarousel.frontIntakeMode = IntakeCarousel.IntakeMode.IDLE;
 
-            robot.sleep(0.2);
+            robot.sleep(0.15);
 
             robot.intakeCarousel.frontIntakeMode = IntakeCarousel.IntakeMode.IN;
 
-            robot.sleep(0.3);
+            robot.sleep(0.1);
 
             robot.intakeCarousel.frontIntakeMode = IntakeCarousel.IntakeMode.OUT;
 
-            while (robot.intakeCarousel.hasElementRear() && opModeIsActive() && !isStopRequested()) {
+            while (!robot.arm.hasElement() && opModeIsActive() && !isStopRequested() && robot.drivetrain.isBusy()) {
                 robot.sleep(0.01);
             }
-            robot.sleep(1.0);
+//            robot.sleep(1.0);
+            if (robot.arm.hasElement()) {
+                robot.arm.trapdoorMode = Arm.TrapdoorMode.CLOSED;
+                robot.elevator.targetHeight = Elevator.TargetHeight.AUTO_HIGH;
+                robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
 
-            robot.arm.trapdoorMode = Arm.TrapdoorMode.CLOSED;
-            robot.elevator.targetHeight = Elevator.TargetHeight.AUTO_HIGH;
-            robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
-
-            robot.arm.armMode = Arm.ArmMode.UP;
+                robot.arm.armMode = Arm.ArmMode.UP;
 
 //            robot.sleep(0.1);
-            robot.intakeCarousel.frontIntakeMode = IntakeCarousel.IntakeMode.IDLE;
+                robot.intakeCarousel.frontIntakeMode = IntakeCarousel.IntakeMode.IDLE;
 
-            robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.AUTO_HIGH;
+                robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.AUTO_HIGH;
 
-            robot.sleep(0.15);
+                robot.sleep(0.35);
 
-            robot.arm.armMode = Arm.ArmMode.HIGH;
+                robot.arm.armMode = Arm.ArmMode.HIGH;
 
-            robot.sleep(0.2);
+                while (robot.elevator.getDistanceLeft() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
+                    robot.sleep(0.01);
 
-            while(robot.elevator.getDistanceLeft() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
-                robot.sleep(0.01);
+                    while (robot.drivetrain.isBusy() && opModeIsActive() && !isStopRequested()) {
+                        robot.sleep(0.01);
+                    }
+                    robot.sleep(0.1);
+
+                    robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
+
+                    robot.sleep(0.25);
+                }
             }
-
-            while (robot.drivetrain.isBusy() && opModeIsActive() && !isStopRequested()) {
-                robot.sleep(0.01);
-            }
-
-            robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
-
-            robot.sleep(0.35);
         }
 
-        if(!safetyStop) {
+        if (!safetyStop) {
             robot.drivetrain.followTrajectory(trajectories.get(TrajectoriesRedWarehouse.CYCLE_COUNT * 3 + 1));
 
 //            robot.intakeCarousel.frontIntakeRotation = IntakeCarousel.IntakeRotation.DOWN;

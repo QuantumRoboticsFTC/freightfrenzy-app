@@ -38,7 +38,7 @@ public class IntakeCarousel implements Subsystem {
     }
 
     public static double INTAKE_IN_SPEED = 1.0;
-    public static double INTAKE_IN_SLOW_SPEED = 0.3;
+    public static double INTAKE_IN_SLOW_SPEED = 0.4;
     public static double INTAKE_IDLE_SPEED = 0;
     public static double INTAKE_OUT_SPEED = -1.0;
     public static double INTAKE_OUT_SLOW_SPEED = -0.4;
@@ -46,11 +46,11 @@ public class IntakeCarousel implements Subsystem {
 
     public static double FRONT_INTAKE_UP_POSITION = 0.755;
     public static double FRONT_INTAKE_DOWN_POSITION = 0.25;
-    public static double FRONT_INTAKE_CAROUSEL_POSITION = 0.62;
+    public static double FRONT_INTAKE_CAROUSEL_POSITION = 0.70;
 
     public static double REAR_INTAKE_UP_POSITION = 0.28;
     public static double REAR_INTAKE_DOWN_POSITION = 0.787;
-    public static double REAR_INTAKE_CAROUSEL_POSITION = 0.41;
+    public static double REAR_INTAKE_CAROUSEL_POSITION = 0.32;
 
     public static double FRONT_BUTTERFLY_UP_POSITION = 0.36;
     public static double FRONT_BUTTERFLY_DOWN_POSITION = 0.88;
@@ -165,7 +165,7 @@ public class IntakeCarousel implements Subsystem {
     }
 
     public boolean hasElementFront() {
-        return frontSensor.getDistance(DistanceUnit.MM) < 26;
+        return frontSensor.getDistance(DistanceUnit.MM) < 29;
     }
 
     public boolean hasElementRear() {
@@ -200,6 +200,7 @@ public class IntakeCarousel implements Subsystem {
 //        }
         if(frontIntakeMode == IntakeMode.CAROUSEL) {
             frontIntakeMotor.setPower(getCarouselPower());
+            frontIntakeRotation = IntakeRotation.CAROUSEL;
         }
         prevFrontIntakeMode = frontIntakeMode;
 
@@ -227,6 +228,7 @@ public class IntakeCarousel implements Subsystem {
 //        }
         if(rearIntakeMode == IntakeMode.CAROUSEL) {
             rearIntakeMotor.setPower(-getCarouselPower());
+            rearIntakeRotation = IntakeRotation.CAROUSEL;
         }
         prevRearIntakeMode = rearIntakeMode;
 
