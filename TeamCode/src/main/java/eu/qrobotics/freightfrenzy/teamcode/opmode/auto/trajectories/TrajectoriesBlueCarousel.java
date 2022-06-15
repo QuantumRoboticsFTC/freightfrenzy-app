@@ -1,5 +1,7 @@
 package eu.qrobotics.freightfrenzy.teamcode.opmode.auto.trajectories;
 
+import static eu.qrobotics.freightfrenzy.teamcode.subsystems.DriveConstants.BASE_ACCEL_CONSTRAINT;
+import static eu.qrobotics.freightfrenzy.teamcode.subsystems.DriveConstants.BASE_VEL_CONSTRAINT;
 import static eu.qrobotics.freightfrenzy.teamcode.subsystems.DriveConstants.NORMAL_ACCEL_CONSTRAINT;
 import static eu.qrobotics.freightfrenzy.teamcode.subsystems.DriveConstants.NORMAL_VEL_CONSTRAINT;
 import static eu.qrobotics.freightfrenzy.teamcode.subsystems.DriveConstants.SLOW_ACCEL_CONSTRAINT;
@@ -36,23 +38,53 @@ public class TrajectoriesBlueCarousel {
     public static List<Trajectory> getTrajectories() {
         List<Trajectory> trajectories = new ArrayList<>();
 
-        trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(220))
-                .splineToSplineHeading(new Pose2d(-60, 24, Math.toRadians(270)), Math.toRadians(270))
+        trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(-180), BASE_VEL_CONSTRAINT, BASE_ACCEL_CONSTRAINT)
+                .lineToLinearHeading(new Pose2d(-41, 49, Math.toRadians(180 + 45)))
                 .build()
         );
-
-        trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(0))
-                .lineToConstantHeading(new Vector2d(-53, 24))
+        trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(180+45), BASE_VEL_CONSTRAINT, BASE_ACCEL_CONSTRAINT)
+                .lineToLinearHeading(new Pose2d(-54, 56, Math.toRadians(180+160)))
                 .build()
         );
-
-        trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(0))
-                .lineToSplineHeading(new Pose2d(-60, 60, Math.toRadians(330)))
+        trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(180+160), SLOW_VEL_CONSTRAINT, SLOW_ACCEL_CONSTRAINT)
+                .lineToConstantHeading(new Vector2d(-58, 58))
                 .build()
         );
+        trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(180+45), BASE_VEL_CONSTRAINT, BASE_ACCEL_CONSTRAINT)
+                .lineToLinearHeading(new Pose2d(-32, 52, Math.toRadians(180+90)))
 
-        trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(0))
-                .lineToSplineHeading(new Pose2d(-64, 36, Math.toRadians(270)))
+                .build()
+        );
+        trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(180+90), BASE_VEL_CONSTRAINT, BASE_ACCEL_CONSTRAINT)
+                .lineToConstantHeading(new Vector2d(-60, 52))
+                .build()
+        );
+        trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(180+90), BASE_VEL_CONSTRAINT, BASE_ACCEL_CONSTRAINT)
+                .lineToConstantHeading(new Vector2d(-60, 56))
+                .build()
+        );
+        trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(180+90), BASE_VEL_CONSTRAINT, BASE_ACCEL_CONSTRAINT)
+                .lineToConstantHeading(new Vector2d(-32, 56))
+                .build()
+        );
+        trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(180+90), BASE_VEL_CONSTRAINT, BASE_ACCEL_CONSTRAINT)
+                .lineToConstantHeading(new Vector2d(-60, 59))
+                .build()
+        );
+        trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(180+90), BASE_VEL_CONSTRAINT, BASE_ACCEL_CONSTRAINT)
+                .lineToConstantHeading(new Vector2d(-32, 59))
+                .build()
+        );
+        trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(180+90), BASE_VEL_CONSTRAINT, BASE_ACCEL_CONSTRAINT)
+                .lineToLinearHeading(new Pose2d(-50, 52, Math.toRadians(180+45)))
+                .build()
+        );
+        trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(180+45), BASE_VEL_CONSTRAINT, BASE_ACCEL_CONSTRAINT)
+                .lineToConstantHeading(new Vector2d(-55, 60))
+                .build()
+        );
+        trajectories.add(makeTrajectoryBuilder(trajectories, Math.toRadians(180+45), BASE_VEL_CONSTRAINT, BASE_ACCEL_CONSTRAINT)
+                .lineToLinearHeading(new Pose2d(-72, 36, Math.toRadians(180+90)))
                 .build()
         );
 

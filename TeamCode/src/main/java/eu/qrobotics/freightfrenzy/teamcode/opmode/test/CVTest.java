@@ -29,7 +29,7 @@ public class CVTest extends OpMode {
     private TileTapeTracker leftTracker;
     private TileTapeTracker rightTracker;
 
-    public static Alliance alliance = Alliance.RED;
+    public static Alliance alliance = Alliance.BLUE;
 
     public static int LEFT_TOP_Y = 1150;
     public static int LEFT_BOTTOM_Y = 1300;

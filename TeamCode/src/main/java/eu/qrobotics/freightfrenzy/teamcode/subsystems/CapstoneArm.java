@@ -11,20 +11,22 @@ public class CapstoneArm implements Subsystem{
         COLLECT,
         SCORE,
         DOUBLE_SCORE,
-        IDLE
+        IDLE,
+        AUTO_PARK
     }
     public enum ClawMode {
         OPEN,
         CLOSED
     }
 
-    public static double COLLECT_ARM_POSITION = 0.86;
-    public static double SCORE_ARM_POSITION = 0.57;
-    public static double DOUBLE_SCORE_ARM_POSITION = 0.55;
+    public static double COLLECT_ARM_POSITION = 0.87;
+    public static double SCORE_ARM_POSITION = 0.50;
+    public static double DOUBLE_SCORE_ARM_POSITION = 0.47;
     public static double IDLE_ARM_POSITION = 0.4;
+    public static double AUTO_PARK_ARM_POSITION = 0.25;
 
-    public static double CLOSED_CLAW_POSITION = 0.38;
-    public static double OPEN_CLAW_POSITION = 1;
+    public static double CLOSED_CLAW_POSITION = 0.785;
+    public static double OPEN_CLAW_POSITION = 0.33;
 
     public ArmMode armmode;
     public ClawMode clawMode;
@@ -56,6 +58,9 @@ public class CapstoneArm implements Subsystem{
                 break;
             case DOUBLE_SCORE:
                 armServo.setPosition(DOUBLE_SCORE_ARM_POSITION);
+                break;
+            case AUTO_PARK:
+                armServo.setPosition(AUTO_PARK_ARM_POSITION);
                 break;
         }
         switch (clawMode) {

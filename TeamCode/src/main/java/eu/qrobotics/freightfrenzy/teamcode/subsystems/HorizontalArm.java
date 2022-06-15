@@ -14,8 +14,9 @@ public class HorizontalArm implements Subsystem {
         AUTO_HIGH,
         NORMAL,
         FULL,
-        CAPSTONE_PICKUP,
-        CAPSTONE_PLACE,
+        SHARED_NEAR,
+        SHARED_MID,
+        SHARED_FAR,
         SAFETY_PUSH,
         MANUAL
     }
@@ -28,14 +29,16 @@ public class HorizontalArm implements Subsystem {
     public static double LINKAGE_AUTO_MID_RIGHT_POSITION = 0.515;
     public static double LINKAGE_AUTO_HIGH_LEFT_POSITION = 0.510;
     public static double LINKAGE_AUTO_HIGH_RIGHT_POSITION = 0.460;
-    public static double LINKAGE_LOW_LEFT_POSITION = 0.56;
-    public static double LINKAGE_LOW_RIGHT_POSITION = 0.41;
+    public static double LINKAGE_LOW_LEFT_POSITION = 0.48;
+    public static double LINKAGE_LOW_RIGHT_POSITION = 0.49;
     public static double LINKAGE_FULL_LEFT_POSITION = 0.455;
     public static double LINKAGE_FULL_RIGHT_POSITION = 0.515;
-    public static double LINKAGE_CAPSTONE_PICKUP_LEFT_POSITION = 0.655;
-    public static double LINKAGE_CAPSTONE_PICKUP_RIGHT_POSITION = 0.315;
-    public static double LINKAGE_CAPSTONE_PLACE_LEFT_POSITION = 0.545;
-    public static double LINKAGE_CAPSTONE_PLACE_RIGHT_POSITION = 0.425;
+    public static double LINKAGE_SHARED_NEAR_LEFT_POSITION = 0.725;
+    public static double LINKAGE_SHARED_NEAR_RIGHT_POSITION = 0.245;
+    public static double LINKAGE_SHARED_MID_LEFT_POSITION = 0.660;
+    public static double LINKAGE_SHARED_MID_RIGHT_POSITION = 0.330;
+    public static double LINKAGE_SHARED_FAR_LEFT_POSITION = 0.620;
+    public static double LINKAGE_SHARED_FAR_RIGHT_POSITION = 0.370;
     public static double LINKAGE_SAFETY_PUSH_LEFT_POSITION = 0.605;
     public static double LINKAGE_SAFETY_PUSH_RIGHT_POSITION = 0.365;
 
@@ -59,7 +62,7 @@ public class HorizontalArm implements Subsystem {
     public void update() {
         if(IS_DISABLED) return;
 
-        if(true || linkageMode != prevArmMode || linkageMode == LinkageMode.MANUAL) {
+        if(linkageMode != prevArmMode || linkageMode == LinkageMode.MANUAL) {
             switch (linkageMode) {
                 case IN:
                     horizontalArmServoLeft.setPosition(LINKAGE_IN_LEFT_POSITION);
@@ -91,15 +94,20 @@ public class HorizontalArm implements Subsystem {
                     horizontalArmServoRight.setPosition(LINKAGE_FULL_RIGHT_POSITION);
                     manualOffset = LINKAGE_IN_LEFT_POSITION - LINKAGE_FULL_LEFT_POSITION;
                     break;
-                case CAPSTONE_PICKUP:
-                    horizontalArmServoLeft.setPosition(LINKAGE_CAPSTONE_PICKUP_LEFT_POSITION);
-                    horizontalArmServoRight.setPosition(LINKAGE_CAPSTONE_PICKUP_RIGHT_POSITION);
-                    manualOffset = LINKAGE_IN_LEFT_POSITION - LINKAGE_CAPSTONE_PICKUP_LEFT_POSITION;
+                case SHARED_NEAR:
+                    horizontalArmServoLeft.setPosition(LINKAGE_SHARED_NEAR_LEFT_POSITION);
+                    horizontalArmServoRight.setPosition(LINKAGE_SHARED_NEAR_RIGHT_POSITION);
+                    manualOffset = LINKAGE_IN_LEFT_POSITION - LINKAGE_SHARED_NEAR_LEFT_POSITION;
                     break;
-                case CAPSTONE_PLACE:
-                    horizontalArmServoLeft.setPosition(LINKAGE_CAPSTONE_PLACE_LEFT_POSITION);
-                    horizontalArmServoRight.setPosition(LINKAGE_CAPSTONE_PLACE_RIGHT_POSITION);
-                    manualOffset = LINKAGE_IN_LEFT_POSITION - LINKAGE_CAPSTONE_PLACE_LEFT_POSITION;
+                case SHARED_MID:
+                    horizontalArmServoLeft.setPosition(LINKAGE_SHARED_MID_LEFT_POSITION);
+                    horizontalArmServoRight.setPosition(LINKAGE_SHARED_MID_RIGHT_POSITION);
+                    manualOffset = LINKAGE_IN_LEFT_POSITION - LINKAGE_SHARED_MID_LEFT_POSITION;
+                    break;
+                case SHARED_FAR:
+                    horizontalArmServoLeft.setPosition(LINKAGE_SHARED_FAR_LEFT_POSITION);
+                    horizontalArmServoRight.setPosition(LINKAGE_SHARED_FAR_RIGHT_POSITION);
+                    manualOffset = LINKAGE_IN_LEFT_POSITION - LINKAGE_SHARED_FAR_LEFT_POSITION;
                     break;
                 case SAFETY_PUSH:
                     horizontalArmServoLeft.setPosition(LINKAGE_SAFETY_PUSH_LEFT_POSITION);

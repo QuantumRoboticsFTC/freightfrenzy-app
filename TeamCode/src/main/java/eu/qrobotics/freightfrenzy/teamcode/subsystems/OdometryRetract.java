@@ -23,13 +23,13 @@ public class OdometryRetract implements Subsystem {
 
     @Override
     public void update() {
-//        if(down != prevDown) {
+        if(down != prevDown) {
             if (down) {
                 servo.setPosition(DOWN_POSITION);
             } else {
                 servo.setPosition(UP_POSITION);
             }
-//        }
+        }
         prevDown = down;
     }
 }

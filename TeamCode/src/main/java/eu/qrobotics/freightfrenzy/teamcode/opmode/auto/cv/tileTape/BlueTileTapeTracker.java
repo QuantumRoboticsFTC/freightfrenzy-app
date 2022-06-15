@@ -8,9 +8,9 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 public class BlueTileTapeTracker extends TileTapeTracker {
-    private double[] hslThresholdHue = {80.0, 100.0};
-    private double[] hslThresholdSaturation = {150.0, 255.0};
-    private double[] hslThresholdLuminance = {0.0, 255.0};
+    double[] hslThresholdHue = {95.0, 105.0};
+    double[] hslThresholdSaturation = {57.0, 255.0};
+    double[] hslThresholdLuminance = {77.0, 139.0};
     private Mat mask, hsl, result;
     private Scalar count = new Scalar(0);
 

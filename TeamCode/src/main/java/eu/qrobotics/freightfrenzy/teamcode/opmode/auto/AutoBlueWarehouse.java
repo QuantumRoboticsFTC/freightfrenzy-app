@@ -21,6 +21,9 @@ import java.util.List;
 
 import eu.qrobotics.freightfrenzy.teamcode.opmode.auto.cv.TSEPattern;
 import eu.qrobotics.freightfrenzy.teamcode.opmode.auto.cv.TeamShippingElementTracker;
+import eu.qrobotics.freightfrenzy.teamcode.opmode.auto.cv.tileTape.BlueTileTapeTracker;
+import eu.qrobotics.freightfrenzy.teamcode.opmode.auto.cv.tileTape.RedTileTapeTracker;
+import eu.qrobotics.freightfrenzy.teamcode.opmode.auto.cv.tileTape.TileTapeTracker;
 import eu.qrobotics.freightfrenzy.teamcode.opmode.auto.trajectories.TrajectoriesBlueWarehouse;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Arm;
 import eu.qrobotics.freightfrenzy.teamcode.subsystems.Elevator;
@@ -33,19 +36,20 @@ import eu.qrobotics.freightfrenzy.teamcode.util.Alliance;
 @Autonomous
 public class AutoBlueWarehouse extends LinearOpMode {
 
-//    public static int LEFT_TSE_UP_X = 50;
-//    public static int LEFT_TSE_UP_Y = 1100;
-//    public static int LEFT_TSE_DOWN_X = 450;
-//    public static int LEFT_TSE_DOWN_Y = 1500;
-    public static int CENTER_TSE_UP_X = 200;
-    public static int CENTER_TSE_UP_Y = 1100;
-    public static int CENTER_TSE_DOWN_X = 600;
-    public static int CENTER_TSE_DOWN_Y = 1500;
-    public static int RIGHT_TSE_UP_X = 700;
-    public static int RIGHT_TSE_UP_Y = 1100;
-    public static int RIGHT_TSE_DOWN_X = 1080;
-    public static int RIGHT_TSE_DOWN_Y = 1500;
+    private OpenCvCamera webcam;
+    private TileTapeTracker leftTracker;
+    private TileTapeTracker rightTracker;
 
+    public static Alliance alliance = Alliance.BLUE;
+
+    public static int LEFT_TOP_Y = 1150;
+    public static int LEFT_BOTTOM_Y = 1300;
+    public static int LEFT_LEFT_X = 0;
+    public static int LEFT_RIGHT_X = 300;
+    public static int RIGHT_TOP_Y = 1150;
+    public static int RIGHT_BOTTOM_Y = 1300;
+    public static int RIGHT_LEFT_X = 500;
+    public static int RIGHT_RIGHT_X = 780;
     public static double ELEVATOR_THRESHOLD = 2;
 
     @Override
@@ -54,26 +58,22 @@ public class AutoBlueWarehouse extends LinearOpMode {
         Robot robot = new Robot(this, true, Alliance.BLUE);
         robot.drivetrain.setPoseEstimate(TrajectoriesBlueWarehouse.START_POSE);
 
-//        TeamShippingElementTracker leftTSE = new TeamShippingElementTracker(
-//                new Point(LEFT_TSE_UP_X, LEFT_TSE_UP_Y),
-//                new Point(LEFT_TSE_DOWN_X, LEFT_TSE_DOWN_Y)
-//        );
-        TeamShippingElementTracker centerTSE = new TeamShippingElementTracker(
-                new Point(CENTER_TSE_UP_X, CENTER_TSE_UP_Y),
-                new Point(CENTER_TSE_DOWN_X, CENTER_TSE_DOWN_Y)
-        );
-        TeamShippingElementTracker rightTSE = new TeamShippingElementTracker(
-                new Point(RIGHT_TSE_UP_X, RIGHT_TSE_UP_Y),
-                new Point(RIGHT_TSE_DOWN_X, RIGHT_TSE_DOWN_Y)
-        );
+        OpenCvTrackerApiPipeline pipeline = new OpenCvTrackerApiPipeline();
 
-        OpenCvTrackerApiPipeline trackerApiPipeline = new OpenCvTrackerApiPipeline();
-//        trackerApiPipeline.addTracker(leftTSE);
-        trackerApiPipeline.addTracker(centerTSE);
-        trackerApiPipeline.addTracker(rightTSE);
+        if(alliance == Alliance.RED) {
+            leftTracker = new RedTileTapeTracker(new Point(LEFT_LEFT_X, LEFT_TOP_Y), new Point(LEFT_RIGHT_X, LEFT_BOTTOM_Y));
+            rightTracker = new RedTileTapeTracker(new Point(RIGHT_LEFT_X, RIGHT_TOP_Y), new Point(RIGHT_RIGHT_X, RIGHT_BOTTOM_Y));
+        }
+        else {
+            leftTracker = new BlueTileTapeTracker(new Point(LEFT_LEFT_X, LEFT_TOP_Y), new Point(LEFT_RIGHT_X, LEFT_BOTTOM_Y));
+            rightTracker = new BlueTileTapeTracker(new Point(RIGHT_LEFT_X, RIGHT_TOP_Y), new Point(RIGHT_RIGHT_X, RIGHT_BOTTOM_Y));
+        }
+
+        pipeline.addTracker(leftTracker);
+        pipeline.addTracker(rightTracker);
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        OpenCvCamera webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
@@ -85,7 +85,7 @@ public class AutoBlueWarehouse extends LinearOpMode {
 
             }
         });
-        webcam.setPipeline(trackerApiPipeline);
+        webcam.setPipeline(pipeline);
         webcam.showFpsMeterOnViewport(true);
 
         FtcDashboard.getInstance().startCameraStream(webcam, 30);
@@ -94,31 +94,28 @@ public class AutoBlueWarehouse extends LinearOpMode {
 
         TSEPattern tsePattern = TSEPattern.RIGHT;
         while (!opModeIsActive() && !isStopRequested()) {
-            double[] counts = {
-//                    average(leftTSE.getCount()),
-                    4e6,
-                    average(centerTSE.getCount()),
-                    average(rightTSE.getCount())
-            };
-            int maxIdx = 0;
-            double max = 0;
+            double[] counts =  new double[]{
+                    leftTracker.getCount(),
+                    rightTracker.getCount(),
+                    100000
+            } ;
+            int minIdx = 0;
+            double min = Double.POSITIVE_INFINITY;
             for (int i = 0; i < counts.length; i++) {
-                if (counts[i] > max) {
-                    max = counts[i];
-                    maxIdx = i;
+                if (counts[i] < min) {
+                    min = counts[i];
+                    minIdx = i;
                 }
             }
-            if (maxIdx == 0) {
+            if (minIdx == 0) {
                 tsePattern = TSEPattern.LEFT;
-            } else if (maxIdx == 1) {
+            } else if (minIdx == 1) {
                 tsePattern = TSEPattern.MIDDLE;
             } else {
                 tsePattern = TSEPattern.RIGHT;
             }
             telemetry.addData("TSE Pattern", tsePattern);
-            telemetry.addData("Value Left", counts[0]);
-            telemetry.addData("Value Mid", counts[1]);
-            telemetry.addData("Value Right", counts[2]);
+            telemetry.addData("Values", Arrays.toString(counts));
             telemetry.update();
         }
 
@@ -126,12 +123,12 @@ public class AutoBlueWarehouse extends LinearOpMode {
 
         webcam.closeCameraDeviceAsync(() -> {});
 
-        if(!isStopRequested()) {
+        if (!isStopRequested()) {
             robot.start();
         }
 
         robot.arm.trapdoorMode = Arm.TrapdoorMode.CLOSED;
-        switch(tsePattern) {
+        switch (tsePattern) {
             case LEFT:
                 robot.elevator.targetHeight = Elevator.TargetHeight.LOW;
                 break;
@@ -152,42 +149,38 @@ public class AutoBlueWarehouse extends LinearOpMode {
 
         robot.sleep(0.3);
 
-        if(tsePattern == TSEPattern.LEFT) {
+        if (tsePattern == TSEPattern.LEFT) {
             robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.LOW;
-        }
-        else if(tsePattern == TSEPattern.RIGHT) {
+        } else if (tsePattern == TSEPattern.RIGHT) {
             robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.AUTO_HIGH;
-        }
-        else {
+        } else {
             robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.NORMAL;
         }
 
-        robot.sleep(0.5);
+        robot.sleep(0.2);
 
-        if(tsePattern == TSEPattern.LEFT) {
+        if (tsePattern == TSEPattern.RIGHT) {
+            robot.arm.armMode = Arm.ArmMode.HIGH;
+        } else {
             robot.arm.armMode = Arm.ArmMode.LOW;
         }
-        else {
-            robot.arm.armMode = Arm.ArmMode.HIGH;
-        }
 
-        robot.sleep(0.68);
+        robot.sleep(0.25);
 
-        while(robot.elevator.getDistanceLeft() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
+        while (robot.elevator.getDistanceLeft() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
             robot.sleep(0.01);
         }
 
         while (robot.drivetrain.isBusy() && opModeIsActive() && !isStopRequested()) {
             robot.sleep(0.01);
         }
-
-        if(tsePattern == TSEPattern.LEFT) {
+        robot.sleep(0.1);
+        if (tsePattern == TSEPattern.LEFT) {
+            robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
+        } else {
             robot.arm.trapdoorMode = Arm.TrapdoorMode.LOW;
         }
-        else {
-            robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
-        }
-        robot.sleep(0.3);
+        robot.sleep(0.25);
 
         boolean safetyStop = false;
 
@@ -201,14 +194,14 @@ public class AutoBlueWarehouse extends LinearOpMode {
             robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.IN;
             robot.elevator.elevatorMode = Elevator.ElevatorMode.DOWN;
 
-            robot.sleep(0.3);
+            robot.sleep(0.1);
 
             robot.arm.armMode = Arm.ArmMode.FRONT;
 
             robot.intakeCarousel.rearIntakeRotation = IntakeCarousel.IntakeRotation.DOWN;
             robot.intakeCarousel.rearIntakeMode = IntakeCarousel.IntakeMode.IN;
 
-            while(robot.elevator.getCurrentHeight() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
+            while (robot.elevator.getCurrentHeight() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
                 robot.sleep(0.01);
             }
 
@@ -216,19 +209,19 @@ public class AutoBlueWarehouse extends LinearOpMode {
                 robot.sleep(0.01);
             }
 
-            robot.sleep(0.2);
+            robot.sleep(0.07);
 
-            if(!robot.intakeCarousel.hasElementRear()) {
+            if (!robot.intakeCarousel.hasElementRear()) {
                 robot.drivetrain.followTrajectory(trajectories.get(2 + cycle * 3));
 
-                while(robot.drivetrain.isBusy() && !robot.intakeCarousel.hasElementRear() && opModeIsActive() && !isStopRequested()) {
+                while (robot.drivetrain.isBusy() && !robot.intakeCarousel.hasElementRear() && opModeIsActive() && !isStopRequested()) {
                     robot.sleep(0.01);
                 }
 
                 robot.drivetrain.cancelTrajectory();
             }
 
-            if(30 - safetyStopTimer.seconds() < 4) {
+            if (30 - safetyStopTimer.seconds() < 3) {
                 safetyStop = true;
                 break;
             }
@@ -238,59 +231,52 @@ public class AutoBlueWarehouse extends LinearOpMode {
             robot.intakeCarousel.rearIntakeRotation = IntakeCarousel.IntakeRotation.UP;
             robot.intakeCarousel.rearIntakeMode = IntakeCarousel.IntakeMode.IDLE;
 
-            robot.sleep(0.2);
+            robot.sleep(0.15);
 
             robot.intakeCarousel.rearIntakeMode = IntakeCarousel.IntakeMode.IN;
 
-            robot.sleep(0.3);
+            robot.sleep(0.1);
 
             robot.intakeCarousel.rearIntakeMode = IntakeCarousel.IntakeMode.OUT;
 
-            while (robot.intakeCarousel.hasElementRear() && opModeIsActive() && !isStopRequested()) {
+            while (!robot.arm.hasElement() && opModeIsActive() && !isStopRequested() && robot.drivetrain.isBusy()) {
                 robot.sleep(0.01);
             }
-            robot.sleep(1.1);
+//            robot.sleep(1.0);
+            if (robot.arm.hasElement()) {
+                robot.arm.trapdoorMode = Arm.TrapdoorMode.CLOSED;
+                robot.elevator.targetHeight = Elevator.TargetHeight.AUTO_HIGH;
+                robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
 
-            robot.arm.trapdoorMode = Arm.TrapdoorMode.CLOSED;
-            robot.elevator.targetHeight = Elevator.TargetHeight.AUTO_HIGH;
-            robot.elevator.elevatorMode = Elevator.ElevatorMode.UP;
+                robot.arm.armMode = Arm.ArmMode.UP;
 
-            robot.arm.armMode = Arm.ArmMode.UP;
+//            robot.sleep(0.1);
+                robot.intakeCarousel.rearIntakeMode = IntakeCarousel.IntakeMode.IDLE;
 
-            robot.sleep(0.3);
-            robot.intakeCarousel.rearIntakeMode = IntakeCarousel.IntakeMode.IDLE;
+                robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.AUTO_HIGH;
 
-            robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.AUTO_HIGH;
+                robot.sleep(0.35);
 
-            robot.sleep(0.5);
+                robot.arm.armMode = Arm.ArmMode.HIGH;
 
-            robot.arm.armMode = Arm.ArmMode.HIGH;
+                while (robot.elevator.getDistanceLeft() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
+                    robot.sleep(0.01);
 
-            if(cycle == 0) {
-                robot.sleep(0.6);
+                    while (robot.drivetrain.isBusy() && opModeIsActive() && !isStopRequested()) {
+                        robot.sleep(0.01);
+                    }
+                    robot.sleep(0.1);
+
+                    robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
+
+                    robot.sleep(0.25);
+                }
             }
-            else {
-                robot.sleep(0.7);
-            }
-
-            while(robot.elevator.getDistanceLeft() > ELEVATOR_THRESHOLD && opModeIsActive() && !isStopRequested()) {
-                robot.sleep(0.01);
-            }
-
-            while (robot.drivetrain.isBusy() && opModeIsActive() && !isStopRequested()) {
-                robot.sleep(0.01);
-            }
-
-            robot.arm.trapdoorMode = Arm.TrapdoorMode.OPEN;
-
-            robot.sleep(0.25);
         }
 
-        if(!safetyStop) {
+        if (!safetyStop) {
             robot.drivetrain.followTrajectory(trajectories.get(TrajectoriesBlueWarehouse.CYCLE_COUNT * 3 + 1));
 
-//            robot.intakeCarousel.rearIntakeRotation = IntakeCarousel.IntakeRotation.DOWN;
-//            robot.intakeCarousel.rearIntakeMode = IntakeCarousel.IntakeMode.IN;
             robot.arm.armMode = Arm.ArmMode.FRONT;
             robot.horizontalArm.linkageMode = HorizontalArm.LinkageMode.IN;
             robot.elevator.elevatorMode = Elevator.ElevatorMode.DOWN;
